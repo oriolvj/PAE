@@ -1,174 +1,89 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { ArrowUpIcon, ArrowDownIcon, Users, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react'
 
-type Event = {
-  id: string
-  title: string
-  day: string
-  startTime: string
-  endTime: string
-  color: string
-}
+// Mock data for the chart
+const data = [
+  { name: 'Jan', value: 400 },
+  { name: 'Feb', value: 300 },
+  { name: 'Mar', value: 500 },
+  { name: 'Apr', value: 280 },
+  { name: 'May', value: 590 },
+  { name: 'Jun', value: 320 },
+]
 
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-const HOURS = Array.from({ length: 14 }, (_, i) => i + 7) // 7 AM to 8 PM
-
-export default function TimetablePage() {
-  const [events, setEvents] = useState<Event[]>([])
-  const [newEvent, setNewEvent] = useState<Omit<Event, 'id'>>({
-    title: '',
-    day: '',
-    startTime: '',
-    endTime: '',
-    color: '#3b82f6' // Default blue color
-  })
-
-  const handleAddEvent = () => {
-    const id = Math.random().toString(36).substr(2, 9)
-    setEvents([...events, { ...newEvent, id }])
-    setNewEvent({ title: '', day: '', startTime: '', endTime: '', color: '#3b82f6' })
-  }
-
+export default function DashboardPage() {
+  // Function to generate random statistics
+  const randomStat = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min)
+  
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-bold">Timetable</h2>
-      <Tabs defaultValue="view" className="w-full">
-        <TabsList>
-          <TabsTrigger value="view">View Timetable</TabsTrigger>
-          <TabsTrigger value="add">Add Event</TabsTrigger>
-        </TabsList>
-        <TabsContent value="view">
-          <Card>
-            <CardContent>
-              <div className="grid grid-cols-6 gap-2">
-                <div className="font-bold">Time</div>
-                {DAYS.map(day => (
-                  <div key={day} className="font-bold">{day}</div>
-                ))}
-                {HOURS.map(hour => (
-                  <>
-                    <div key={hour} className="text-sm">
-                      {hour % 12 || 12} {hour < 12 ? 'AM' : 'PM'}
-                    </div>
-                    {DAYS.map(day => (
-                      <div key={`${day}-${hour}`} className="relative h-12 border-t">
-                        {events
-                          .filter(event => event.day === day && parseInt(event.startTime) <= hour && parseInt(event.endTime) > hour)
-                          .map(event => (
-                            <div
-                              key={event.id}
-                              className="absolute inset-0 m-1 overflow-hidden rounded p-1 text-xs"
-                              style={{ backgroundColor: event.color }}
-                            >
-                              {event.title}
-                            </div>
-                          ))}
-                      </div>
-                    ))}
-                  </>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="add">
-          <Card>
-            <CardHeader>
-              <CardTitle>Add New Event</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={(e) => { e.preventDefault(); handleAddEvent(); }} className="space-y-4">
-                <div>
-                  <Label htmlFor="title">Event Title</Label>
-                  <Input
-                    id="title"
-                    value={newEvent.title}
-                    onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="day">Day</Label>
-                  <Select
-                    value={newEvent.day}
-                    onValueChange={(value) => setNewEvent({ ...newEvent, day: value })}
-                  >
-                    <SelectTrigger id="day">
-                      <SelectValue placeholder="Select a day" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DAYS.map(day => (
-                        <SelectItem key={day} value={day}>{day}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="startTime">Start Time</Label>
-                    <Select
-                      value={newEvent.startTime}
-                      onValueChange={(value) => setNewEvent({ ...newEvent, startTime: value })}
-                    >
-                      <SelectTrigger id="startTime">
-                        <SelectValue placeholder="Start time" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {HOURS.map(hour => (
-                          <SelectItem key={hour} value={hour.toString()}>
-                            {hour % 12 || 12} {hour < 12 ? 'AM' : 'PM'}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="endTime">End Time</Label>
-                    <Select
-                      value={newEvent.endTime}
-                      onValueChange={(value) => setNewEvent({ ...newEvent, endTime: value })}
-                    >
-                      <SelectTrigger id="endTime">
-                        <SelectValue placeholder="End time" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {HOURS.map(hour => (
-                          <SelectItem key={hour} value={hour.toString()}>
-                            {hour % 12 || 12} {hour < 12 ? 'AM' : 'PM'}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="color">Event Color</Label>
-                  <Input
-                    id="color"
-                    type="color"
-                    value={newEvent.color}
-                    onChange={(e) => setNewEvent({ ...newEvent, color: e.target.value })}
-                  />
-                </div>
-                <Button type="submit">Add Event</Button>
-              </form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+    <div className="p-8">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Usuaris</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{randomStat(1000, 5000)}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Facturació</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">${randomStat(10000, 50000)}</div>
+            <p className="text-xs text-muted-foreground">
+              +{randomStat(5, 30)}% des de l'últim mes
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">TODO</CardTitle>
+            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">TODO</div>
+            <p className="text-xs text-muted-foreground">
+              TODO
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">TODO</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">TODO</div>
+            <p className="text-xs text-muted-foreground">
+              TODO
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Facturació per mesos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="value" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
     </div>
   )
 }
+
