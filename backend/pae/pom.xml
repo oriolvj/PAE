@@ -54,6 +54,16 @@
             <artifactId>lombok</artifactId>
             <version>1.18.30</version>
         </dependency>
+		<dependency>
+			<groupId>me.paulschwarz</groupId>
+			<artifactId>spring-dotenv</artifactId>
+			<version>4.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.6.0</version>
+		</dependency>
     </dependencies>
 
 	<build>

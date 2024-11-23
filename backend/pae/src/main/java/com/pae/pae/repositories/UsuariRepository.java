@@ -1,6 +1,7 @@
 package com.pae.pae.repositories;
 
 import com.pae.pae.models.UsuariDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -10,7 +11,9 @@ import java.util.ArrayList;
 public class UsuariRepository {
 
     private static final String URL = "";
+    @Value("${database_username}")
     private static final String USER = "";
+    @Value("${database_password}")
     private static final String PWD = "";
 
     private UsuariDTO uDTO = null;
