@@ -35,7 +35,7 @@ public class UsuariRepository {
 
     public ArrayList<UsuariDTO> getUsuaris() {
         ArrayList<UsuariDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM usuari";
+        String query = "SELECT * FROM usuaris";
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query);
@@ -51,7 +51,7 @@ public class UsuariRepository {
     }
 
     public UsuariDTO getUsuari(String username) {
-        String query = "SELECT * FROM usuari WHERE username = ?";
+        String query = "SELECT * FROM usuaris WHERE username = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, username);
@@ -68,7 +68,7 @@ public class UsuariRepository {
 
     public boolean usuariRemove(String username) {
         boolean ok = true;
-        String query = "DELETE FROM usuari WHERE username = ?";
+        String query = "DELETE FROM usuaris WHERE username = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, username);
@@ -78,6 +78,24 @@ public class UsuariRepository {
             ok = false;
         }
         return ok;
+    }
+
+    public boolean doAuth(UsuariDTO user) {
+        String query= "select * from usuaris where username=?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, user.getUsername());
+            ResultSet rs = statement.executeQuery();
+            while(rs.next()) {
+                String password = rs.getString("pwd");
+                //BCrypt.Result result = BCrypt.verifyer().verify(user.getPassword().toCharArray(), password);
+                return result.verified;
+            }
+            return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            ok = false;
+        }
     }
 
 }

@@ -30,6 +30,7 @@ public class UsuariService {
             System.out.println("Invalid username or password.");
             return null;
         } else {
+
             if (user.getPwd().equals(password)) {
                 System.out.println("Correct login");
                 return user;

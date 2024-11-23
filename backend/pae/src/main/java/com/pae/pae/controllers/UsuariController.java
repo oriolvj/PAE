@@ -29,6 +29,7 @@ public class UsuariController {
     public UsuariDTO login(@RequestBody Map<String, String> loginRequest) {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
+        //String password = new BCryptPasswordEncoder().encode(password_text); //fem el hash del password
         return usuariService.login(username, password);
     }
 
