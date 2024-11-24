@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -26,6 +27,7 @@ const placeholderUsers: User[] = [
 ]
 
 export default function UsersPage() {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = useState('')
   const [users, setUsers] = useState<User[]>(placeholderUsers)
 
@@ -85,7 +87,7 @@ export default function UsersPage() {
               </TableCell>
               <TableCell>{new Date(user.lastActive).toLocaleString()}</TableCell>
               <TableCell className="text-right">
-                <Button variant="ghost" size="sm">Edit</Button>
+                <Button variant="ghost" size="sm" onClick={() => router.push(`/dashboard/users/${user.id}/edit`)}>Edit</Button>
                 <Button variant="ghost" size="sm" className="text-red-600">Delete</Button>
               </TableCell>
             </TableRow>
@@ -95,3 +97,4 @@ export default function UsersPage() {
     </div>
   )
 }
+
