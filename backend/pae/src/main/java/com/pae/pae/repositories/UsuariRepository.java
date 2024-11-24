@@ -3,6 +3,7 @@ package com.pae.pae.repositories;
 import com.pae.pae.models.UsuariDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+import com.pae.pae.models.Rols;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ public class UsuariRepository {
     }
 
     private void AssignUsuariObject(ResultSet resultSet) throws SQLException {
+        String rol = resultSet.getString("rol");
+        Rols r = Rols.valueOf(rol);
         uDTO = new UsuariDTO(resultSet.getString("username"),
                 resultSet.getString("nom"),
                 resultSet.getInt("edat"),
@@ -31,7 +34,7 @@ public class UsuariRepository {
                 resultSet.getString("email"),
                 resultSet.getString("pwd"),
                 resultSet.getBoolean("administrador"),
-                resultSet.getString("rol"));
+                r);
     }
 
     public ArrayList<UsuariDTO> getUsuaris() {

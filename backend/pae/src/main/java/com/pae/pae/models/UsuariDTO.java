@@ -9,12 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UsuariDTO {
 
-    public static enum Rols {
-        ADMINISTRADOR,
-        GESTOR_PROJECTE,
-        TREBALLADOR
-    }
-
     private String username;
     private String nom;
     private Integer edat;
@@ -22,9 +16,9 @@ public class UsuariDTO {
     private String email;
     private String pwd;
     private Boolean administrador;
-    private String rol;
+    private Rols rol;
 
-    public UsuariDTO(String username, String nom, Integer edat, Integer tlf, String email, String pwd, Boolean administrador, String rol) {
+    public UsuariDTO(String username, String nom, Integer edat, Integer tlf, String email, String pwd, Boolean administrador, Rols rol) {
         this.username = username;
         this.nom = nom;
         this.edat = edat;
@@ -91,11 +85,11 @@ public class UsuariDTO {
         this.administrador = administrador;
     }
 
-    public String getRol() {
+    public Rols getRol() {
         return rol;
     }
 
-    public void setRol(String rol) {
+    public void setRol(Rols rol) {
         this.rol = rol;
     }
 }
