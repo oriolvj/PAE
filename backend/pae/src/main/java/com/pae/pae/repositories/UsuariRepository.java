@@ -10,6 +10,7 @@ import java.util.ArrayList;
 @Repository
 public class UsuariRepository {
 
+    @Value("${SPRING_DATASOURCE_URL}")
     private static final String URL = "";
     @Value("${database_username}")
     private static final String USER = "";
@@ -80,7 +81,7 @@ public class UsuariRepository {
         return ok;
     }
 
-    public boolean doAuth(UsuariDTO user) {
+    /*public boolean doAuth(UsuariDTO user) {
         String query= "select * from usuaris where username=?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -96,6 +97,6 @@ public class UsuariRepository {
             e.printStackTrace();
             ok = false;
         }
-    }
+    }*/
 
 }
