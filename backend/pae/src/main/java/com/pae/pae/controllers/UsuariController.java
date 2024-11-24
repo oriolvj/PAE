@@ -25,6 +25,7 @@ public class UsuariController {
         return usuariService.getUsuari(username);
     }
 
+    @CrossOrigin
     @PostMapping(path = "/login")
     public UsuariDTO login(@RequestBody Map<String, String> loginRequest) {
         String username = loginRequest.get("username");
