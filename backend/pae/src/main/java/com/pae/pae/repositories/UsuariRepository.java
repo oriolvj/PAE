@@ -11,11 +11,11 @@ import java.util.ArrayList;
 public class UsuariRepository {
 
     @Value("${SPRING_DATASOURCE_URL}")
-    private static final String URL = "";
-    @Value("${database_username}")
-    private static final String USER = "";
-    @Value("${database_password}")
-    private static final String PWD = "";
+    private String URL = "";
+    @Value("${SPRING_DATASOURCE_USERNAME}")
+    private String USER = "";
+    @Value("${SPRING_DATASOURCE_PASSWORD}")
+    private String PWD = "";
 
     private UsuariDTO uDTO = null;
 
