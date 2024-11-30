@@ -12,6 +12,29 @@ import java.util.Map;
 @RestController
 @RequestMapping("/usuaris")
 public class UsuariController {
+    /*private static final String SECRET_KEY = "mySecretKey123"; // Clave secreta para firmar los tokens
+    private static final long EXPIRATION_TIME = 86400000; // 1 día en milisegundos
+
+    @PostMapping(path = "/login")
+    public String login(@RequestBody Map<String, String> loginRequest) {
+        String username = loginRequest.get("username");
+        String password = loginRequest.get("password");
+
+        // Autenticación (puedes usar tu servicio para esto)
+        if (usuariService.login(username, password) != null) {
+            // Generar JWT
+            String token = Jwts.builder()
+                    .setSubject(username)
+                    .claim("role", usuariService.getUserRole(username)) // Incluye el rol
+                    .setIssuedAt(new Date())
+                    .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                    .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+                    .compact();
+            return token;
+        } else {
+            throw new RuntimeException("Credenciales inválidas");
+        }
+    }*/
 
     @Autowired
     private UsuariService usuariService = new UsuariService();
@@ -68,8 +91,39 @@ public class UsuariController {
 
     @DeleteMapping(path = "/remove")
     public boolean remove(@RequestBody Map<String, String> deleteRequest) {
-        String adminUer = newuserRequest.get("adminUser");
-        String username = loginRequest.get("username");
-        return usuariService.usuariRemove(username, adminUer);
+        String adminUser = deleteRequest.get("adminUser");
+        String username = deleteRequest.get("username");
+        return usuariService.usuariRemove(username, adminUser);
+    }
+
+    @CrossOrigin
+    @PostMapping(path = "/modify")
+    public boolean modifyUser (@RequestBody Map<String, String> modifyRequest){
+        String adminUser = modifyRequest.get("adminUser");
+
+        String username = modifyRequest.get("username"); //el username no sera modificable de moment
+        String nom = modifyRequest.get("nom");
+        String edat = modifyRequest.get("edat");
+        String tlf = modifyRequest.get("tlf");
+        String email = modifyRequest.get("email");
+        String pwd = modifyRequest.get("pwd");
+        boolean administrador;
+        administrador = Boolean.parseBoolean(modifyRequest.get("admin").toString());
+        Rols rol = Rols.valueOf(modifyRequest.get("rol"));
+        String preferencia = modifyRequest.get("preferencia");
+        boolean actiu = Boolean.parseBoolean(modifyRequest.get("actiu").toString());
+
+        UsuariDTO modifyUser = new UsuariDTO();
+        modifyUser.setUsername(username);
+        modifyUser.setNom(nom);
+        modifyUser.setEdat(Integer.valueOf(edat));
+        modifyUser.setTlf(Integer.valueOf(tlf));
+        modifyUser.setEmail(email);
+        modifyUser.setPwd(pwd);
+        modifyUser.setAdministrador(administrador);
+        modifyUser.setRol(rol);
+        modifyUser.setPreferencia(preferencia);
+        modifyUser.setActiu(actiu);
+        return usuariService.RegisterUser(adminUser, modifyUser);
     }
 }

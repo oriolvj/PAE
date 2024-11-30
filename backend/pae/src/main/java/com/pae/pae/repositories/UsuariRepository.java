@@ -94,7 +94,7 @@ public class UsuariRepository {
         return false;
     }
 
-    public boolean usuariRemove(String username) {
+    public boolean removeUser(String username) {
         boolean ok = true;
         String query = "DELETE FROM usuaris WHERE username = ?";
         try (Connection connection = getConnection();
@@ -106,6 +106,32 @@ public class UsuariRepository {
             ok = false;
         }
         return ok;
+    }
+
+    public boolean usuariModify(UsuariDTO user) {
+        String query = "UPDATE usuaris SET nom = ?, edat = ?, tlf = ?, email = ?, pwd = ?, administrador = ?, rol = ?, preferencia = ?, actiu = ? WHERE username = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, user.getNom());
+            stmt.setInt(2, user.getEdat());
+            stmt.setInt(3, user.getTlf());
+            stmt.setString(4, user.getEmail());
+            stmt.setString(5, user.getPwd());
+            stmt.setBoolean(6, user.getAdministrador());
+            stmt.setString(7, user.getRol().toString());
+            stmt.setString(8, user.getPreferencia());
+            stmt.setBoolean(9, user.getActiu());
+            stmt.setString(10, user.getUsername());
+
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("Usuari actualitzat correctament");
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 

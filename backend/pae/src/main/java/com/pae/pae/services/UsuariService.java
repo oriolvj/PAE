@@ -5,7 +5,6 @@ import com.pae.pae.repositories.UsuariRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 @Service
@@ -43,21 +42,8 @@ public class UsuariService {
 
     public boolean RegisterUser(String administrador, UsuariDTO newuser) {
         UsuariDTO admin = usuariRepository.getUsuari(administrador);
-        if (admin == null || !"ADMINISTRADOR".equals(admin.getRol())) {
-            System.out.println("No admin to create new users");
-            return false;
-        }
-        UsuariDTO user = usuariRepository.getUsuari(newuser.getUsername());
-        if (user != null) {
-            System.out.println("User already exsists");
-            return false;
-        }
-        //newUsuari.setPassword(new BCryptPasswordEncoder().encode(newUsuari.getPassword())); --> encru¡iptar password
-        try {
-            return usuariRepository.addUser(newuser);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        System.out.println("No admin to create new users");
+        return false;
 
     }
 
@@ -73,8 +59,27 @@ public class UsuariService {
             return false;
         }
         try {
-            return usuariRepository.usuariRemove(username);
+            return usuariRepository.removeUser(username);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+    }
 
+    public boolean usuariModify(String administrador, UsuariDTO userToModify) {
+        UsuariDTO user = usuariRepository.getUsuari(userToModify.getUsername());
+        UsuariDTO admin = usuariRepository.getUsuari(administrador);
+        if (admin == null || !"ADMINISTRADOR".equals(admin.getRol())) {
+            System.out.println("No admin to modify new users");
+            return false;
+        }
+        if (user == null) {
+            System.out.println("No user");
+            return false;
+        }
+        try {
+            return usuariRepository.usuariModify(userToModify);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
