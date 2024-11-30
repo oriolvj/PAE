@@ -17,6 +17,9 @@ public class UsuariDTO {
     private String pwd;
     private Boolean administrador;
     private Rols rol;
+    @Getter
+    private String preferencia;
+    private boolean actiu;
 
     public UsuariDTO(String username, String nom, Integer edat, Integer tlf, String email, String pwd, Boolean administrador, Rols rol) {
         this.username = username;
@@ -27,6 +30,8 @@ public class UsuariDTO {
         this.pwd = pwd;
         this.administrador = administrador;
         this.rol = rol;
+        this.preferencia = preferencia;
+        this.actiu = actiu;
     }
 
     public String getUsername() {
@@ -91,5 +96,16 @@ public class UsuariDTO {
 
     public void setRol(Rols rol) {
         this.rol = rol;
+    }
+
+    public void setPreferencia(String preferencia) {
+        this.preferencia = preferencia;
+    }
+
+    public void setActiu(boolean actiu) {
+        this.actiu = actiu;
+    }
+    public boolean getActiu() {
+        return actiu;
     }
 }

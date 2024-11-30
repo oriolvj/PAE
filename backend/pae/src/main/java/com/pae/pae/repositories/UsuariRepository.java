@@ -70,6 +70,30 @@ public class UsuariRepository {
         return uDTO;
     }
 
+    public boolean addUser (UsuariDTO newUser) throws SQLException {
+        String query = "INSERT INTO usuaris (username, nom, edat, tlf, email, pwd, administrador, rol, preferencia, actiu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection connection = getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, newUser.getUsername());
+            stmt.setString(2, newUser.getNom());
+            stmt.setInt(3, newUser.getEdat());
+            stmt.setInt(4, newUser.getTlf());
+            stmt.setString(5, newUser.getEmail());
+            stmt.setString(6, newUser.getPwd());
+            stmt.setBoolean(7, newUser.getAdministrador());
+            stmt.setString(8, newUser.getRol().toString());
+            stmt.setString(9, newUser.getPreferencia());
+            stmt.setBoolean(10, newUser.getActiu());
+
+            int rowsInserted = stmt.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("Usuari insertat correctament");
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean usuariRemove(String username) {
         boolean ok = true;
         String query = "DELETE FROM usuaris WHERE username = ?";
@@ -84,22 +108,7 @@ public class UsuariRepository {
         return ok;
     }
 
-    /*public boolean doAuth(UsuariDTO user) {
-        String query= "select * from usuaris where username=?";
-        try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, user.getUsername());
-            ResultSet rs = statement.executeQuery();
-            while(rs.next()) {
-                String password = rs.getString("pwd");
-                //BCrypt.Result result = BCrypt.verifyer().verify(user.getPassword().toCharArray(), password);
-                return result.verified;
-            }
-            return false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            ok = false;
-        }
-    }*/
+
+
 
 }
