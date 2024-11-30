@@ -66,9 +66,10 @@ public class UsuariController {
         return usuariService.RegisterUser(adminUer, newUser);
     }
 
-    @DeleteMapping(path = "/{username}")
-    public boolean remove(@RequestBody Map<String, String> loginRequest) {
+    @DeleteMapping(path = "/remove")
+    public boolean remove(@RequestBody Map<String, String> deleteRequest) {
+        String adminUer = newuserRequest.get("adminUser");
         String username = loginRequest.get("username");
-        return usuariService.usuariRemove(username);
+        return usuariService.usuariRemove(username, adminUer);
     }
 }

@@ -54,15 +54,27 @@ public class UsuariService {
         }
         //newUsuari.setPassword(new BCryptPasswordEncoder().encode(newUsuari.getPassword())); --> encru¡iptar password
         try {
-            usuariRepository.addUser(newuser);
+            return usuariRepository.addUser(newuser);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return true;
 
     }
 
-    public boolean usuariRemove(String username) {
-        return usuariRepository.usuariRemove(username);
+    public boolean usuariRemove(String username, String administrador) {
+        UsuariDTO admin = usuariRepository.getUsuari(administrador);
+        UsuariDTO user = usuariRepository.getUsuari(username);
+        if (admin == null || !"ADMINISTRADOR".equals(admin.getRol())) {
+            System.out.println("No admin to create new users");
+            return false;
+        }
+        if (user == null) {
+            System.out.println("No admin to create new users");
+            return false;
+        }
+        try {
+            return usuariRepository.usuariRemove(username);
+        }
+
     }
 }
