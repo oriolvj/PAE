@@ -41,11 +41,12 @@ public class UsuariController {
     @Autowired
     private UsuariService usuariService = new UsuariService();
 
+    @CrossOrigin
     @GetMapping
     public ArrayList<UsuariDTO> getUsuaris() {
         return usuariService.getUsuaris();
     }
-
+    @CrossOrigin
     @GetMapping(path = "/{username}")
     public UsuariDTO getUsuari(@PathVariable("username") String username) {
         return usuariService.getUsuari(username);
@@ -95,6 +96,7 @@ public class UsuariController {
         return usuariService.RegisterUser(adminUer, newUser);
     }
 
+    @CrossOrigin
     @DeleteMapping(path = "/remove")
     public boolean remove(@RequestBody Map<String, String> deleteRequest) {
         String adminUser = deleteRequest.get("adminUser");

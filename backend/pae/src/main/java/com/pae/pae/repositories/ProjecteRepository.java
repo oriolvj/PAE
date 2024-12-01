@@ -80,4 +80,24 @@ public class ProjecteRepository {
         }
         return pDTO;
     }
+
+    public boolean addProject(ProjecteDTO proj) throws SQLException {
+        String query = "INSERT INTO projectes(nom,mes,setmana,data_inici,data_fi,num_empl,ubicacio) VALUES(?,?,?,?,?,?,?)";
+        try (Connection connection = getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, proj.getNom());
+            stmt.setString(2, proj.getMes().toString());
+            stmt.setString(3, proj.getSetmana().toString());
+            stmt.setDate(4, proj.getData_inici());
+            stmt.setDate(5, proj.getData_fi());
+            stmt.setInt(6, proj.getNum_empleats());
+            stmt.setString(7, proj.getUbicacio());
+            int rowsInserted = stmt.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("Usuari insertat correctament");
+                return true;
+            }
+        }
+        return false;
+    }
 }
