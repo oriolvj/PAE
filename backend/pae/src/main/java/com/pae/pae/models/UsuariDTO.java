@@ -17,11 +17,12 @@ public class UsuariDTO {
     private String pwd;
     private Boolean administrador;
     private Rols rol;
-    @Getter
     private String preferencia;
     private boolean actiu;
+    private boolean contractat;//True si es de l'empresa, false altrement
+    private Jornada jornda;
 
-    public UsuariDTO(String username, String nom, Integer edat, Integer tlf, String email, String pwd, Boolean administrador, Rols rol) {
+    public UsuariDTO(String username, String nom, Integer edat, Integer tlf, String email, String pwd, Boolean administrador, Rols rol, String preferencia, boolean actiu, boolean contractat, Jornada jornada) {
         this.username = username;
         this.nom = nom;
         this.edat = edat;
@@ -32,6 +33,8 @@ public class UsuariDTO {
         this.rol = rol;
         this.preferencia = preferencia;
         this.actiu = actiu;
+        this.contractat = contractat;
+        this.jornda = jornada;
     }
 
     public String getUsername() {
@@ -107,5 +110,29 @@ public class UsuariDTO {
     }
     public boolean getActiu() {
         return actiu;
+    }
+
+    public String getPreferencia() {
+        return preferencia;
+    }
+
+    public boolean isActiu() {
+        return actiu;
+    }
+
+    public boolean isContractat() {
+        return contractat;
+    }
+
+    public Jornada getJornda() {
+        return jornda;
+    }
+
+    public void setContractat(boolean contractat) {
+        this.contractat = contractat;
+    }
+
+    public void setJornda(Jornada jornda) {
+        this.jornda = jornda;
     }
 }

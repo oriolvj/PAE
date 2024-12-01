@@ -1,5 +1,6 @@
 package com.pae.pae.repositories;
 
+import com.pae.pae.models.Jornada;
 import com.pae.pae.models.UsuariDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -25,17 +26,34 @@ public class UsuariRepository {
     }
 
     private void AssignUsuariObject(ResultSet resultSet) throws SQLException {
-        String rol = resultSet.getString("rol");
-        Rols r = Rols.valueOf(rol);
-        uDTO = new UsuariDTO(resultSet.getString("username"),
-                resultSet.getString("nom"),
-                resultSet.getInt("edat"),
-                resultSet.getInt("tlf"),
-                resultSet.getString("email"),
-                resultSet.getString("pwd"),
-                resultSet.getBoolean("administrador"),
-                r);
+        try {
+            String rolString = resultSet.getString("rol");
+            Rols rol = (rolString != null) ? Rols.valueOf(rolString) : null;
+
+            String jornadaString = resultSet.getString("jornada");
+            Jornada jornada = (jornadaString != null) ? Jornada.valueOf(jornadaString) : null;
+
+            uDTO = new UsuariDTO(
+                    resultSet.getString("username"),
+                    resultSet.getString("nom"),
+                    (resultSet.getObject("edat") != null) ? resultSet.getInt("edat") : null,
+                    (resultSet.getObject("tlf") != null) ? resultSet.getInt("tlf") : null,
+                    resultSet.getString("email"),
+                    resultSet.getString("pwd"),
+                    resultSet.getBoolean("administrador"),
+                    rol,
+                    resultSet.getString("preferencia"),
+                    resultSet.getBoolean("actiu"),
+                    resultSet.getBoolean("contractat"),
+                    jornada
+            );
+        } catch (IllegalArgumentException e) {
+            throw new SQLException("Error al convertir datos de Rol o Jornada desde el ResultSet", e);
+        } catch (SQLException e) {
+            throw new SQLException("Error al obtener datos del ResultSet", e);
+        }
     }
+
 
     public ArrayList<UsuariDTO> getUsuaris() {
         ArrayList<UsuariDTO> ja = new ArrayList<>();
@@ -71,7 +89,7 @@ public class UsuariRepository {
     }
 
     public boolean addUser (UsuariDTO newUser) throws SQLException {
-        String query = "INSERT INTO usuaris (username, nom, edat, tlf, email, pwd, administrador, rol, preferencia, actiu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO usuaris (username, nom, edat, tlf, email, pwd, administrador, rol, preferencia, actiu, contractat, jornada) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, newUser.getUsername());
@@ -83,7 +101,10 @@ public class UsuariRepository {
             stmt.setBoolean(7, newUser.getAdministrador());
             stmt.setString(8, newUser.getRol().toString());
             stmt.setString(9, newUser.getPreferencia());
-            stmt.setBoolean(10, newUser.getActiu());
+            stmt.setBoolean(10, newUser.isActiu());
+            stmt.setBoolean(11, newUser.isContractat());
+            stmt.setString(12, newUser.getJornda().toString());
+
 
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
@@ -109,7 +130,7 @@ public class UsuariRepository {
     }
 
     public boolean usuariModify(UsuariDTO user) {
-        String query = "UPDATE usuaris SET nom = ?, edat = ?, tlf = ?, email = ?, pwd = ?, administrador = ?, rol = ?, preferencia = ?, actiu = ? WHERE username = ?";
+        String query = "UPDATE usuaris SET nom = ?, edat = ?, tlf = ?, email = ?, pwd = ?, administrador = ?, rol = ?, preferencia = ?, actiu = ?, contractat = ?, jornada = ? WHERE username = ?";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, user.getNom());
@@ -120,8 +141,10 @@ public class UsuariRepository {
             stmt.setBoolean(6, user.getAdministrador());
             stmt.setString(7, user.getRol().toString());
             stmt.setString(8, user.getPreferencia());
-            stmt.setBoolean(9, user.getActiu());
-            stmt.setString(10, user.getUsername());
+            stmt.setBoolean(9, user.isActiu());
+            stmt.setBoolean(10, user.isContractat());
+            stmt.setString(11, user.getJornda().toString());
+            stmt.setString(12, user.getUsername());
 
             int rowsUpdated = stmt.executeUpdate();
             if (rowsUpdated > 0) {

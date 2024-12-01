@@ -1,5 +1,6 @@
 package com.pae.pae.controllers;
 
+import com.pae.pae.models.Jornada;
 import com.pae.pae.models.Rols;
 import com.pae.pae.models.UsuariDTO;
 import com.pae.pae.services.UsuariService;
@@ -70,10 +71,12 @@ public class UsuariController {
         String email = newuserRequest.get("email");
         String pwd = newuserRequest.get("pwd");
         boolean administrador;
-        administrador = Boolean.parseBoolean(newuserRequest.get("admin").toString());
+        administrador = Boolean.parseBoolean(newuserRequest.get("admin"));
         Rols rol = Rols.valueOf(newuserRequest.get("rol"));
         String preferencia = newuserRequest.get("preferencia");
-        boolean actiu = Boolean.parseBoolean(newuserRequest.get("actiu").toString());
+        boolean actiu = Boolean.parseBoolean(newuserRequest.get("actiu"));
+        boolean contractat = Boolean.parseBoolean(newuserRequest.get("contractat"));
+        Jornada jornada = Jornada.valueOf(newuserRequest.get("jornada"));
 
         UsuariDTO newUser = new UsuariDTO();
         newUser.setUsername(username);
@@ -86,6 +89,8 @@ public class UsuariController {
         newUser.setRol(rol);
         newUser.setPreferencia(preferencia);
         newUser.setActiu(actiu);
+        newUser.setActiu(contractat);
+        newUser.setJornda(jornada);
         return usuariService.RegisterUser(adminUer, newUser);
     }
 
@@ -108,10 +113,12 @@ public class UsuariController {
         String email = modifyRequest.get("email");
         String pwd = modifyRequest.get("pwd");
         boolean administrador;
-        administrador = Boolean.parseBoolean(modifyRequest.get("admin").toString());
+        administrador = Boolean.parseBoolean(modifyRequest.get("admin"));
         Rols rol = Rols.valueOf(modifyRequest.get("rol"));
         String preferencia = modifyRequest.get("preferencia");
-        boolean actiu = Boolean.parseBoolean(modifyRequest.get("actiu").toString());
+        boolean actiu = Boolean.parseBoolean(modifyRequest.get("actiu"));
+        boolean contractat = Boolean.parseBoolean(modifyRequest.get("contractat"));
+        Jornada jornada = Jornada.valueOf(modifyRequest.get("jornada"));
 
         UsuariDTO modifyUser = new UsuariDTO();
         modifyUser.setUsername(username);
@@ -124,6 +131,8 @@ public class UsuariController {
         modifyUser.setRol(rol);
         modifyUser.setPreferencia(preferencia);
         modifyUser.setActiu(actiu);
+        modifyUser.setActiu(contractat);
+        modifyUser.setJornda(jornada);
         return usuariService.RegisterUser(adminUser, modifyUser);
     }
 }
