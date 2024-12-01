@@ -6,17 +6,19 @@ public class ProjecteDTO {
     private String nom;
     private Mes mes;
     private Setmana setmana;
-    Date data_inici;
-    Date data_fi;
+    private Date data_inici;
+    private Date data_fi;
     private int num_empleats;
+    private String ubicacio;
 
-    public ProjecteDTO(String nom, Mes mes, Setmana setmana, Date data_inici, Date data_fi, int num_empleats) {
+    public ProjecteDTO(String nom, Mes mes, Setmana setmana, Date data_inici, Date data_fi, int num_empleats, String ubicacio) {
         this.nom = nom;
         this.mes = mes;
         this.setmana = setmana;
         this.data_inici = data_inici;
         this.data_fi = data_fi;
         this.num_empleats = num_empleats;
+        this.ubicacio = ubicacio;
     }
 
     public String getNom() {
@@ -65,5 +67,13 @@ public class ProjecteDTO {
 
     public void setNum_empleats(int num_empleats) {
         this.num_empleats = num_empleats;
+    }
+
+    public String getUbicacio() {
+        return ubicacio;
+    }
+
+    public void setUbicacio(String ubicacio) {
+        this.ubicacio = ubicacio;
     }
 }

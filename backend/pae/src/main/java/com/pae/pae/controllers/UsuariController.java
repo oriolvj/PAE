@@ -103,7 +103,7 @@ public class UsuariController {
 
     @CrossOrigin
     @PostMapping(path = "/modify")
-    public boolean modifyUser (@RequestBody Map<String, String> modifyRequest){
+    public boolean usuariModify (@RequestBody Map<String, String> modifyRequest){
         String adminUser = modifyRequest.get("adminUser");
 
         String username = modifyRequest.get("username"); //el username no sera modificable de moment
@@ -133,6 +133,6 @@ public class UsuariController {
         modifyUser.setActiu(actiu);
         modifyUser.setActiu(contractat);
         modifyUser.setJornda(jornada);
-        return usuariService.RegisterUser(adminUser, modifyUser);
+        return usuariService.usuariModify(adminUser, modifyUser);
     }
 }

@@ -6,6 +6,7 @@ import com.pae.pae.models.UsuariDTO;
 import com.pae.pae.services.ProjecteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,5 +21,10 @@ public class ProjecteController {
     @GetMapping
     public ArrayList<ProjecteDTO> getProjectes() {
         return projecteService.getProjectes();
+    }
+
+    @GetMapping(path = "/{projecte}")
+    public ProjecteDTO getProjecte(@PathVariable("nom") String nom) {
+        return projecteService.getProjecte(nom);
     }
 }
