@@ -88,7 +88,7 @@ public class UsuariRepository {
         return uDTO;
     }
 
-    public boolean addUser (UsuariDTO newUser) throws SQLException {
+    public boolean RegisterUser (UsuariDTO newUser) throws SQLException {
         String query = "INSERT INTO usuaris (username, nom, edat, tlf, email, pwd, administrador, rol, preferencia, actiu, contractat, jornada) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {

@@ -7,6 +7,7 @@ import com.pae.pae.services.UsuariService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public class UsuariController {
 
     @CrossOrigin
     @PostMapping(path = "/register")
-    public boolean registerUser (@RequestBody Map<String, String> newuserRequest){
+    public boolean registerUser (@RequestBody Map<String, String> newuserRequest) throws SQLException {
         String adminUer = newuserRequest.get("adminUser");
 
         String username = newuserRequest.get("username");

@@ -5,6 +5,7 @@ import com.pae.pae.repositories.UsuariRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 @Service
@@ -40,9 +41,12 @@ public class UsuariService {
         }
     }
 
-    public boolean RegisterUser(String administrador, UsuariDTO newuser) {
+    public boolean RegisterUser(String administrador, UsuariDTO newuser) throws SQLException {
         UsuariDTO admin = usuariRepository.getUsuari(administrador);
-        System.out.println("No admin to create new users");
+        UsuariDTO user = usuariRepository.getUsuari(newuser.getUsername());
+        if (user == null) {
+            return usuariRepository.RegisterUser(newuser);
+        }
         return false;
 
     }
