@@ -21,5 +21,5 @@ public class ProjecteService {
         return projecteRepository.getProjecte(nom);
     }
 
-    public boolean addProject()
+    //public boolean addProject()
 }
