@@ -88,6 +88,20 @@ public class UsuariRepository {
         return uDTO;
     }
 
+    public boolean existsUsuari(String username) {
+        String query = "SELECT 1 FROM usuaris WHERE username = ? LIMIT 1";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, username);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean RegisterUser (UsuariDTO newUser) throws SQLException {
         String query = "INSERT INTO usuaris (username, nom, edat, tlf, email, pwd, administrador, rol, preferencia, actiu, contractat, jornada) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
         try (Connection connection = getConnection();
