@@ -54,14 +54,15 @@ public class ProjecteController {
         Mes mes = Mes.valueOf(newprojectRequest.get("mes"));
         Setmana setmana = Setmana.valueOf(newprojectRequest.get("setmana"));
 
-        ProjecteDTO proj = new ProjecteDTO();
-        proj.setNom(nom);
-        proj.setData_inici(data_inici);
-        proj.setData_fi(data_fi);
-        proj.setMes(mes);
-        proj.setSetmana(setmana);
-        proj.setNum_empleats(Integer.valueOf(num_empl));
-        proj.setUbicacio(ubicacio);
+        ProjecteDTO proj = new ProjecteDTO(
+                nom,
+                mes,
+                setmana,
+                data_inici,
+                data_fi,
+                Integer.valueOf(num_empl),
+                ubicacio
+        );
         return projecteService.addProject(proj);
 
     }
