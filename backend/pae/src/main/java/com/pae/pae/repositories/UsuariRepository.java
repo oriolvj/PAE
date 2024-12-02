@@ -103,7 +103,7 @@ public class UsuariRepository {
     }
 
     public boolean RegisterUser (Map<String, String> newUserRequest) throws SQLException {
-        String query = "INSERT INTO usuaris (username, nom, edat, tlf, email, pwd, administrador, rol, preferencia, actiu, contractat, jornada) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
+        String query = "INSERT INTO usuaris (username, nom, edat, tlf, email, pwd, rol, preferencia, actiu, contractat, jornada) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, newUserRequest.get("username"));
@@ -144,7 +144,7 @@ public class UsuariRepository {
     }
 
     public boolean usuariModify(String username, Map<String, String> modifyRequest) {
-        String query = "UPDATE usuaris SET nom = ?, edat = ?, tlf = ?, email = ?, pwd = ?, administrador = ?, rol = ?, preferencia = ?, actiu = ?, contractat = ?, jornada = ? WHERE username = ?";
+        String query = "UPDATE usuaris SET nom = ?, edat = ?, tlf = ?, email = ?, pwd = ?, rol = ?, preferencia = ?, actiu = ?, contractat = ?, jornada = ? WHERE username = ?";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, modifyRequest.get("username"));
