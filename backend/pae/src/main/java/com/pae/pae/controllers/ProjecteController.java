@@ -29,41 +29,15 @@ public class ProjecteController {
     }
 
     @CrossOrigin
-    @GetMapping(path = "/{projecte}")
+    @GetMapping(path = "/{nom}")
     public ProjecteDTO getProjecte(@PathVariable("nom") String nom) {
         return projecteService.getProjecte(nom);
     }
 
     @CrossOrigin
-    @PostMapping(path = "/register")
+    @PostMapping
     public boolean addProject(@RequestBody Map<String, String> newprojectRequest) throws SQLException {
-        String nom = newprojectRequest.get("nom");
-        String data_ini =   newprojectRequest.get("data_inici");
-        String data = newprojectRequest.get("data_fi");
-        Date data_inici = null;
-        Date data_fi = null;
-        try {
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            data_inici = formatter.parse(data_ini);
-            data_fi = formatter.parse(data);
-        } catch (ParseException e) {
-            System.out.println("Error al convertir data_inici: " + e.getMessage());
-        }
-        String num_empl = newprojectRequest.get("num_empl");
-        String ubicacio = newprojectRequest.get("ubicacio");
-        Mes mes = Mes.valueOf(newprojectRequest.get("mes"));
-        Setmana setmana = Setmana.valueOf(newprojectRequest.get("setmana"));
-
-        ProjecteDTO proj = new ProjecteDTO(
-                nom,
-                mes,
-                setmana,
-                data_inici,
-                data_fi,
-                Integer.valueOf(num_empl),
-                ubicacio
-        );
-        return projecteService.addProject(proj);
+        return projecteService.addProject(newprojectRequest);
 
     }
 }

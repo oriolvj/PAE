@@ -29,8 +29,8 @@ public class ProjecteService {
     }
 
 
-    public boolean addProject(ProjecteDTO proj) throws SQLException {
+    public boolean addProject(Map<String, String> newprojectRequest) throws SQLException {
         //comprovar rol del administrador del jwt aqui
-        return projecteRepository.addProject(proj);
+        return projecteRepository.addProject(newprojectRequest);
     }
 }

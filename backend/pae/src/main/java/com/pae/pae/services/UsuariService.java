@@ -68,4 +68,12 @@ public class UsuariService {
         } else return usuariRepository.getUsuarisByModalitat(false);
 
     }
+
+    public ArrayList<UsuariDTO> getUsuarisByPreferencia(String preferencia) {
+        return usuariRepository.getUsuarisByPreferencia(preferencia);
+    }
+
+    public ArrayList<UsuariDTO> getUsuarisByJornada(String jornada) {
+        return usuariRepository.getUsuarisByJornada(jornada);
+    }
 }
