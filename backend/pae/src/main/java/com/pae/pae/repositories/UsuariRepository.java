@@ -171,6 +171,21 @@ public class UsuariRepository {
     }
 
 
-
-
+    public ArrayList<UsuariDTO> getUsuarisByModalitat(boolean modalitat) {
+        ArrayList<UsuariDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM usuaris WHERE contractat = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setBoolean(1, modalitat);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignUsuariObject(resultSet);
+                    ja.add(uDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
+    }
 }

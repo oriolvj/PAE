@@ -53,6 +53,12 @@ public class UsuariController {
     }
 
     @CrossOrigin
+    @GetMapping(path = "/modalitat/{modalitat}")
+    public ArrayList<UsuariDTO> getUsuarisByModalitat(@PathVariable("modalitat") String modalitat) {
+        return usuariService.getUsuarisByModalitat(modalitat);
+    }
+
+    @CrossOrigin
     @PostMapping(path = "/login")
     public UsuariDTO login(@RequestBody Map<String, String> loginRequest) {
         String username = loginRequest.get("username");

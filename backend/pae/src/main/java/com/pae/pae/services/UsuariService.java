@@ -61,4 +61,11 @@ public class UsuariService {
         //s'ha de mirar per la session si l'usuari es admin
         return usuariRepository.usuariModify(username, modifyRequest);
     }
+
+    public ArrayList<UsuariDTO> getUsuarisByModalitat(String modalitat) {
+        if(modalitat.equals("POOL")){
+            return usuariRepository.getUsuarisByModalitat(true);
+        } else return usuariRepository.getUsuarisByModalitat(false);
+
+    }
 }
