@@ -1,11 +1,16 @@
 package com.pae.pae.services;
 
+import com.pae.pae.models.Jornada;
+import com.pae.pae.models.Rols;
 import com.pae.pae.models.UsuariDTO;
 import com.pae.pae.repositories.UsuariRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
 
 @Service
 public class UsuariService {
@@ -40,46 +45,35 @@ public class UsuariService {
         }
     }
 
-    public boolean RegisterUser(String administrador, UsuariDTO newuser) {
-        UsuariDTO admin = usuariRepository.getUsuari(administrador);
-        System.out.println("No admin to create new users");
-        return false;
+    public boolean RegisterUser(Map<String, String> newUserRequest) throws SQLException {
+
+        //s'ha de mirar per la session si l'usuari es admin
+
+        return usuariRepository.RegisterUser(newUserRequest);
+    }
+
+    public boolean usuariRemove(String username) {
+        //s'ha de mirar per la session si l'usuari es admin
+        return usuariRepository.removeUser(username);
+    }
+
+    public boolean usuariModify(String username, Map<String, String> modifyRequest) {
+        //s'ha de mirar per la session si l'usuari es admin
+        return usuariRepository.usuariModify(username, modifyRequest);
+    }
+
+    public ArrayList<UsuariDTO> getUsuarisByModalitat(String modalitat) {
+        if(modalitat.equals("POOL")){
+            return usuariRepository.getUsuarisByModalitat(true);
+        } else return usuariRepository.getUsuarisByModalitat(false);
 
     }
 
-    public boolean usuariRemove(String username, String administrador) {
-        UsuariDTO admin = usuariRepository.getUsuari(administrador);
-        UsuariDTO user = usuariRepository.getUsuari(username);
-        if (admin == null || !"ADMINISTRADOR".equals(admin.getRol())) {
-            System.out.println("No admin to create new users");
-            return false;
-        }
-        if (user == null) {
-            System.out.println("No admin to create new users");
-            return false;
-        }
-        try {
-            return usuariRepository.removeUser(username);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public ArrayList<UsuariDTO> getUsuarisByPreferencia(String preferencia) {
+        return usuariRepository.getUsuarisByPreferencia(preferencia);
     }
 
-    public boolean usuariModify(String administrador, UsuariDTO userToModify) {
-        UsuariDTO user = usuariRepository.getUsuari(userToModify.getUsername());
-        UsuariDTO admin = usuariRepository.getUsuari(administrador);
-        if (admin == null || !"ADMINISTRADOR".equals(admin.getRol())) {
-            System.out.println("No admin to modify new users");
-            return false;
-        }
-        if (user == null) {
-            System.out.println("No user");
-            return false;
-        }
-        try {
-            return usuariRepository.usuariModify(userToModify);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public ArrayList<UsuariDTO> getUsuarisByJornada(String jornada) {
+        return usuariRepository.getUsuarisByJornada(jornada);
     }
 }

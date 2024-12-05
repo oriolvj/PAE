@@ -8,6 +8,7 @@ import com.pae.pae.models.Rols;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Map;
 
 @Repository
 public class UsuariRepository {
@@ -40,7 +41,6 @@ public class UsuariRepository {
                     (resultSet.getObject("tlf") != null) ? resultSet.getInt("tlf") : null,
                     resultSet.getString("email"),
                     resultSet.getString("pwd"),
-                    resultSet.getBoolean("administrador"),
                     rol,
                     resultSet.getString("preferencia"),
                     resultSet.getBoolean("actiu"),
@@ -88,22 +88,36 @@ public class UsuariRepository {
         return uDTO;
     }
 
-    public boolean addUser (UsuariDTO newUser) throws SQLException {
-        String query = "INSERT INTO usuaris (username, nom, edat, tlf, email, pwd, administrador, rol, preferencia, actiu, contractat, jornada) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
+    public boolean existsUsuari(String username) {
+        String query = "SELECT * FROM usuaris WHERE username = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, username);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean RegisterUser (Map<String, String> newUserRequest) throws SQLException {
+        String query = "INSERT INTO usuaris (username, nom, edat, tlf, email, pwd, rol, preferencia, actiu, contractat, jornada) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, newUser.getUsername());
-            stmt.setString(2, newUser.getNom());
-            stmt.setInt(3, newUser.getEdat());
-            stmt.setInt(4, newUser.getTlf());
-            stmt.setString(5, newUser.getEmail());
-            stmt.setString(6, newUser.getPwd());
-            stmt.setBoolean(7, newUser.getAdministrador());
-            stmt.setString(8, newUser.getRol().toString());
-            stmt.setString(9, newUser.getPreferencia());
-            stmt.setBoolean(10, newUser.isActiu());
-            stmt.setBoolean(11, newUser.isContractat());
-            stmt.setString(12, newUser.getJornda().toString());
+            stmt.setString(1, newUserRequest.get("username"));
+            stmt.setString(2, newUserRequest.get("nom"));
+            stmt.setInt(3, Integer.parseInt(newUserRequest.get("edat")));
+            stmt.setString(4, newUserRequest.get("tlf"));
+            stmt.setString(5, newUserRequest.get("email"));
+            stmt.setString(6, newUserRequest.get("pwd"));
+            stmt.setString(7, Rols.valueOf(newUserRequest.get("rol")).toString());
+            stmt.setString(8, newUserRequest.get("preferencia"));
+            stmt.setBoolean(9, Boolean.parseBoolean(newUserRequest.get("actiu")));
+            stmt.setBoolean(10, Boolean.parseBoolean(newUserRequest.get("contractat")));
+            stmt.setString(11, newUserRequest.get("jornada"));
+
 
 
             int rowsInserted = stmt.executeUpdate();
@@ -129,22 +143,21 @@ public class UsuariRepository {
         return ok;
     }
 
-    public boolean usuariModify(UsuariDTO user) {
-        String query = "UPDATE usuaris SET nom = ?, edat = ?, tlf = ?, email = ?, pwd = ?, administrador = ?, rol = ?, preferencia = ?, actiu = ?, contractat = ?, jornada = ? WHERE username = ?";
+    public boolean usuariModify(String username, Map<String, String> modifyRequest) {
+        String query = "UPDATE usuaris SET nom = ?, edat = ?, tlf = ?, email = ?, pwd = ?, rol = ?, preferencia = ?, actiu = ?, contractat = ?, jornada = ? WHERE username = ?";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, user.getNom());
-            stmt.setInt(2, user.getEdat());
-            stmt.setInt(3, user.getTlf());
-            stmt.setString(4, user.getEmail());
-            stmt.setString(5, user.getPwd());
-            stmt.setBoolean(6, user.getAdministrador());
-            stmt.setString(7, user.getRol().toString());
-            stmt.setString(8, user.getPreferencia());
-            stmt.setBoolean(9, user.isActiu());
-            stmt.setBoolean(10, user.isContractat());
-            stmt.setString(11, user.getJornda().toString());
-            stmt.setString(12, user.getUsername());
+            stmt.setString(1, modifyRequest.get("username"));
+            stmt.setString(2, modifyRequest.get("nom"));
+            stmt.setInt(3, Integer.parseInt(modifyRequest.get("edat")));
+            stmt.setString(4, modifyRequest.get("tlf"));
+            stmt.setString(5, modifyRequest.get("email"));
+            stmt.setString(6, modifyRequest.get("pwd"));
+            stmt.setString(7, Rols.valueOf(modifyRequest.get("rol")).toString());
+            stmt.setString(8, modifyRequest.get("preferencia"));
+            stmt.setBoolean(9, Boolean.parseBoolean(modifyRequest.get("actiu")));
+            stmt.setBoolean(10, Boolean.parseBoolean(modifyRequest.get("contractat")));
+            stmt.setString(11, modifyRequest.get("jornada"));
 
             int rowsUpdated = stmt.executeUpdate();
             if (rowsUpdated > 0) {
@@ -158,6 +171,57 @@ public class UsuariRepository {
     }
 
 
+    public ArrayList<UsuariDTO> getUsuarisByModalitat(boolean modalitat) {
+        ArrayList<UsuariDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM usuaris WHERE contractat = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setBoolean(1, modalitat);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignUsuariObject(resultSet);
+                    ja.add(uDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
+    }
 
+    public ArrayList<UsuariDTO> getUsuarisByPreferencia(String preferencia) {
+        ArrayList<UsuariDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM usuaris WHERE contractat = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, preferencia);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignUsuariObject(resultSet);
+                    ja.add(uDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
+    }
 
+    public ArrayList<UsuariDTO> getUsuarisByJornada(String jornada) {
+        ArrayList<UsuariDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM usuaris WHERE contractat = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, jornada);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignUsuariObject(resultSet);
+                    ja.add(uDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
+    }
 }

@@ -1,7 +1,14 @@
 package com.pae.pae.models;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.Date;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class ProjecteDTO {
     private String nom;
     private Mes mes;
@@ -33,12 +40,12 @@ public class ProjecteDTO {
         return setmana;
     }
 
-    public Date getData_inici() {
-        return data_inici;
+    public java.sql.Date getData_inici() {
+        return (java.sql.Date) data_inici;
     }
 
-    public Date getData_fi() {
-        return data_fi;
+    public java.sql.Date getData_fi() {
+        return (java.sql.Date) data_fi;
     }
 
     public void setNom(String nom) {

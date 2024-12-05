@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Map;
 
 @Repository
 public class ProjecteRepository {
@@ -79,5 +80,25 @@ public class ProjecteRepository {
             e.printStackTrace();
         }
         return pDTO;
+    }
+
+    public boolean addProject(Map<String, String> newprojectRequest) throws SQLException {
+        String query = "INSERT INTO projectes(nom,mes,setmana,data_inici,data_fi,num_empl,ubicacio) VALUES(?,?,?,?,?,?,?)";
+        try (Connection connection = getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, newprojectRequest.get("nom"));
+            stmt.setString(2, newprojectRequest.get("mes").toString());
+            stmt.setString(3, newprojectRequest.get("setmana").toString());
+            stmt.setDate(4, Date.valueOf(newprojectRequest.get("data_inici")));
+            stmt.setDate(5, Date.valueOf(newprojectRequest.get("data_fi")));
+            stmt.setInt(6, Integer.valueOf(newprojectRequest.get("num_empleats")));
+            stmt.setString(7, newprojectRequest.get("ubicacio"));
+            int rowsInserted = stmt.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("Projecte insertat correctament");
+                return true;
+            }
+        }
+        return false;
     }
 }
