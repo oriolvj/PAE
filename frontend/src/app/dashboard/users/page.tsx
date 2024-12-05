@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
@@ -8,39 +8,66 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from 'lucide-react'
+import { Skeleton } from "@/components/ui/skeleton"
+
+type Rols = 'ADMINISTRADOR' | 'GESTOR_PROJECTE' | 'TREBALLADOR'
+type Jornada = 'Total' | 'Parcial' | 'Trenta_hores'
 
 type User = {
-  id: string
-  name: string
+  username: string
+  nom: string
+  edat: number
+  tlf: number
   email: string
-  role: 'admin' | 'user' | 'moderator'
-  status: 'active' | 'inactive'
-  lastActive: string
+  pwd: string
+  rol: Rols
+  preferencia: string
+  actiu: boolean
+  contractat: boolean
+  jornada: Jornada
 }
-
-const placeholderUsers: User[] = [
-  { id: '1', name: 'John Doe', email: 'john@example.com', role: 'admin', status: 'active', lastActive: '2023-05-15T10:30:00Z' },
-  { id: '2', name: 'Jane Smith', email: 'jane@example.com', role: 'user', status: 'active', lastActive: '2023-05-14T14:20:00Z' },
-  { id: '3', name: 'Alice Johnson', email: 'alice@example.com', role: 'moderator', status: 'inactive', lastActive: '2023-05-10T09:15:00Z' },
-  { id: '4', name: 'Bob Williams', email: 'bob@example.com', role: 'user', status: 'active', lastActive: '2023-05-15T08:45:00Z' },
-  { id: '5', name: 'Charlie Brown', email: 'charlie@example.com', role: 'user', status: 'inactive', lastActive: '2023-05-01T11:30:00Z' },
-]
 
 export default function UsersPage() {
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState('')
-  const [users, setUsers] = useState<User[]>(placeholderUsers)
+  const [users, setUsers] = useState<User[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('http://10.4.41.41:8080/usuaris')
+        if (!response.ok) {
+          throw new Error('Hi ha hagut un error en recuperar els usuaris.')
+        }
+        const data = await response.json()
+        setUsers(data)
+        setIsLoading(false)
+      } catch (err) {
+        setError('Hi ha hagut un error en recuperar els usuaris. Torna-ho a provar.')
+        setIsLoading(false)
+      }
+    }
+
+    fetchUsers()
+  }, [])
 
   const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    user.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.username.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  if (error) {
+    return <div className="text-center text-red-500 mt-8">{error}</div>
+  }
 
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">User Management</h1>
-        <Button>
+        <Button onClick={() => router.push('/dashboard/users/add')}>
           <PlusCircle className="mr-2 h-4 w-4" /> Add New User
         </Button>
       </div>
@@ -56,42 +83,79 @@ export default function UsersPage() {
         <TableHeader>
           <TableRow>
             <TableHead className="w-[50px]">Avatar</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Last Active</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead>Nom</TableHead>
+            <TableHead>Nom d'usuari</TableHead>
+            <TableHead>Correu</TableHead>
+            <TableHead>Edat</TableHead>
+            <TableHead>Rol</TableHead>
+            <TableHead>Estat</TableHead>
+            <TableHead>Jornada</TableHead>
+            <TableHead>Contractat</TableHead>
+            <TableHead className="text-right">Accions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredUsers.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>
-                <Avatar>
-                  <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${user.name}`} />
-                  <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                </Avatar>
-              </TableCell>
-              <TableCell className="font-medium">{user.name}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>
-                <Badge variant={user.role === 'admin' ? 'destructive' : user.role === 'moderator' ? 'warning' : 'default'}>
-                  {user.role}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <Badge variant={user.status === 'active' ? 'success' : 'secondary'}>
-                  {user.status}
-                </Badge>
-              </TableCell>
-              <TableCell>{new Date(user.lastActive).toLocaleString()}</TableCell>
-              <TableCell className="text-right">
-                <Button variant="ghost" size="sm" onClick={() => router.push(`/dashboard/users/${user.id}/edit`)}>Edit</Button>
-                <Button variant="ghost" size="sm" className="text-red-600">Delete</Button>
-              </TableCell>
-            </TableRow>
-          ))}
+          {isLoading ? (
+            Array(5).fill(0).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell><Skeleton className="h-10 w-10 rounded-full" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-[200px]" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-[200px]" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-[50px]" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+              </TableRow>
+            ))
+          ) : (
+            filteredUsers.map((user, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <Avatar>
+                    <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${user.nom}`} />
+                    <AvatarFallback>{user.nom.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                  </Avatar>
+                </TableCell>
+                <TableCell className="font-medium">{user.nom}</TableCell>
+                <TableCell>{user.username}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.edat}</TableCell>
+                <TableCell>
+                  <Badge variant={user.rol === 'ADMINISTRADOR' ? 'destructive' : user.rol === 'GESTOR_PROJECTE' ? 'outline' : 'default'}>
+                    {user.rol}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={user.actiu ? 'default' : 'secondary'}>
+                    {user.actiu ? 'Active' : 'Inactive'}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={user.jornada === 'Total' ? 'default' : 'outline'}>
+                    {user.jornada}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={user.contractat ? 'default' : 'secondary'}>
+                    {user.contractat ? 'Contracted' : 'Not Contracted'}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => router.push(`/dashboard/users/${user.username}/edit`)}
+                  >
+                    Edit
+                  </Button>
+                  <Button variant="ghost" size="sm" className="text-red-600">Delete</Button>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>

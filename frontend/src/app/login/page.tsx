@@ -6,20 +6,50 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useRouter } from 'next/navigation'
+
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Login attempted with:', { email, password })
+    setIsLoading(true)
+    setError('')
 
-    if(email == "admin@admin.com" && password == "admin"){
-      window.location.href = '/dashboard';
-    } else {
-      alert('Invalid Credentials');
+    try {
+      const response = await fetch('http://10.4.41.41:8080/usuaris/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+        credentials: 'omit', // This is important for cookies
+        mode: 'cors', // Explicitly state we're using CORS
+      })
+
+      if (!response.ok) {
+        throw new Error('Invalid credentials')
+      }
+
+      const data = await response.json()
+      console.log('Login successful:', data)
+      
+      // Store the token in a cookie
+      //setCookie('token', data.token, { maxAge: 60 * 60 * 24 * 7 }) // 1 week
+
+      router.push('/dashboard')
+    } catch (err) {
+      console.error('Login error:', err)
+      setError('Invalid credentials or server error. Please try again.')
+    } finally {
+      setIsLoading(false)
     }
-
   }
 
   return (
@@ -30,12 +60,12 @@ export default function LoginPage() {
             <h1 className="text-3xl font-bold text-red-600 mb-8 text-center">Accedeix al teu compte</h1>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">Correu</Label>
+                <Label htmlFor="username" className="text-sm font-medium text-gray-700">Nom d'usuari</Label>
                 <Input 
-                  id="email" 
-                  type="email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="username" 
+                  type="text" 
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                   className="w-full p-3 border border-gray-300 rounded-xl"
                 />
@@ -58,8 +88,13 @@ export default function LoginPage() {
                 </div>
                 <a href="#" className="text-sm text-gray-600 hover:underline">Contrasenya oblidada?</a>
               </div>
-              <Button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-xl transition duration-300">
-                Accedir
+              {error && <p className="text-red-500 text-sm" role="alert">{error}</p>}
+              <Button 
+                type="submit" 
+                className="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-xl transition duration-300"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Carregant...' : 'Accedir'}
               </Button>
             </form>
           </CardContent>
@@ -68,3 +103,4 @@ export default function LoginPage() {
     </div>
   )
 }
+
