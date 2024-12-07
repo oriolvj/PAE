@@ -15,14 +15,23 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.accept.ContentNegotiationStrategy;
+import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private final JWTFilter filter;
+    private final AuthService uds;
+    private final AuthenticationConfiguration authenticationConfiguration;
 
     @Autowired
-    private JWTFilter filter;
-    @Autowired private AuthService uds;
+    public SecurityConfig(JWTFilter filter, AuthService uds, AuthenticationConfiguration authenticationConfiguration) {
+        this.filter = filter;
+        this.uds = uds;
+        this.authenticationConfiguration = authenticationConfiguration;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -53,5 +62,15 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    /*@Bean
+    public ContentNegotiationStrategy contentNegotiationStrategy() {
+        return new HeaderContentNegotiationStrategy();
+    }
+
+    @Bean
+    public ContentNegotiationManager contentNegotiationManager(ContentNegotiationStrategy contentNegotiationStrategy) {
+        return new ContentNegotiationManager(contentNegotiationStrategy);
+    }*/
 
 }
