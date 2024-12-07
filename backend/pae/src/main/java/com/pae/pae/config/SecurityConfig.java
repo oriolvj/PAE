@@ -6,6 +6,7 @@ import com.pae.pae.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -28,7 +29,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
 
     @Autowired
-    public SecurityConfig(JWTFilter filter, AuthService uds, AuthenticationConfiguration authenticationConfiguration) {
+    public SecurityConfig(JWTFilter filter, @Lazy AuthService uds, AuthenticationConfiguration authenticationConfiguration) {
         this.filter = filter;
         this.uds = uds;
         this.authenticationConfiguration = authenticationConfiguration;
