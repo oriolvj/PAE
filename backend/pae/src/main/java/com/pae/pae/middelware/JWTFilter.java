@@ -27,6 +27,7 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
+        System.out.println(path);
         if(path.equals("/usuaris") && HttpMethod.POST.matches(request.getMethod())){
             filterChain.doFilter(request, response);
             return;
