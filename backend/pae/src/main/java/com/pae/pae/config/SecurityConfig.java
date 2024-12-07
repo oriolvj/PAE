@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         // Aqui es poden afegir els endpoints que es volen protegir amb els rols adequats
-                        .requestMatchers(HttpMethod.POST, "/usuaris").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuaris/login").permitAll()
                         .requestMatchers("/usuaris/registre").hasRole(String.valueOf(Rols.ADMINISTRADOR))
                         .anyRequest().authenticated()
                 )
