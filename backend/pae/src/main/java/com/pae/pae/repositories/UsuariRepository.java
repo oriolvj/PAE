@@ -2,7 +2,9 @@ package com.pae.pae.repositories;
 
 import com.pae.pae.models.Jornada;
 import com.pae.pae.models.UsuariDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import com.pae.pae.models.Rols;
 
@@ -19,7 +21,9 @@ public class UsuariRepository {
     private String USER = "";
     @Value("${SPRING_DATASOURCE_PASSWORD}")
     private String PWD = "";
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
     private UsuariDTO uDTO = null;
 
     protected Connection getConnection() throws SQLException {
@@ -111,7 +115,7 @@ public class UsuariRepository {
             stmt.setInt(3, Integer.parseInt(newUserRequest.get("edat")));
             stmt.setString(4, newUserRequest.get("tlf"));
             stmt.setString(5, newUserRequest.get("email"));
-            stmt.setString(6, newUserRequest.get("pwd"));
+            stmt.setString(6, passwordEncoder.encode(newUserRequest.get("pwd")));
             stmt.setString(7, Rols.valueOf(newUserRequest.get("rol")).toString());
             stmt.setString(8, newUserRequest.get("preferencia"));
             stmt.setBoolean(9, Boolean.parseBoolean(newUserRequest.get("actiu")));

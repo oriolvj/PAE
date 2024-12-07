@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // Aqui es poden afegir els endpoints que es volen protegir amb els rols adequats
                         .requestMatchers(HttpMethod.POST, "/usuaris/login").permitAll()
-                        .requestMatchers("/usuaris/registre").hasRole(String.valueOf(Rols.ADMINISTRADOR))
+                        .requestMatchers(HttpMethod.POST, "/usuaris").permitAll()
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(uds)
