@@ -86,6 +86,7 @@ public class ProjecteRepository {
         String query = "INSERT INTO projectes(nom,mes,setmana,data_inici,data_fi,num_empl,ubicacio) VALUES(?,?,?,?,?,?,?)";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
+            System.out.println(Date.valueOf(newprojectRequest.get("data_inici")));
             stmt.setString(1, newprojectRequest.get("nom"));
             stmt.setString(2, newprojectRequest.get("mes").toString());
             stmt.setString(3, newprojectRequest.get("setmana").toString());

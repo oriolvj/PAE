@@ -39,5 +39,6 @@ public class ProjecteController {
     public boolean addProject(@RequestBody Map<String, String> newprojectRequest) throws SQLException {
         return projecteService.addProject(newprojectRequest);
 
+
     }
 }

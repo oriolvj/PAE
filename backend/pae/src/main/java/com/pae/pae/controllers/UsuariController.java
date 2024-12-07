@@ -3,23 +3,27 @@ package com.pae.pae.controllers;
 import com.pae.pae.models.Jornada;
 import com.pae.pae.models.Rols;
 import com.pae.pae.models.UsuariDTO;
+import com.pae.pae.repositories.UsuariRepository;
 import com.pae.pae.services.UsuariService;
+import com.pae.pae.utils.JWTUtil;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/usuaris")
 public class UsuariController {
-    private static final String SECRET_KEY = "OriolBeyaco123"; // Clave secreta para firmar los tokens
-    private static final long EXPIRATION_TIME = 86400000; // 1 día en milisegundos
-
 
     @Autowired
     private UsuariService usuariService = new UsuariService();
@@ -34,34 +38,10 @@ public class UsuariController {
     public UsuariDTO getUsuari(@PathVariable("username") String username) {
         return usuariService.getUsuari(username);
     }
-
-    @PostMapping(path = "/login")
-    public String login(@RequestBody Map<String, String> loginRequest) {
-        String username = loginRequest.get("username");
-        String password = loginRequest.get("password");
-
-        // Autenticación (puedes usar tu servicio para esto)
-        if (usuariService.login(username, password) != null) {
-            // Generar JWT
-            String token = Jwts.builder()
-                    .setSubject(username)
-                    .claim("role", usuariService.getUserRole(username)) // Incluye el rol
-                    .setIssuedAt(new Date())
-                    .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                    .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
-                    .compact();
-            return token;
-        } else {
-            throw new RuntimeException("Credenciales inválidas");
-        }
-    }
     @CrossOrigin
     @PostMapping(path = "/login")
-    public UsuariDTO login(@RequestBody Map<String, String> loginRequest) {
-        String username = loginRequest.get("username");
-        String password = loginRequest.get("password");
-        //String password = new BCryptPasswordEncoder().encode(password_text); //fem el hash del password
-        return usuariService.login(username, password);
+    public Map<String, Object> login(@RequestBody Map<String, String> loginRequest) {
+        return usuariService.login(loginRequest);
     }
 
     @CrossOrigin

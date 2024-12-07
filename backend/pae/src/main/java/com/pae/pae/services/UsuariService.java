@@ -4,17 +4,28 @@ import com.pae.pae.models.Jornada;
 import com.pae.pae.models.Rols;
 import com.pae.pae.models.UsuariDTO;
 import com.pae.pae.repositories.UsuariRepository;
+import com.pae.pae.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 @Service
 public class UsuariService {
-
+    @Autowired
+    private JWTUtil jwtUtil;
+    @Autowired
+    private AuthenticationManager authManager;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private UsuariRepository usuariRepository;
 
@@ -27,21 +38,18 @@ public class UsuariService {
         return usuariRepository.getUsuari(username);
     }
 
-    public UsuariDTO login(String username, String password) {
+    public Map<String, Object> login(Map<String, String> loginRequest) {
+        try {
+            UsernamePasswordAuthenticationToken authInputToken =
+                    new UsernamePasswordAuthenticationToken(loginRequest.get("username"), loginRequest.get("pwd"));
 
-        UsuariDTO user = getUsuari(username);
+            authManager.authenticate(authInputToken);
 
-        if (user == null) {
-            System.out.println("Invalid username or password.");
-            return null;
-        } else {
+            String token = jwtUtil.generateToken(loginRequest.get("username"));
 
-            if (user.getPwd().equals(password)) {
-                System.out.println("Correct login");
-                return user;
-            }
-            System.out.println("Invalid username or password.");
-            return null;
+            return Collections.singletonMap("token", token);
+        }catch (AuthenticationException authExc){
+            throw new RuntimeException("Invalid Login Credentials");
         }
     }
 

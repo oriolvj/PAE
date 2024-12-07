@@ -20,10 +20,10 @@ public class JWTUtil {
     @Value("${jwt_secret}")
     private String secret;
 
-    public String generateToken(UsuariDTO user) throws IllegalArgumentException, JWTCreationException {
+    public String generateToken(String username) throws IllegalArgumentException, JWTCreationException {
         return JWT.create()
                 .withSubject("User Details")
-                .withClaim("username", user.getUsername())
+                .withClaim("username", username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + 3600000))
                 .withIssuedAt(new Date())
                 .withIssuer("Lavinia")
