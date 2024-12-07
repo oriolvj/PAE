@@ -28,10 +28,11 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
         System.out.println(path);
-        if(path.equals("/usuaris/login") && HttpMethod.POST.matches(request.getMethod())){
+        /*if(path.equals("/usuaris/login") && HttpMethod.POST.matches(request.getMethod())){
+            System.out.println("dins el if del path");
             filterChain.doFilter(request, response);
             return;
-        }
+        }*/
         String authHeader = request.getHeader("Authorization");
         if(authHeader != null && !authHeader.isBlank() && authHeader.startsWith("Bearer ")){
             String jwt = authHeader.substring(7);
@@ -39,13 +40,17 @@ public class JWTFilter extends OncePerRequestFilter {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT Token in Bearer Header");
             }else {
                 try{
+                    System.out.println("Dins del else del try");
                     String username = jwtUtil.validateTokenAndRetrieveSubject(jwt);
+                    System.out.println("Va a entrar al loadUserByUsername");
                     UserDetails userDetails = authService.loadUserByUsername(username);
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(username, userDetails.getPassword(), userDetails.getAuthorities());
                     if(SecurityContextHolder.getContext().getAuthentication() == null){
+                        System.out.println("Dins del if del SecurityContextHolder");
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
+                    System.out.println(authToken);
                 }catch(JWTVerificationException exc){
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT Token");
                 }

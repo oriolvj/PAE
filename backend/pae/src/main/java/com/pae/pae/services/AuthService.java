@@ -18,9 +18,11 @@ public class AuthService implements UserDetailsService {
     @Autowired private UsuariRepository usuariRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.out.println("Entra al loadUserByUsername");
         Optional<UsuariDTO> useropt = Optional.ofNullable(usuariRepository.getUsuari(username));
         if(useropt.isEmpty()) throw new UsernameNotFoundException("Usuari amb username: " + username+ "no trobat");
         UsuariDTO user = useropt.get();
+        System.out.println("Crea user DTO: "+ user.toString());
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPwd(), Collections.singletonList(new SimpleGrantedAuthority(user.getRol().toString())));
     }
 }

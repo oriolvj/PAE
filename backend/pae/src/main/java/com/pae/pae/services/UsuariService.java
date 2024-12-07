@@ -41,14 +41,15 @@ public class UsuariService {
     public Map<String, Object> login(Map<String, String> loginRequest) {
         try {
             UsernamePasswordAuthenticationToken authInputToken =
-                    new UsernamePasswordAuthenticationToken(loginRequest.get("username"), loginRequest.get("pwd"));
-
+                    new UsernamePasswordAuthenticationToken(loginRequest.get("username"), loginRequest.get("password"));
+            System.out.println("authInputToken: " + authInputToken);
             authManager.authenticate(authInputToken);
-
+            System.out.println("authInputToken: " + authInputToken);
             String token = jwtUtil.generateToken(loginRequest.get("username"));
 
             return Collections.singletonMap("token", token);
         }catch (AuthenticationException authExc){
+            authExc.printStackTrace();
             throw new RuntimeException("Invalid Login Credentials");
         }
     }
