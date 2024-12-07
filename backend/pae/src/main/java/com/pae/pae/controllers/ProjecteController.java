@@ -35,7 +35,7 @@ public class ProjecteController {
     }
 
     @CrossOrigin
-    @PostMapping(path = "/register")
+    @PostMapping
     public boolean addProject(@RequestBody Map<String, String> newprojectRequest) throws SQLException {
         String nom = newprojectRequest.get("nom");
         String data_ini =   newprojectRequest.get("data_inici");
