@@ -17,19 +17,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.accept.ContentNegotiationManager;
-import org.springframework.web.accept.ContentNegotiationStrategy;
-import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     private final JWTFilter filter;
+    @Autowired
+    @Lazy
     private final AuthService uds;
     private final AuthenticationConfiguration authenticationConfiguration;
 
     @Autowired
-    public SecurityConfig(JWTFilter filter, @Lazy AuthService uds, AuthenticationConfiguration authenticationConfiguration) {
+    public SecurityConfig(JWTFilter filter, AuthService uds, AuthenticationConfiguration authenticationConfiguration) {
         this.filter = filter;
         this.uds = uds;
         this.authenticationConfiguration = authenticationConfiguration;
@@ -44,6 +43,7 @@ public class SecurityConfig {
                         // Aqui es poden afegir els endpoints que es volen protegir amb els rols adequats
                         .requestMatchers(HttpMethod.POST, "/usuaris/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuaris").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(uds)
