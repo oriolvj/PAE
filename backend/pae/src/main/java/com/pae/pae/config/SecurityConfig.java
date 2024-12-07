@@ -6,6 +6,7 @@ import com.pae.pae.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,7 +41,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         // Aqui es poden afegir els endpoints que es volen protegir amb els rols adequats
-                        .requestMatchers("/usuaris/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuaris").permitAll()
                         .requestMatchers("/usuaris/registre").hasRole(String.valueOf(Rols.ADMINISTRADOR))
                         .anyRequest().authenticated()
                 )
@@ -62,15 +63,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    /*@Bean
-    public ContentNegotiationStrategy contentNegotiationStrategy() {
-        return new HeaderContentNegotiationStrategy();
-    }
-
-    @Bean
-    public ContentNegotiationManager contentNegotiationManager(ContentNegotiationStrategy contentNegotiationStrategy) {
-        return new ContentNegotiationManager(contentNegotiationStrategy);
-    }*/
 
 }
