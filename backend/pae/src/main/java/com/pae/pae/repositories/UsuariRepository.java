@@ -188,4 +188,40 @@ public class UsuariRepository {
         }
         return ja;
     }
+
+    public ArrayList<UsuariDTO> getUsuarisByPreferencia(String preferencia) {
+        ArrayList<UsuariDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM usuaris WHERE contractat = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, preferencia);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignUsuariObject(resultSet);
+                    ja.add(uDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
+    }
+
+    public ArrayList<UsuariDTO> getUsuarisByJornada(String jornada) {
+        ArrayList<UsuariDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM usuaris WHERE contractat = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, jornada);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignUsuariObject(resultSet);
+                    ja.add(uDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
+    }
 }

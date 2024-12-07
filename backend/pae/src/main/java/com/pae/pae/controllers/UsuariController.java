@@ -59,6 +59,18 @@ public class UsuariController {
     }
 
     @CrossOrigin
+    @GetMapping(path = "/preferencia/{preferencia}")
+    public ArrayList<UsuariDTO> getUsuarisByPreferencia(@PathVariable("preferencia") String preferencia) {
+        return usuariService.getUsuarisByPreferencia(preferencia);
+    }
+
+    @CrossOrigin
+    @GetMapping(path = "/jornada/{jornada}")
+    public ArrayList<UsuariDTO> getUsuarisByJornada(@PathVariable("jornada") String jornada) {
+        return usuariService.getUsuarisByJornada(jornada);
+    }
+
+    @CrossOrigin
     @PostMapping(path = "/login")
     public UsuariDTO login(@RequestBody Map<String, String> loginRequest) {
         String username = loginRequest.get("username");

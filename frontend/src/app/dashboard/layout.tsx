@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Calendar, Home, Users } from 'lucide-react'
+import { Calendar, Home, PanelsTopLeft, PanelTopClose, Users } from 'lucide-react'
 
 export default function DashboardLayout({
   children,
@@ -18,6 +18,10 @@ export default function DashboardLayout({
           <Link href="/dashboard/timetable" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
             <Calendar className="h-5 w-5" />
             <span>Timetable</span>
+          </Link>
+          <Link href="/dashboard/projects" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
+            <PanelsTopLeft className="h-5 w-5" />
+            <span>Projectes</span>
           </Link>
           <Link href="/dashboard/users" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
             <Users className="h-5 w-5" />
