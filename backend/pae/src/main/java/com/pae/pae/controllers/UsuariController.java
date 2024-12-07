@@ -4,18 +4,36 @@ import com.pae.pae.models.Jornada;
 import com.pae.pae.models.Rols;
 import com.pae.pae.models.UsuariDTO;
 import com.pae.pae.services.UsuariService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/usuaris")
 public class UsuariController {
-    /*private static final String SECRET_KEY = "mySecretKey123"; // Clave secreta para firmar los tokens
+    private static final String SECRET_KEY = "OriolBeyaco123"; // Clave secreta para firmar los tokens
     private static final long EXPIRATION_TIME = 86400000; // 1 día en milisegundos
+
+
+    @Autowired
+    private UsuariService usuariService = new UsuariService();
+
+    @CrossOrigin
+    @GetMapping
+    public ArrayList<UsuariDTO> getUsuaris() {
+        return usuariService.getUsuaris();
+    }
+    @CrossOrigin
+    @GetMapping(path = "/{username}")
+    public UsuariDTO getUsuari(@PathVariable("username") String username) {
+        return usuariService.getUsuari(username);
+    }
 
     @PostMapping(path = "/login")
     public String login(@RequestBody Map<String, String> loginRequest) {
@@ -36,20 +54,14 @@ public class UsuariController {
         } else {
             throw new RuntimeException("Credenciales inválidas");
         }
-    }*/
-
-    @Autowired
-    private UsuariService usuariService = new UsuariService();
-
-    @CrossOrigin
-    @GetMapping
-    public ArrayList<UsuariDTO> getUsuaris() {
-        return usuariService.getUsuaris();
     }
     @CrossOrigin
-    @GetMapping(path = "/{username}")
-    public UsuariDTO getUsuari(@PathVariable("username") String username) {
-        return usuariService.getUsuari(username);
+    @PostMapping(path = "/login")
+    public UsuariDTO login(@RequestBody Map<String, String> loginRequest) {
+        String username = loginRequest.get("username");
+        String password = loginRequest.get("password");
+        //String password = new BCryptPasswordEncoder().encode(password_text); //fem el hash del password
+        return usuariService.login(username, password);
     }
 
     @CrossOrigin
@@ -70,14 +82,7 @@ public class UsuariController {
         return usuariService.getUsuarisByJornada(jornada);
     }
 
-    @CrossOrigin
-    @PostMapping(path = "/login")
-    public UsuariDTO login(@RequestBody Map<String, String> loginRequest) {
-        String username = loginRequest.get("username");
-        String password = loginRequest.get("password");
-        //String password = new BCryptPasswordEncoder().encode(password_text); //fem el hash del password
-        return usuariService.login(username, password);
-    }
+
 
     @CrossOrigin
     @PostMapping
