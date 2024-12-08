@@ -44,7 +44,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/usuaris/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuaris").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .anyRequest().authenticated()
+                        //.anyRequest().authenticated() ----- descomenta aixo si vols que tots els endpoints estiguin protegits
+                        .anyRequest().permitAll()
                 )
                 .userDetailsService(uds)
                 .exceptionHandling(exception -> exception
