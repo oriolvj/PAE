@@ -9,7 +9,7 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen flex-col">
       <header className="flex h-16 items-center justify-between border-b px-4">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <h1 className="text-2xl font-bold">TeamOptima</h1>
         <nav className="flex space-x-4">
           <Link href="/dashboard" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
             <Home className="h-5 w-5" />
