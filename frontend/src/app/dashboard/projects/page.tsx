@@ -29,7 +29,7 @@ export default function ProjectsPage() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch('http://10.4.41.41:8080/projectes')
+        const response = await fetch('http://10.4.41.40:8080/projectes')
         if (!response.ok) {
           throw new Error('Hi ha hagut un error en recuperar els projectes.')
         }

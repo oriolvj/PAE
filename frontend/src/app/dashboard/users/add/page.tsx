@@ -68,7 +68,7 @@ export default function AddUserPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('http://10.4.41.41:8080/usuaris', {
+      const response = await fetch('http://10.4.41.40:8080/usuaris', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

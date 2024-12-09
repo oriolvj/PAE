@@ -37,7 +37,7 @@ export default function UsersPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://10.4.41.41:8080/usuaris')
+        const response = await fetch('http://10.4.41.40:8080/usuaris')
         if (!response.ok) {
           throw new Error('Hi ha hagut un error en recuperar els usuaris.')
         }
