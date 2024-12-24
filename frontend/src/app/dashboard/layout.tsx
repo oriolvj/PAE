@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Calendar, Home, PanelsTopLeft, PanelTopClose, Users } from 'lucide-react'
+import { BookUser, BookUserIcon, Calendar, CircleDollarSign, FolderOpenDot, Home, Hourglass, PanelsTopLeft, PanelTopClose, Users, Variable } from 'lucide-react'
 
 export default function DashboardLayout({
   children,
@@ -19,8 +19,24 @@ export default function DashboardLayout({
             <Calendar className="h-5 w-5" />
             <span>Timetable</span>
           </Link>
+          <Link href="/dashboard/project-costs" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
+            <CircleDollarSign className="h-5 w-5" />
+            <span>Costos de Projecte</span>
+          </Link>
+          <Link href="/dashboard/register-hours" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
+            <Hourglass className="h-5 w-5" />
+            <span>Registre d'hores</span>
+          </Link>
+          <Link href="/dashboard/technical" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
+            <BookUserIcon className="h-5 w-5" />
+            <span>Tècnics i Material</span>
+          </Link>
+          <Link href="/dashboard/variables" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
+            <Variable className="h-5 w-5" />
+            <span>Variables</span>
+          </Link>
           <Link href="/dashboard/projects" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
-            <PanelsTopLeft className="h-5 w-5" />
+            <FolderOpenDot className="h-5 w-5" />
             <span>Projectes</span>
           </Link>
           <Link href="/dashboard/users" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
