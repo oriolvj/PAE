@@ -9,6 +9,7 @@ import com.pae.pae.models.Rols;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -191,7 +192,7 @@ public class UsuariRepository {
 
     public ArrayList<UsuariDTO> getUsuarisByPreferencia(String preferencia) {
         ArrayList<UsuariDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM usuaris WHERE contractat = ?";
+        String query = "SELECT * FROM usuaris WHERE preferencia = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, preferencia);
@@ -213,6 +214,43 @@ public class UsuariRepository {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, jornada);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignUsuariObject(resultSet);
+                    ja.add(uDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
+    }
+
+    public ArrayList<UsuariDTO> getUsuarisByModalitatAndPreferencia(boolean modalitat, String preferencia) {
+        ArrayList<UsuariDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM usuaris WHERE contractat = ? and preferencia = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setBoolean(1, modalitat);
+            statement.setString(2, preferencia);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignUsuariObject(resultSet);
+                    ja.add(uDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
+    }
+
+    public List<UsuariDTO> getUsuarisByRol(String rol) {
+        ArrayList<UsuariDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM usuaris WHERE contractat = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, rol);
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     AssignUsuariObject(resultSet);

@@ -1,73 +1,77 @@
 package com.pae.pae.Algorithm;
 
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.YearMonth;
+import com.pae.pae.Algorithm.Classes.Requirement;
+import com.pae.pae.controllers.ProjecteController;
+import com.pae.pae.controllers.RequerimentController;
+import com.pae.pae.controllers.UsuariController;
+import com.pae.pae.models.ProjecteDTO;
+import com.pae.pae.models.RequerimentDTO;
+import com.pae.pae.models.RequerimentsProjecteDTO;
+import com.pae.pae.models.UsuariDTO;
+
+import java.time.*;
 import java.time.temporal.IsoFields;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import com.pae.pae.Algorithm.Classes.Employee;
-import com.pae.pae.Algorithm.Classes.Project;
-import com.pae.pae.Algorithm.Classes.ProjectForm;
-import com.pae.pae.Algorithm.Classes.Requirement;
-
-public class Main {
+public class MainCorregit {
     public static void main(String[] args) {
         //System.out.println("Hello world!");
 
         // Create some objects as an example
-        List<Employee> employees = createEmployees();
-        List<Requirement> requirementsCCCB = createRequirements("CCCB");
-        List<Requirement> requirementsParlament = createRequirements("Parlament");
-        List<Requirement> requirementsKingsLeague = createRequirements("Kings League");
-        List<ProjectForm> projectForms = createProjectForms(requirementsCCCB, requirementsParlament, requirementsKingsLeague);
+        List<UsuariDTO> allEmployees = getUsuaris();
+        List<RequerimentDTO> requirementsCCCB = createRequirements("CCCB");
+        List<RequerimentDTO> requirementsParlament = createRequirements("Parlament");
+        List<RequerimentDTO> requirementsKingsLeague = createRequirements("Kings League");
+        //List<RequerimentsProjecteDTO> projectForms = createProjectForms(requirementsCCCB, requirementsParlament, requirementsKingsLeague);
 
-        List<Employee> candidates = new ArrayList<>();
-        List<Employee> preferenceCandidates = new ArrayList<>();
-        List<Project> projects = new ArrayList<>();
+        List<UsuariDTO> candidates = new ArrayList<>();
+        List<UsuariDTO> preferenceCandidates = new ArrayList<>();
+        List<ProjecteDTO> projects = new ArrayList<>();
 
         // Automatic assignment of employees to requirements
-        for (ProjectForm projectForm : projectForms) {
+        List<String> nomProjectes = getNomProjectes();
+        //for (RequerimentsProjecteDTO projectForm : projectForms) {
+        for (String nom : nomProjectes) {
             candidates.clear();
             preferenceCandidates.clear();
+            List<RequerimentDTO> requerimentsProjecte = getRequerimentsProjecte(nom);
 
             // First, we look for available POOL employees
-            candidates = findEmployeesByModality(employees, "POOL");
-            preferenceCandidates = findEmployeesByPreference(candidates, projectForm.getProjectName());
+            candidates = findEmployeesByModality(allEmployees, "POOL");
+            //preferenceCandidates = findEmployeesByPreference(candidates, projectForm.getProjectName());
+            preferenceCandidates = findEmployeesByModalityandPreference("POOL", nom);
             // Check if there are employees with preference for the project
             if (preferenceCandidates.size() > 0) {
-                assignEmployeesToRequirements(projectForm, preferenceCandidates);
+                assignEmployeesToRequirements(requerimentsProjecte, preferenceCandidates);
             } else {
-                assignEmployeesToRequirements(projectForm, candidates);
+                assignEmployeesToRequirements(requerimentsProjecte, candidates);
             }
             // If there are still requirements without employees assigned, we look for employees in ALTAS
-            if (projectForm.getRequirements().size() > 0) {
-                candidates = findEmployeesByModality(employees, "ALTAS");
-                assignEmployeesToRequirements(projectForm, candidates);
+            if (requerimentsProjecte.size() > 0) {
+                candidates = findEmployeesByModality(allEmployees, "ALTAS");
+                assignEmployeesToRequirements(requerimentsProjecte, candidates);
             }
-            
+
             // Create a project with the assigned acts
             projects.add(new Project(projectForm.getProjectName(), projectForm.getStartDate(), projectForm.getEndDate(), projectForm.getRequirements()));
         }
     }
 
-    public static void assignEmployeesToRequirements(ProjectForm projectForm, List<Employee> candidates) {
+    public static void assignEmployeesToRequirements(List<RequerimentDTO> requeriments, List<UsuariDTO> candidates) {
         Duration duration;
-        List<Employee> profileCandidates = new ArrayList<>();
-        for (Requirement requirement : projectForm.getRequirements()) {
+        List<UsuariDTO> profileCandidates = new ArrayList<>();
+        for (RequerimentDTO requeriment : requeriments) {
             // First, we look for employees with the required technical profile
-            profileCandidates = findEmployeesByProfile(candidates, requirement.getTechnicalProfile());
+            profileCandidates = findEmployeesByRol(candidates, requeriment.getTechnicalProfile());
             if (!profileCandidates.isEmpty()) {
-                duration = Duration.between(requirement.getStartTime(), requirement.getEndTime());
-                for (Employee candidate : candidates) {
+                duration = Duration.between(requeriment.getStartTime(), requeriment.getEndTime());
+                for (UsuariDTO candidate : candidates) {
                     // If the duration of the act is greater than 9 hours, part-time employees are discarded
-                    if (duration.toMinutes() > 540 && candidate.getModality().equals("PART_TIME")) {
+                    if (duration.toMinutes() > 540 && candidate.getJornda().toString().equals("PARCIAL")) {
+
                         profileCandidates.remove(candidate);
                     }
                     // Check if the employee is available -> check if the employee is already assigned to another act at the same time
@@ -84,57 +88,59 @@ public class Main {
                         candidate.assignRequirement(requirement);
                         projectForm.getRequirements().get(projectForm.getRequirements().indexOf(requirement)).setAssignedEmployee(candidate);
                         projectForm.getRequirements().remove(requirement);
-                    }                    
+                    }
                 }
             }
         }
     }
 
-    public static List<ProjectForm> createProjectForms(List<Requirement> requirementsCCCB, List<Requirement> requirementsParlament, List<Requirement> requirementsKingsLeague) {
-        List<ProjectForm> projectForms = new ArrayList<>();
-        projectForms.add(new ProjectForm("CCCB", LocalDate.of(2024, 10, 14), LocalDate.of(2024, 10, 17), requirementsCCCB));
-        projectForms.add(new ProjectForm("Parlament", LocalDate.of(2024, 10, 18), LocalDate.of(2024, 10, 18), requirementsParlament));
-        projectForms.add(new ProjectForm("Kings League", LocalDate.of(2024, 10, 19), LocalDate.of(2024, 10, 19), requirementsKingsLeague));
+    /*public static List<RequerimentsProjecteDTO> createProjectForms(List<RequerimentDTO> requirementsCCCB, List<RequerimentDTO> requirementsParlament, List<RequerimentDTO> requirementsKingsLeague) {
+        List<RequerimentsProjecteDTO> projectForms = new ArrayList<>();
+        projectForms.add(new RequerimentsProjecteDTO("CCCB", LocalDate.of(2024, 10, 14), LocalDate.of(2024, 10, 17), requirementsCCCB));
+        projectForms.add(new RequerimentsProjecteDTO("Parlament", LocalDate.of(2024, 10, 18), LocalDate.of(2024, 10, 18), requirementsParlament));
+        projectForms.add(new RequerimentsProjecteDTO("Kings League", LocalDate.of(2024, 10, 19), LocalDate.of(2024, 10, 19), requirementsKingsLeague));
         return projectForms;
+    }*/
+
+    public static List<String> getNomProjectes(){
+        ProjecteController projecteController = new ProjecteController();
+        return projecteController.getNomProjectes();
     }
 
-    public static List<Employee> findEmployeesByProfile(List<Employee> employees, String profile) {
-        List<Employee> candidates = new ArrayList<>();
-        for (Employee employee : employees) {
-            if (employee.getTechnicalProfile().equals(profile)) {
-                candidates.add(employee);
-            }
-        }
-        return candidates;
+    public static List<RequerimentDTO> getRequerimentsProjecte(String nom){
+        RequerimentController requerimentController = new RequerimentController();
+        return requerimentController.getRequerimentsProjecte(nom);
     }
 
-    public static List<Employee> findEmployeesByModality(List<Employee> employees, String modality) {
-        List<Employee> candidates = new ArrayList<>();
-        for (Employee employee : employees) {
-            if (employee.getModality().equals(modality)) {
-                candidates.add(employee);
-            }
-        }
-        return candidates;
+    public static List<UsuariDTO> findEmployeesByRol(List<UsuariDTO> employees, String profile) {
+        UsuariController usuariController = new UsuariController();
+        return usuariController.getUsuarisByRol(profile);
     }
 
-    public static List<Employee> findEmployeesByPreference(List<Employee> employees, String project) {
-        List<Employee> candidates = new ArrayList<>();
-        for (Employee employee : employees) {
-            if (employee.getPreferenceActs() != null && employee.getPreferenceActs().contains(project)) {
-                candidates.add(employee);
-            }
-        }
-        return candidates;
+    public static List<UsuariDTO> findEmployeesByModality(List<UsuariDTO> employees, String modality) {
+        UsuariController usuariController = new UsuariController();
+        return usuariController.getUsuarisByModalitat(modality);
     }
+
+    public static List<UsuariDTO> findEmployeesByPreference(List<UsuariDTO> employees, String project) {
+        UsuariController usuariController = new UsuariController();
+        return usuariController.getUsuarisByPreferencia(project);
+    }
+
+    public static List<UsuariDTO> findEmployeesByModalityandPreference(String modality, String project) {
+        UsuariController usuariController = new UsuariController();
+        return usuariController.getUsuarisByModalitatAndPreferencia(modality, project);
+    }
+
+
 
     public static boolean checkLabourAgreement(Employee candidate, Requirement requirement){
         // Comprovar:
-                    // Superar las 9h/d máximo 3 dias consecutivos
-                    // Nunca superar las 50h/semana
-                    // Nunca superar las 40h/semana de media en un periodo de 4 semanas
-                    // Mínimo 48h consecutivas de descanso semanal
-                    // Mínimo 12h de descanso entre jornadas
+        // Superar las 9h/d máximo 3 dias consecutivos
+        // Nunca superar las 50h/semana
+        // Nunca superar las 40h/semana de media en un periodo de 4 semanas
+        // Mínimo 48h consecutivas de descanso semanal
+        // Mínimo 12h de descanso entre jornadas
         // Check:
         if (chechkMaximumDailyHours(candidate, requirement)) {  // Maximum of 12 hours per day
             if (checkMinimumRestBetweenActs(candidate, requirement)) {  // Minimum rest between acts (12 hours)
@@ -167,7 +173,7 @@ public class Main {
         if (!sameDayRequirements.isEmpty()){
             // We add the new requirement to the list to check if with it the employee is going to work more than 12 hours
             sameDayRequirements.add(requirement);
-            
+
             // Check if the employee is going to work more than 12 hours in a day
             long totalHours = 0;
             for (Requirement act : sameDayRequirements) {
@@ -213,8 +219,8 @@ public class Main {
             sameWeekRequirements.add(requirement);
             // Sort the list by day and start time
             sameWeekRequirements.sort(Comparator.comparing(Requirement::getDay)
-                                .thenComparing(Requirement::getStartTime));
-            
+                    .thenComparing(Requirement::getStartTime));
+
             // Obtain startWeek and endWeek
             LocalDateTime weekStart = requirement.getDay().with(DayOfWeek.MONDAY).atStartOfDay();   // Monday 00:00
             LocalDateTime weekEnd = requirement.getDay().with(DayOfWeek.SUNDAY).atTime(LocalTime.MAX); // Sunday 23:59
@@ -259,7 +265,7 @@ public class Main {
             List<Requirement> relevantLongWorkRequirements = new ArrayList<>();
             for (Requirement assignedAct : candidate.getAssignedRequirements()){
                 if (Duration.between(assignedAct.getStartTime(), assignedAct.getEndTime()).toMinutes() > 540 &&
-                (assignedAct.getDay().isAfter(requirement.getDay().minusDays(4)) && assignedAct.getDay().isBefore(requirement.getDay().plusDays(4)))){
+                        (assignedAct.getDay().isAfter(requirement.getDay().minusDays(4)) && assignedAct.getDay().isBefore(requirement.getDay().plusDays(4)))){
                     relevantLongWorkRequirements.add(assignedAct);
                 }
             }
@@ -269,7 +275,7 @@ public class Main {
                 relevantLongWorkRequirements.add(requirement);
                 // Sort the list by day and start time
                 relevantLongWorkRequirements.sort(Comparator.comparing(Requirement::getDay));
-                                            
+
                 // Check if the employee has worked more than 9 hours in 3 consecutive days
                 int consecutiveDays = 1;
                 for (int i = 1; i < relevantLongWorkRequirements.size(); i++){
@@ -309,7 +315,7 @@ public class Main {
         if (!sameWeekRequirements.isEmpty()){
             // We add the new requirement to the list to check if with it the employee has worked more than 50 hours
             sameWeekRequirements.add(requirement);
-                    
+
             // Check if the employee has worked more than 50 hours in a week
             long totalHours = 0;
             for (Requirement act : sameWeekRequirements) {
@@ -349,7 +355,7 @@ public class Main {
     public static boolean isSameWeek(LocalDate date1, LocalDate date2) {
         // Compare week ISO and year
         return date1.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == date2.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR)
-            && date1.getYear() == date2.getYear();
+                && date1.getYear() == date2.getYear();
     }
 
     private static int laborDaysInMonth(YearMonth month) {
@@ -367,85 +373,66 @@ public class Main {
         return workingDays;
     }
 
-    public static List<Employee> createEmployees() {
-        List<Employee> employees = new ArrayList<>();
-        // Create an employee
-        employees.add(new Employee("Marta Ferrer", "coordinator", "POOL", "FULL_TIME", new ArrayList<>(Arrays.asList("Parlament")), null));
-        employees.add(new Employee("Pau Riera", "mixer", "ALTAS", "FULL_TIME", null, null));
-        employees.add(new Employee("Ana Gómez", "technical sound", "POOL", "PART_TIME", null, null));
-        employees.add(new Employee("Jordi Puig", "camera operator", "POOL", "FULL_TIME", null, null));
-        employees.add(new Employee("Clara Benet", "camera operator", "ALTA", "PART_TIME", null, null));
-        employees.add(new Employee("Carlos Martínez", "producer", "POOL", "FULL_TIME", null, null));
-        employees.add(new Employee("Laia Costa", "support", "POOL", "PART_TIME", null, null));
-        employees.add(new Employee("Ismael Morales", "mount auxiliary", "ALTAS", "FULL_TIME", null, null));
-        employees.add(new Employee("Sílvia Soler", "coordinator", "POOL", "FULL_TIME", new ArrayList<>(Arrays.asList("CCCB")), null));
-        employees.add(new Employee("Jaume Rovira", "technical sound", "POOL", "FULL_TIME", null, null));
-        employees.add(new Employee("Lucía Ibáñez", "producer", "POOL", "FULL_TIME", null, null));
-        employees.add(new Employee("Marc Serra", "mixer", "ALTAS", "FULL_TIME", null, null));
-        employees.add(new Employee("Alba Rodríguez", "support", "POOL", "FULL_TIME", null, null));
-        employees.add(new Employee("Óscar Aguilar", "camera operator", "POOL", "FULL_TIME", null, null));
-        employees.add(new Employee("Núria Bosch", "mount auxiliary", "ALTAS", "PART_TIME", null, null));
-        employees.add(new Employee("Daniel Vidal", "coordinator", "POOL", "FULL_TIME", null, null));
-        employees.add(new Employee("Adrià Pons", "mount auxiliary", "POOL", "FULL_TIME", null, null));
-
-        return employees;
+    public static List<UsuariDTO> getUsuaris() {
+        UsuariController usuariController = new UsuariController();
+        return usuariController.getUsuaris();
     }
 
-    public static List<Requirement> createRequirements(String project) {
-        List<Requirement> requirements = new ArrayList<>();
+    public static List<RequerimentDTO> createRequirements(String project) {
+        List<RequerimentDTO> requeriments = new ArrayList<>();
 
         if (project.equals("CCCB")){
             // Día 1: CCCB
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(19, 0), "coordinator", "«Tic Tac» de Rosa Vergés", "Auditori", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(19, 30), "mixer", "«Tic Tac» de Rosa Vergés", "Auditori", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Menjar amb els ulls", "Sala Teatre", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(19, 30), "camera operator", "«Tic Tac» de Rosa Vergés", "Auditori", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Menjar amb els ulls", "Sala Teatre", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 14), LocalTime.of(17, 0), LocalTime.of(20, 30), "support", "El renaixement", "Hall", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 14), LocalTime.of(17, 0), LocalTime.of(20, 30), "mount auxiliary", "El renaixement", "Hall", null));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(19, 0), "coordinator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(19, 30), "mixer", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(19, 30), "camera operator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 14), LocalTime.of(17, 0), LocalTime.of(20, 30), "support", "El renaixement", "Hall", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 14), LocalTime.of(17, 0), LocalTime.of(20, 30), "mount auxiliary", "El renaixement", "Hall", "CCCB"));
 
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(19, 0), "coordinator", "«Tic Tac» de Rosa Vergés", "Auditori", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(19, 30), "mixer", "«Tic Tac» de Rosa Vergés", "Auditori", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Menjar amb els ulls", "Sala Teatre", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(19, 30), "camera operator", "«Tic Tac» de Rosa Vergés", "Auditori", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Menjar amb els ulls", "Sala Teatre", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 15), LocalTime.of(17, 0), LocalTime.of(20, 30), "support", "El renaixement", "Hall", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 15), LocalTime.of(17, 0), LocalTime.of(20, 30), "mount auxiliary", "El renaixement", "Hall", null));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(19, 0), "coordinator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(19, 30), "mixer", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(19, 30), "camera operator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 15), LocalTime.of(17, 0), LocalTime.of(20, 30), "support", "El renaixement", "Hall", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 15), LocalTime.of(17, 0), LocalTime.of(20, 30), "mount auxiliary", "El renaixement", "Hall", "CCCB"));
 
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(19, 0), "coordinator", "«Tic Tac» de Rosa Vergés", "Auditori", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(19, 30), "mixer", "«Tic Tac» de Rosa Vergés", "Auditori", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Menjar amb els ulls", "Sala Teatre", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(19, 30), "camera operator", "«Tic Tac» de Rosa Vergés", "Auditori", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Menjar amb els ulls", "Sala Teatre", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 16), LocalTime.of(17, 0), LocalTime.of(20, 30), "support", "El renaixement", "Hall", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 16), LocalTime.of(17, 0), LocalTime.of(20, 30), "mount auxiliary", "El renaixement", "Hall", null));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(19, 0), "coordinator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(19, 30), "mixer", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(19, 30), "camera operator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 16), LocalTime.of(17, 0), LocalTime.of(20, 30), "support", "El renaixement", "Hall", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 16), LocalTime.of(17, 0), LocalTime.of(20, 30), "mount auxiliary", "El renaixement", "Hall", "CCCB"));
 
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(19, 0), "coordinator", "«Tic Tac» de Rosa Vergés", "Auditori", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(19, 30), "mixer", "«Tic Tac» de Rosa Vergés", "Auditori", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Menjar amb els ulls", "Sala Teatre", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(19, 30), "camera operator", "«Tic Tac» de Rosa Vergés", "Auditori", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Menjar amb els ulls", "Sala Teatre", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 17), LocalTime.of(17, 0), LocalTime.of(20, 30), "support", "El renaixement", "Hall", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 17), LocalTime.of(17, 0), LocalTime.of(20, 30), "mount auxiliary", "El renaixement", "Hall", null));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(19, 0), "coordinator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(19, 30), "mixer", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(19, 30), "camera operator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 17), LocalTime.of(17, 0), LocalTime.of(20, 30), "support", "El renaixement", "Hall", "CCCB"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 17), LocalTime.of(17, 0), LocalTime.of(20, 30), "mount auxiliary", "El renaixement", "Hall", "CCCB"));
         } else if (project.equals("Parlament")){
             // Día 2: Parlament
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "coordinator", "Debat Parlamentari", "Parlament", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "mixer", "Debat Parlamentari", "Parlament", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Debat Parlamentari", "Parlament", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Debat Parlamentari", "Parlament", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Debat Parlamentari", "Parlament", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Debat Parlamentari", "Parlament", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "mount auxiliary", "Debat Parlamentari", "Parlament", null));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "coordinator", "Debat Parlamentari", "Parlament", "Parlament"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "mixer", "Debat Parlamentari", "Parlament", "Parlament"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Debat Parlamentari", "Parlament", "Parlament"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Debat Parlamentari", "Parlament", "Parlament"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Debat Parlamentari", "Parlament", "Parlament"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Debat Parlamentari", "Parlament", "Parlament"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "mount auxiliary", "Debat Parlamentari", "Parlament", "Parlament"));
         } else if (project.equals("Kings League")){
             // Día 3: Kings League
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "coordinator", "Draft de Jugadores", "Kings league plant", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "mixer", "Draft de Jugadores", "Kings league plant", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "technical sound", "Draft de Jugadores", "Kings league plant", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "camera operator", "Draft de Jugadores", "Kings league plant", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "producer", "Draft de Jugadores", "Kings league plant", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "support", "Draft de Jugadores", "Kings league plant", null));
-            requirements.add(new Requirement(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "mount auxiliary", "Draft de Jugadores", "Kings league plant", null));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "coordinator", "Draft de Jugadores", "Kings league plant", "Kings League"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "mixer", "Draft de Jugadores", "Kings league plant", "Kings League"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "technical sound", "Draft de Jugadores", "Kings league plant", "Kings League"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "camera operator", "Draft de Jugadores", "Kings league plant", "Kings League"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "producer", "Draft de Jugadores", "Kings league plant", "Kings League"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "support", "Draft de Jugadores", "Kings league plant", "Kings League"));
+            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "mount auxiliary", "Draft de Jugadores", "Kings league plant", "Kings League"));
         }
-        return requirements;
+        return requeriments;
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -84,5 +85,15 @@ public class UsuariService {
 
     public ArrayList<UsuariDTO> getUsuarisByJornada(String jornada) {
         return usuariRepository.getUsuarisByJornada(jornada);
+    }
+
+    public ArrayList<UsuariDTO> getUsuarisByModalitatAndPreferencia(String modalitat, String preferencia) {
+        if(modalitat.equals("POOL")){
+            return usuariRepository.getUsuarisByModalitatAndPreferencia(true, preferencia);
+        } else return usuariRepository.getUsuarisByModalitatAndPreferencia(false, preferencia);
+    }
+
+    public List<UsuariDTO> getUsuarisByRol(String rol) {
+        return usuariRepository.getUsuarisByRol(rol);
     }
 }

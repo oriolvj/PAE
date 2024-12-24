@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -51,7 +52,17 @@ public class UsuariController {
         return usuariService.getUsuarisByJornada(jornada);
     }
 
+    @CrossOrigin
+    @GetMapping(path = "/modalitat/{modalitat}/preferencia/{preferencia}")
+    public ArrayList<UsuariDTO> getUsuarisByModalitatAndPreferencia(@PathVariable("preferencia") String modalitat, @PathVariable("preferencia") String preferencia) {
+        return usuariService.getUsuarisByModalitatAndPreferencia(modalitat, preferencia);
+    }
 
+    @CrossOrigin
+    @PutMapping(path = "/rol/{rol}")
+    public List<UsuariDTO> getUsuarisByRol(String rol) {
+        return usuariService.getUsuarisByRol(rol);
+    }
 
     @CrossOrigin
     @PostMapping

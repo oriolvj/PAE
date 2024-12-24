@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -101,5 +102,21 @@ public class ProjecteRepository {
             }
         }
         return false;
+    }
+
+    public List<String> getNomProjectes() {
+        List<String> noms = new ArrayList<>();
+        String query = "SELECT DISTINCT nom FROM projectes";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    noms.add(resultSet.getString("nom"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return noms;
     }
 }

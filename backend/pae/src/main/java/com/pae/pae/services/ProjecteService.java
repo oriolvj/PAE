@@ -14,12 +14,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class ProjecteService {
     @Autowired
-    private ProjecteRepository projecteRepository;
+    private ProjecteRepository projecteRepository = new ProjecteRepository();
     public ArrayList<ProjecteDTO> getProjectes() {
         return projecteRepository.getProjectes();
     }
@@ -32,5 +33,9 @@ public class ProjecteService {
     public boolean addProject(Map<String, String> newprojectRequest) throws SQLException {
         //comprovar rol del administrador del jwt aqui
         return projecteRepository.addProject(newprojectRequest);
+    }
+
+    public List<String> getNomProjectes() {
+        return projecteRepository.getNomProjectes();
     }
 }
