@@ -38,4 +38,10 @@ public class FeinaAssignadaController {
 
     }
 
+    @CrossOrigin
+    @GetMapping(path = "/{username}")
+    public ArrayList<FeinaAssignadaDTO> getfeinesAssignadaUsuari(@PathVariable("username") String username) {
+        return feinaAssignadaService.getfeinesAssignadaUsuari(username);
+    }
+
 }

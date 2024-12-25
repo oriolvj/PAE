@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class RequerimentDTO {
+    private Integer id;
     private LocalDate day;
     private LocalTime startTime;
     private LocalTime endTime;
@@ -27,6 +28,16 @@ public class RequerimentDTO {
     }
 
     // Getters and Setters
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public LocalDate getDay() {
         return day;
     }

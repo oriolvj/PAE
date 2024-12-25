@@ -5,6 +5,7 @@ import com.pae.pae.repositories.FeinaAssignadaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -21,7 +22,11 @@ public class FeinaAssignadaService {
         return feinaAssignadaRepository.getfeinaAssignada(nomProjecte,username, id);
     }
 
-    public boolean addFeinaAssignada(Map<String, String> newfeinaRequest) {
-        return feinaAssignadaRepository.getfeinaAssignadea(newfeinaRequest);
+    public boolean addFeinaAssignada(Map<String, String> newfeinaRequest) throws SQLException {
+        return feinaAssignadaRepository.addfeinaAssignada(newfeinaRequest);
+    }
+
+    public ArrayList<FeinaAssignadaDTO> getfeinesAssignadaUsuari(String username) {
+        return feinaAssignadaRepository.getfeinesAssignadaUsuari(username);
     }
 }

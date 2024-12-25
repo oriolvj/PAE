@@ -1,26 +1,21 @@
 package com.pae.pae.Algorithm;
 
 import com.pae.pae.Algorithm.Classes.Requirement;
+import com.pae.pae.controllers.FeinaAssignadaController;
 import com.pae.pae.controllers.ProjecteController;
 import com.pae.pae.controllers.RequerimentController;
 import com.pae.pae.controllers.UsuariController;
-import com.pae.pae.models.ProjecteDTO;
-import com.pae.pae.models.RequerimentDTO;
-import com.pae.pae.models.RequerimentsProjecteDTO;
-import com.pae.pae.models.UsuariDTO;
+import com.pae.pae.models.*;
 
-// Treu aquesta linea
-import com.pae.pae.Algorithm.Classes.*;
+
+import java.sql.SQLException;
 
 import java.time.*;
 import java.time.temporal.IsoFields;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class MainCorregit {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         //System.out.println("Hello world!");
 
         // Create some objects as an example
@@ -59,12 +54,11 @@ public class MainCorregit {
             }
 
             // Create a project with the assigned acts
-            // Descomenta aquesta linea
             //projects.add(new Project(projectForm.getProjectName(), projectForm.getStartDate(), projectForm.getEndDate(), projectForm.getRequirements()));
         }
     }
 
-    public static void assignEmployeesToRequirements(List<RequerimentDTO> requeriments, List<UsuariDTO> candidates) {
+    public static void assignEmployeesToRequirements(List<RequerimentDTO> requeriments, List<UsuariDTO> candidates) throws SQLException {
         Duration duration;
         List<UsuariDTO> profileCandidates = new ArrayList<>();
         for (RequerimentDTO requeriment : requeriments) {
@@ -79,21 +73,23 @@ public class MainCorregit {
                         profileCandidates.remove(candidate);
                     }
                     // Check if the employee is available -> check if the employee is already assigned to another act at the same time
-                    // Descomenta aquesta linea
-                    /*for (Requirement assignedAct : candidate.getAssignedRequirements()) {
+
+                    //for (Requirement assignedAct : candidate.getAssignedRequirements()) {
+
+                    List<FeinaAssignadaDTO> feines = getFeinesCandidat(candidate.getUsername());
+                    for (FeinaAssignadaDTO feina : feines) {
                         // If the employee is already assigned to another act the same day at the same time, is discarded
-                        if (assignedAct.getDay().equals(requirement.getDay()) && assignedAct.getStartTime().equals(requirement.getStartTime())) {
+                        if (feina.getDay().equals(requeriment.getDay()) && feina.getStart_time().equals(requeriment.getStartTime())) {
                             profileCandidates.remove(candidate);
                         }
                     }
                     // If the employee is available
                     // We check if the employee adheres to the rules of the labor contract (CONVENI)
-                    if (checkLabourAgreement(candidate, requirement)){
+                    if (checkLabourAgreement(candidate, requeriment, feines)){
                         // Assign the employee to the act
-                        candidate.assignRequirement(requirement);
-                        projectForm.getRequirements().get(projectForm.getRequirements().indexOf(requirement)).setAssignedEmployee(candidate);
-                        projectForm.getRequirements().remove(requirement);
-                    }*/
+                        addFeinaAssignada(requeriment.getNomProjecte(), candidate.getUsername(), requeriment.getId());
+                    }
+
                 }
             }
         }
@@ -137,9 +133,14 @@ public class MainCorregit {
         return usuariController.getUsuarisByModalitatAndPreferencia(modality, project);
     }
 
+    public static List<FeinaAssignadaDTO> getFeinesCandidat(String username) {
+        FeinaAssignadaController feinaAssignadaController = new FeinaAssignadaController();
+        return feinaAssignadaController.getfeinesAssignadaUsuari(username);
+    }
 
 
-    public static boolean checkLabourAgreement(Employee candidate, Requirement requirement){
+
+    public static boolean checkLabourAgreement(UsuariDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         // Comprovar:
         // Superar las 9h/d máximo 3 dias consecutivos
         // Nunca superar las 50h/semana
@@ -147,12 +148,12 @@ public class MainCorregit {
         // Mínimo 48h consecutivas de descanso semanal
         // Mínimo 12h de descanso entre jornadas
         // Check:
-        if (chechkMaximumDailyHours(candidate, requirement)) {  // Maximum of 12 hours per day
-            if (checkMinimumRestBetweenActs(candidate, requirement)) {  // Minimum rest between acts (12 hours)
-                if (checkWeeklyRest(candidate, requirement)) {  // Minimum rest of 48 hours on a week
-                    if (checkConsecutiveDailyHours(candidate, requirement)) {   // Maximum of 3 consecutive days with more than 9 hours
-                        if (checkMaxWeeklyHours(candidate, requirement)) {  // Maximum of 50 hours per week
-                            if (checkAverageWeeklyHours(candidate, requirement)) { // Maximum of 9h/d * labor days in a month
+        if (chechkMaximumDailyHours(candidate, requeriment, feines)) {  // Maximum of 12 hours per day
+            if (checkMinimumRestBetweenActs(candidate, requeriment, feines)) {  // Minimum rest between acts (12 hours)
+                if (checkWeeklyRest(candidate, requeriment, feines)) {  // Minimum rest of 48 hours on a week
+                    if (checkConsecutiveDailyHours(candidate, requeriment, feines)) {   // Maximum of 3 consecutive days with more than 9 hours
+                        if (checkMaxWeeklyHours(candidate, requeriment, feines)) {  // Maximum of 50 hours per week
+                            if (checkAverageWeeklyHours(candidate, requeriment, feines)) { // Maximum of 9h/d * labor days in a month
                                 // The employee meets all the rules of the agreement
                                 return true;
                             }
@@ -165,25 +166,26 @@ public class MainCorregit {
         return false;
     }
 
-    public static boolean chechkMaximumDailyHours(Employee candidate, Requirement requirement){
+    public static boolean chechkMaximumDailyHours(UsuariDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         Boolean maximumDailyHoursNotExceeded = true;
         // Check if the employee is going to work more than 12 hours in a day
-        List<Requirement> sameDayRequirements = new ArrayList<>();
-        for (Requirement assignedAct : candidate.getAssignedRequirements()) {
-            if (assignedAct.getDay().equals(requirement.getDay())) {
-                sameDayRequirements.add(assignedAct);
+        List<FeinaAssignadaDTO> sameDayFeines = new ArrayList<>();
+        for (FeinaAssignadaDTO feina : feines) {
+            if (feina.getDay().equals(requeriment.getDay())) {
+                sameDayFeines.add(feina);
             }
         }
 
-        if (!sameDayRequirements.isEmpty()){
+        if (!sameDayFeines.isEmpty()){
             // We add the new requirement to the list to check if with it the employee is going to work more than 12 hours
-            sameDayRequirements.add(requirement);
+            //sameDayFeines.add(requeriment);
 
             // Check if the employee is going to work more than 12 hours in a day
             long totalHours = 0;
-            for (Requirement act : sameDayRequirements) {
-                totalHours += Duration.between(act.getStartTime(), act.getEndTime()).toHours();
+            for (FeinaAssignadaDTO act : sameDayFeines) {
+                totalHours += Duration.between(act.getStart_time(), act.getEnd_time()).toHours();
             }
+            totalHours += Duration.between(requeriment.getStartTime(), requeriment.getEndTime()).toHours();
             if (totalHours > 12) {
                 maximumDailyHoursNotExceeded = false;
             }
@@ -192,15 +194,15 @@ public class MainCorregit {
         return maximumDailyHoursNotExceeded;
     }
 
-    public static boolean checkMinimumRestBetweenActs(Employee candidate, Requirement requirement){
+    public static boolean checkMinimumRestBetweenActs(UsuariDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         Boolean minimumRest = true;
         // Check if the employee has a minimum rest of 12 hours between acts
-        if (!candidate.getAssignedRequirements().isEmpty()){
-            for (Requirement assignedAct : candidate.getAssignedRequirements()) {
+        if (!feines.isEmpty()){
+            for (FeinaAssignadaDTO assignedAct : feines) {
                 // If the end time of the assigned act is less than 12 hours before the start time of the new act, the employee is discarded
-                if (Duration.between(assignedAct.getEndTime(), requirement.getStartTime()).toHours() < 12) {
+                if (Duration.between(assignedAct.getEnd_time(), requeriment.getStartTime()).toHours() < 12) {
                     minimumRest = false;
-                }else if (Duration.between(requirement.getEndTime(), assignedAct.getStartTime()).toHours() < 12) {
+                }else if (Duration.between(requeriment.getEndTime(), assignedAct.getStart_time()).toHours() < 12) {
                     // If the start time of the assigned act is less than 12 hours before the end time of the new act, the employee is discarded
                     minimumRest = false;
                 }
@@ -209,42 +211,44 @@ public class MainCorregit {
         return minimumRest;
     }
 
-    public static boolean checkWeeklyRest(Employee candidate, Requirement requirement){
+    public static boolean checkWeeklyRest(UsuariDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         Boolean rest = false;
         // Check if the employee has a minimum rest of 48 hours on a week
-        List<Requirement> sameWeekRequirements = new ArrayList<>();
-        for (Requirement assignedAct : candidate.getAssignedRequirements()) {
-            if (isSameWeek(assignedAct.getDay(), requirement.getDay())) {
+        List<FeinaAssignadaDTO> sameWeekRequirements = new ArrayList<>();
+        for (FeinaAssignadaDTO assignedAct : feines) {
+            if (isSameWeek(assignedAct.getDay(), requeriment.getDay())) {
                 sameWeekRequirements.add(assignedAct);
             }
         }
 
         if (!sameWeekRequirements.isEmpty()){
             // We add the new requirement to the list to check if with it the employee has a rest of 48 hours
-            sameWeekRequirements.add(requirement);
+            FeinaAssignadaDTO possibleFeina = new FeinaAssignadaDTO(null, candidate.getUsername(), null, requeriment.getDay(),
+                                                                                requeriment.getStartTime(), requeriment.getEndTime());
+            sameWeekRequirements.add(possibleFeina);
             // Sort the list by day and start time
-            sameWeekRequirements.sort(Comparator.comparing(Requirement::getDay)
-                    .thenComparing(Requirement::getStartTime));
+            sameWeekRequirements.sort(Comparator.comparing(FeinaAssignadaDTO::getDay)
+                    .thenComparing(FeinaAssignadaDTO::getStart_time));
 
             // Obtain startWeek and endWeek
-            LocalDateTime weekStart = requirement.getDay().with(DayOfWeek.MONDAY).atStartOfDay();   // Monday 00:00
-            LocalDateTime weekEnd = requirement.getDay().with(DayOfWeek.SUNDAY).atTime(LocalTime.MAX); // Sunday 23:59
+            LocalDateTime weekStart = requeriment.getDay().with(DayOfWeek.MONDAY).atStartOfDay();   // Monday 00:00
+            LocalDateTime weekEnd = requeriment.getDay().with(DayOfWeek.SUNDAY).atTime(LocalTime.MAX); // Sunday 23:59
 
             // Check 3 different cases:
             // 1. If the rest between the start of the week and the first act is more or equal than 48 hours
-            LocalDateTime firstAct = LocalDateTime.of(sameWeekRequirements.get(0).getDay(),sameWeekRequirements.get(0).getStartTime());
+            LocalDateTime firstAct = LocalDateTime.of(sameWeekRequirements.get(0).getDay(),sameWeekRequirements.get(0).getStart_time());
             if (Duration.between(weekStart, firstAct).toHours() >= 48) {
                 rest = true;
             }else{
                 // 2. If the rest between the last act and the end of the week is more or equal than 48 hours
-                LocalDateTime lastAct = LocalDateTime.of(sameWeekRequirements.get(sameWeekRequirements.size()-1).getDay(),sameWeekRequirements.get(sameWeekRequirements.size()-1).getEndTime());
+                LocalDateTime lastAct = LocalDateTime.of(sameWeekRequirements.get(sameWeekRequirements.size()-1).getDay(),sameWeekRequirements.get(sameWeekRequirements.size()-1).getEnd_time());
                 if (Duration.between(lastAct, weekEnd).toHours() >= 48) {
                     rest = true;
                 }else{
                     // 3. If the rest between two consecutive acts is more or equal than 48 hours
                     for (int i = 0; i < sameWeekRequirements.size()-1; i++) {   // go across the list
-                        LocalDateTime act1 = LocalDateTime.of(sameWeekRequirements.get(i).getDay(),sameWeekRequirements.get(i).getEndTime());
-                        LocalDateTime act2 = LocalDateTime.of(sameWeekRequirements.get(i+1).getDay(),sameWeekRequirements.get(i+1).getStartTime());
+                        LocalDateTime act1 = LocalDateTime.of(sameWeekRequirements.get(i).getDay(),sameWeekRequirements.get(i).getEnd_time());
+                        LocalDateTime act2 = LocalDateTime.of(sameWeekRequirements.get(i+1).getDay(),sameWeekRequirements.get(i+1).getStart_time());
                         if (Duration.between(act1, act2).toHours() >= 48) {
                             rest = true;
                         }else{
@@ -261,25 +265,27 @@ public class MainCorregit {
         return rest;
     }
 
-    public static boolean checkConsecutiveDailyHours(Employee candidate, Requirement requirement){
+    public static boolean checkConsecutiveDailyHours(UsuariDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         Boolean consecutiveHoursNotExceeded = true;
         // We only check this if the duration of the act is greater than 9 hours
-        long duration = Duration.between(requirement.getStartTime(), requirement.getEndTime()).toMinutes();
+        long duration = Duration.between(requeriment.getStartTime(), requeriment.getEndTime()).toMinutes();
         if (duration > 540){
             // Check if the employee has more than 9 hours in 3 consecutive days
-            List<Requirement> relevantLongWorkRequirements = new ArrayList<>();
-            for (Requirement assignedAct : candidate.getAssignedRequirements()){
-                if (Duration.between(assignedAct.getStartTime(), assignedAct.getEndTime()).toMinutes() > 540 &&
-                        (assignedAct.getDay().isAfter(requirement.getDay().minusDays(4)) && assignedAct.getDay().isBefore(requirement.getDay().plusDays(4)))){
+            List<FeinaAssignadaDTO> relevantLongWorkRequirements = new ArrayList<>();
+            for (FeinaAssignadaDTO assignedAct : feines){
+                if (Duration.between(assignedAct.getStart_time(), assignedAct.getEnd_time()).toMinutes() > 540 &&
+                        (assignedAct.getDay().isAfter(requeriment.getDay().minusDays(4)) && assignedAct.getDay().isBefore(requeriment.getDay().plusDays(4)))){
                     relevantLongWorkRequirements.add(assignedAct);
                 }
             }
 
             if (!relevantLongWorkRequirements.isEmpty()){
                 // We add the new requirement to the list to check if with it the employee has more than 9 hours in 3 consecutive days
-                relevantLongWorkRequirements.add(requirement);
+                FeinaAssignadaDTO possibleFeina = new FeinaAssignadaDTO(null, candidate.getUsername(), null, requeriment.getDay(),
+                        requeriment.getStartTime(), requeriment.getEndTime());
+                relevantLongWorkRequirements.add(possibleFeina);
                 // Sort the list by day and start time
-                relevantLongWorkRequirements.sort(Comparator.comparing(Requirement::getDay));
+                relevantLongWorkRequirements.sort(Comparator.comparing(FeinaAssignadaDTO::getDay));
 
                 // Check if the employee has worked more than 9 hours in 3 consecutive days
                 int consecutiveDays = 1;
@@ -307,24 +313,26 @@ public class MainCorregit {
         return consecutiveHoursNotExceeded;
     }
 
-    public static boolean checkMaxWeeklyHours(Employee candidate, Requirement requirement){
+    public static boolean checkMaxWeeklyHours(UsuariDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         boolean maxWeeklyHoursNotExceeded = true;
         // Check if the employee has worked more than 50 hours in a week
-        List<Requirement> sameWeekRequirements = new ArrayList<>();
-        for (Requirement assignedAct : candidate.getAssignedRequirements()) {
-            if (isSameWeek(assignedAct.getDay(), requirement.getDay())) {
+        List<FeinaAssignadaDTO> sameWeekRequirements = new ArrayList<>();
+        for (FeinaAssignadaDTO assignedAct : feines) {
+            if (isSameWeek(assignedAct.getDay(), requeriment.getDay())) {
                 sameWeekRequirements.add(assignedAct);
             }
         }
 
         if (!sameWeekRequirements.isEmpty()){
             // We add the new requirement to the list to check if with it the employee has worked more than 50 hours
-            sameWeekRequirements.add(requirement);
+            FeinaAssignadaDTO possibleFeina = new FeinaAssignadaDTO(null, candidate.getUsername(), null, requeriment.getDay(),
+                    requeriment.getStartTime(), requeriment.getEndTime());
+            sameWeekRequirements.add(possibleFeina);
 
             // Check if the employee has worked more than 50 hours in a week
             long totalHours = 0;
-            for (Requirement act : sameWeekRequirements) {
-                totalHours += Duration.between(act.getStartTime(), act.getEndTime()).toHours();
+            for (FeinaAssignadaDTO act : sameWeekRequirements) {
+                totalHours += Duration.between(act.getStart_time(), act.getEnd_time()).toHours();
             }
             if (totalHours > 50) {
                 maxWeeklyHoursNotExceeded = false;
@@ -334,19 +342,21 @@ public class MainCorregit {
         return maxWeeklyHoursNotExceeded;
     }
 
-    public static boolean checkAverageWeeklyHours(Employee candidate, Requirement requirement){
+    public static boolean checkAverageWeeklyHours(UsuariDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         boolean averageWeeklyHoursNotExceeded = true;
         // Maximum of 9h/d * labor days in a month
         // Determine the labor days in the requirement month
-        int laborDaysInMonth = laborDaysInMonth(YearMonth.from(requirement.getDay()));
+        int laborDaysInMonth = laborDaysInMonth(YearMonth.from(requeriment.getDay()));
         // Calculate the maximum hours that the employee can work in a month
         int maxHoursInMonth = 9 * laborDaysInMonth;
         // Calculate the hours that the employee has worked in the month
-        List<Requirement> candidateRequirements = candidate.getAssignedRequirements();
-        candidateRequirements.add(requirement);
-        for (Requirement assignedAct : candidateRequirements) {
-            if (YearMonth.from(assignedAct.getDay()).equals(YearMonth.from(requirement.getDay()))) {
-                maxHoursInMonth -= Duration.between(assignedAct.getStartTime(), assignedAct.getEndTime()).toHours();
+        List<FeinaAssignadaDTO> candidateRequirements = feines;
+        FeinaAssignadaDTO possibleFeina = new FeinaAssignadaDTO(null, candidate.getUsername(), null, requeriment.getDay(),
+                requeriment.getStartTime(), requeriment.getEndTime());
+        candidateRequirements.add(possibleFeina);
+        for (FeinaAssignadaDTO assignedAct : candidateRequirements) {
+            if (YearMonth.from(assignedAct.getDay()).equals(YearMonth.from(requeriment.getDay()))) {
+                maxHoursInMonth -= Duration.between(assignedAct.getStart_time(), assignedAct.getEnd_time()).toHours();
             }
         }
         if (maxHoursInMonth < 0) {
@@ -440,4 +450,15 @@ public class MainCorregit {
         }
         return requeriments;
     }
+
+
+    public static void addFeinaAssignada(String nomProjecte, String username, Integer id) throws SQLException {
+        FeinaAssignadaController feinaAssignadaController = new FeinaAssignadaController();
+        Map<String, String> req = new HashMap<>();
+        req.put("nom_projecte", nomProjecte);
+        req.put("username", username);
+        req.put("id", id.toString());
+        feinaAssignadaController.addFeinaAssignada(req);
+    }
 }
+
