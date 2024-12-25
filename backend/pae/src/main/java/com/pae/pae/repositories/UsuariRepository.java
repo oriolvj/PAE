@@ -110,7 +110,7 @@ public class UsuariRepository {
             stmt.setString(1, newUserRequest.get("username"));
             stmt.setString(2, newUserRequest.get("nom"));
             stmt.setInt(3, Integer.parseInt(newUserRequest.get("edat")));
-            stmt.setString(4, newUserRequest.get("tlf"));
+            stmt.setInt(4, Integer.parseInt(newUserRequest.get("tlf")));
             stmt.setString(5, newUserRequest.get("email"));
             stmt.setString(6, newUserRequest.get("pwd"));
             stmt.setString(7, Rols.valueOf(newUserRequest.get("rol")).toString());
