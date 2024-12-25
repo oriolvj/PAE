@@ -9,6 +9,9 @@ import com.pae.pae.models.RequerimentDTO;
 import com.pae.pae.models.RequerimentsProjecteDTO;
 import com.pae.pae.models.UsuariDTO;
 
+// Treu aquesta linea
+import com.pae.pae.Algorithm.Classes.*;
+
 import java.time.*;
 import java.time.temporal.IsoFields;
 import java.util.ArrayList;
@@ -56,7 +59,8 @@ public class MainCorregit {
             }
 
             // Create a project with the assigned acts
-            projects.add(new Project(projectForm.getProjectName(), projectForm.getStartDate(), projectForm.getEndDate(), projectForm.getRequirements()));
+            // Descomenta aquesta linea
+            //projects.add(new Project(projectForm.getProjectName(), projectForm.getStartDate(), projectForm.getEndDate(), projectForm.getRequirements()));
         }
     }
 
@@ -75,7 +79,8 @@ public class MainCorregit {
                         profileCandidates.remove(candidate);
                     }
                     // Check if the employee is available -> check if the employee is already assigned to another act at the same time
-                    for (Requirement assignedAct : candidate.getAssignedRequirements()) {
+                    // Descomenta aquesta linea
+                    /*for (Requirement assignedAct : candidate.getAssignedRequirements()) {
                         // If the employee is already assigned to another act the same day at the same time, is discarded
                         if (assignedAct.getDay().equals(requirement.getDay()) && assignedAct.getStartTime().equals(requirement.getStartTime())) {
                             profileCandidates.remove(candidate);
@@ -88,7 +93,7 @@ public class MainCorregit {
                         candidate.assignRequirement(requirement);
                         projectForm.getRequirements().get(projectForm.getRequirements().indexOf(requirement)).setAssignedEmployee(candidate);
                         projectForm.getRequirements().remove(requirement);
-                    }
+                    }*/
                 }
             }
         }
