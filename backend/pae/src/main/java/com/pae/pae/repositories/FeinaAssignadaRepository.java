@@ -21,11 +21,17 @@ public class FeinaAssignadaRepository {
 
     private FeinaAssignadaDTO fDTO = null;
     public ArrayList<FeinaAssignadaDTO> getfeinaAssignades() {
+        //TODO
+        return null;
     }
 
     public FeinaAssignadaDTO getfeinaAssignada(String nomProjecte, String username, Integer id) {
+        //TODO
+        return null;
     }
 
     public boolean getfeinaAssignadea(Map<String, String> newfeinaRequest) {
+        //TODO
+        return false;
     }
 }
