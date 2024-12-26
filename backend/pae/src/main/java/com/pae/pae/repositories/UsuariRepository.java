@@ -145,13 +145,19 @@ public class UsuariRepository {
     }
 
     public boolean usuariModify(String username, Map<String, String> modifyRequest) {
-        String query = "UPDATE usuaris SET nom = ?, edat = ?, tlf = ?, email = ?, pwd = ?, rol = CAST(? AS rols), preferencia = ?, actiu = ?, contractat = ?, jornada = CAST(? AS jornada) WHERE username = ?";
+
+        String oldPassword = getOldPassword(username);
+
+        String query = "UPDATE usuaris SET username = ?, nom = ?, edat = ?, tlf = ?, email = ?, pwd = ?, rol = CAST(? AS rols), preferencia = ?, actiu = ?, contractat = ?, jornada = CAST(? AS jornada) WHERE username = ?";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
+
+            modifyRequest.putIfAbsent("pwd", oldPassword);
+
             stmt.setString(1, modifyRequest.get("username"));
             stmt.setString(2, modifyRequest.get("nom"));
             stmt.setInt(3, Integer.parseInt(modifyRequest.get("edat")));
-            stmt.setString(4, modifyRequest.get("tlf"));
+            stmt.setInt(4, Integer.parseInt(modifyRequest.get("tlf")));
             stmt.setString(5, modifyRequest.get("email"));
             stmt.setString(6, modifyRequest.get("pwd"));
             stmt.setString(7, Rols.valueOf(modifyRequest.get("rol")).toString());
@@ -159,6 +165,7 @@ public class UsuariRepository {
             stmt.setBoolean(9, Boolean.parseBoolean(modifyRequest.get("actiu")));
             stmt.setBoolean(10, Boolean.parseBoolean(modifyRequest.get("contractat")));
             stmt.setString(11, modifyRequest.get("jornada"));
+            stmt.setString(12, modifyRequest.get("username"));
 
             int rowsUpdated = stmt.executeUpdate();
             if (rowsUpdated > 0) {
@@ -169,6 +176,22 @@ public class UsuariRepository {
             e.printStackTrace();
         }
         return false;
+    }
+
+    private String getOldPassword(String username) {
+        String query = "SELECT pwd FROM usuaris WHERE username = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, username);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString("pwd");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

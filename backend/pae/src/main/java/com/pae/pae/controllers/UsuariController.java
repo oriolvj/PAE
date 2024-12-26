@@ -25,6 +25,7 @@ public class UsuariController {
     }
     @CrossOrigin
     @GetMapping(path = "/{username}")
+    //TODO: Remove password from username GET request
     public UsuariDTO getUsuari(@PathVariable("username") String username) {
         return usuariService.getUsuari(username);
     }

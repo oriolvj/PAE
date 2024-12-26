@@ -30,16 +30,12 @@ public class ProjecteRepository {
         try {
             String mesString = resultSet.getString("mes");
             Mes mes = (mesString != null) ? Mes.valueOf(mesString) : null;
-
-            String setmanaString = resultSet.getString("setmana");
-            Setmana setmana = (setmanaString != null) ? Setmana.valueOf(setmanaString) : null;
             pDTO = new ProjecteDTO(
                     resultSet.getString("nom"),
                     mes,
-                    setmana,
-                    resultSet.getDate("data_inici"),
-                    resultSet.getDate("data_fi"),
-                    resultSet.getInt("num_empleats"),
+                    resultSet.getDate("dataInici"),
+                    resultSet.getDate("dataFi"),
+                    resultSet.getInt("numeroEmpleats"),
                     resultSet.getString("ubicacio")
             );
         } catch (IllegalArgumentException e) {
@@ -84,17 +80,15 @@ public class ProjecteRepository {
     }
 
     public boolean addProject(Map<String, String> newprojectRequest) throws SQLException {
-        String query = "INSERT INTO projectes(nom,mes,setmana,data_inici,data_fi,num_empl,ubicacio) VALUES(?,?,?,?,?,?,?)";
+        String query = "INSERT INTO projectes(nom,mes,dataInici,dataFi,numeroEmpleats,ubicacio) VALUES(?,CAST(? AS mes),?,?,?,?)";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            System.out.println(Date.valueOf(newprojectRequest.get("data_inici")));
             stmt.setString(1, newprojectRequest.get("nom"));
             stmt.setString(2, newprojectRequest.get("mes").toString());
-            stmt.setString(3, newprojectRequest.get("setmana").toString());
-            stmt.setDate(4, Date.valueOf(newprojectRequest.get("data_inici")));
-            stmt.setDate(5, Date.valueOf(newprojectRequest.get("data_fi")));
-            stmt.setInt(6, Integer.valueOf(newprojectRequest.get("num_empleats")));
-            stmt.setString(7, newprojectRequest.get("ubicacio"));
+            stmt.setDate(3, Date.valueOf(newprojectRequest.get("dataInici")));
+            stmt.setDate(4, Date.valueOf(newprojectRequest.get("dataFi")));
+            stmt.setInt(5, Integer.valueOf(newprojectRequest.get("numeroEmpleats")));
+            stmt.setString(6, newprojectRequest.get("ubicacio"));
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
                 System.out.println("Projecte insertat correctament");
