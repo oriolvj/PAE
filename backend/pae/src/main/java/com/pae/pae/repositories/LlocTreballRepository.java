@@ -27,7 +27,7 @@ public class LlocTreballRepository {
             lltDTO = new LlocTreballDTO(
                     resultSet.getString("posicio")
             );
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             throw new SQLException("Error al obtener datos del ResultSet", e);
         }
     }
