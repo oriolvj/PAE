@@ -2,7 +2,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { ArrowUpIcon, ArrowDownIcon, Users, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react'
+import { Users, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react'
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 // Mock data for the chart
 const data = [
@@ -83,6 +85,11 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </CardContent>
       </Card>
+      <div className="mt-6 flex justify-center">
+        <Button asChild>
+          <Link href="/dashboard/planification">Planificació Setmana Següent</Link>
+        </Button>
+      </div>
     </div>
   )
 }

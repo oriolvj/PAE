@@ -29,8 +29,8 @@ export default function LoginPage() {
           'Accept': 'application/json',
         },
         body: JSON.stringify({ username, password }),
-        credentials: 'omit', // This is important for cookies
-        mode: 'cors', // Explicitly state we're using CORS
+        credentials: 'omit',
+        mode: 'cors',
       })
 
       if (!response.ok) {

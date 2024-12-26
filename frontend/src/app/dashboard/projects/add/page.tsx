@@ -9,16 +9,21 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { ArrowLeft } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from "@/components/ui/toaster"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 type Project = {
   nom: string
   mes: string
-  setmana: number
   dataInici: string
   dataFi: string
   numeroEmpleats: number
   ubicacio: string
 }
+
+const months = [
+  "Gener", "Febrer", "Març", "Abril", "Maig", "Juny",
+  "Juliol", "Agost", "Setembre", "Octubre", "Novembre", "Desembre"
+]
 
 export default function AddProjectPage() {
   const router = useRouter()
@@ -27,7 +32,6 @@ export default function AddProjectPage() {
   const [project, setProject] = useState<Project>({
     nom: '',
     mes: '',
-    setmana: 1,
     dataInici: '',
     dataFi: '',
     numeroEmpleats: 0,
@@ -39,6 +43,13 @@ export default function AddProjectPage() {
     setProject(prev => ({
       ...prev,
       [name]: type === 'number' ? Number(value) : value
+    }))
+  }
+
+  const handleSelectChange = (value: string) => {
+    setProject(prev => ({
+      ...prev,
+      mes: value
     }))
   }
 
@@ -92,15 +103,20 @@ export default function AddProjectPage() {
               <Label htmlFor="nom">Nom del Projecte</Label>
               <Input id="nom" name="nom" value={project.nom} onChange={handleInputChange} required />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="mes">Mes</Label>
-                <Input id="mes" name="mes" value={project.mes} onChange={handleInputChange} required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="setmana">Setmana</Label>
-                <Input id="setmana" name="setmana" type="number" value={project.setmana} onChange={handleInputChange} required />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="mes">Mes</Label>
+              <Select onValueChange={handleSelectChange} value={project.mes}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecciona un mes" />
+                </SelectTrigger>
+                <SelectContent>
+                  {months.map((month) => (
+                    <SelectItem key={month} value={month}>
+                      {month}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
