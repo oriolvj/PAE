@@ -14,17 +14,17 @@ import java.util.Date;
 public class ProjecteDTO {
     private String nom;
     private Mes mes;
-    private Date data_inici;
-    private Date data_fi;
-    private int num_empleats;
+    private Date dataInici;
+    private Date dataFi;
+    private int numeroEmpleats;
     private String ubicacio;
 
-    public ProjecteDTO(String nom, Mes mes, Date data_inici, Date data_fi, int num_empleats, String ubicacio) {
+    public ProjecteDTO(String nom, Mes mes, Date dataInici, Date dataFi, int numeroEmpleats, String ubicacio) {
         this.nom = nom;
         this.mes = mes;
-        this.data_inici = data_inici;
-        this.data_fi = data_fi;
-        this.num_empleats = num_empleats;
+        this.dataInici = dataInici;
+        this.dataFi = dataFi;
+        this.numeroEmpleats = numeroEmpleats;
         this.ubicacio = ubicacio;
     }
 }

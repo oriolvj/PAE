@@ -33,9 +33,9 @@ public class ProjecteRepository {
             pDTO = new ProjecteDTO(
                     resultSet.getString("nom"),
                     mes,
-                    resultSet.getDate("data_inici"),
-                    resultSet.getDate("data_fi"),
-                    resultSet.getInt("num_empleats"),
+                    resultSet.getDate("dataInici"),
+                    resultSet.getDate("dataFi"),
+                    resultSet.getInt("numeroEmpleats"),
                     resultSet.getString("ubicacio")
             );
         } catch (IllegalArgumentException e) {
@@ -80,7 +80,7 @@ public class ProjecteRepository {
     }
 
     public boolean addProject(Map<String, String> newprojectRequest) throws SQLException {
-        String query = "INSERT INTO projectes(nom,mes,data_inici,data_fi,num_empleats,ubicacio) VALUES(?,CAST(? AS mes),?,?,?,?)";
+        String query = "INSERT INTO projectes(nom,mes,dataInici,dataFi,numeroEmpleats,ubicacio) VALUES(?,CAST(? AS mes),?,?,?,?)";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, newprojectRequest.get("nom"));
