@@ -22,4 +22,12 @@ public class TecnicService {
     public boolean registerTecnic(Map<String, String> newTecnicRequest) {
         return tecnicRepository.registerTecnic(newTecnicRequest);
     }
+
+    public boolean Tecnicremove(String username) {
+        return tecnicRepository.Tecnicremove(username);
+    }
+
+    public boolean TecnicModify(String username, Map<String, String> modifyRequest) {
+        return tecnicRepository.TecnicModify(username, modifyRequest);
+    }
 }

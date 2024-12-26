@@ -22,8 +22,8 @@ public class TecnicController {
         return tecnicService.getTecnics();
     }
     @CrossOrigin
-    @GetMapping(path = "/{tecnic}")
-    public TecnicDTO getTecnic(@PathVariable("tecnic") int id) {
+    @GetMapping(path = "/{id}")
+    public TecnicDTO getTecnic(@PathVariable("id") Integer id) {
         return tecnicService.getTecnic(id);
     }
 
@@ -33,7 +33,16 @@ public class TecnicController {
         return tecnicService.registerTecnic(newTecnicRequest);
     }
 
+    @CrossOrigin
+    @DeleteMapping(path = "/{username}")
+    public boolean Tecnicremove(@PathVariable("username") String username) {
+        return tecnicService.Tecnicremove(username);
+    }
 
-    //falten fer tots els afegir, modificar i eliminar tecnics a més de el tema de les posicions fer-les dinàmiques i obtenir les
+    @CrossOrigin
+    @PutMapping(path = "/{username}")
+    public boolean usuariModify (@PathVariable("username") String username, @RequestBody Map<String, String> modifyRequest){
+        return tecnicService.TecnicModify(username,modifyRequest);
+    }
 
 }

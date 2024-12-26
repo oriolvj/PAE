@@ -72,8 +72,7 @@ public class TecnicRepository {
     public boolean registerTecnic(Map<String, String> newTecnicRequest) {
         String getUserRealNameQuery = "SELECT nom FROM usuaris WHERE username = ?";
         String checkPositionQuery = "SELECT COUNT(*) FROM posicions WHERE posicio = ?";
-        String insertPositionQuery = "INSERT INTO posicions (posicio) VALUES (?)";
-        String insertTecnicQuery = "INSERT INTO tecnics (nom, hores_contracte, sou, posicio) VALUES (?, ?, ?, ?)";
+        String insertTecnicQuery = "INSERT INTO tecnics (username, hores_contracte, sou, posicio, nom_tecnic) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection connection = getConnection()) {
             // Get the real name of the user
@@ -84,7 +83,9 @@ public class TecnicRepository {
                     if (resultSet.next()) {
                         realName = resultSet.getString("nom");
                     } else {
-                        throw new SQLException("User not found");
+                        //throw new SQLException("User not found");
+                        System.out.println("user doesn't exist");
+                        return false;
                     }
                 }
             }
@@ -94,26 +95,66 @@ public class TecnicRepository {
                 checkStmt.setString(1, newTecnicRequest.get("posicio"));
                 try (ResultSet resultSet = checkStmt.executeQuery()) {
                     if (resultSet.next() && resultSet.getInt(1) == 0) {
-                        // Position does not exist, insert it
-                        try (PreparedStatement insertPositionStmt = connection.prepareStatement(insertPositionQuery)) {
-                            insertPositionStmt.setString(1, newTecnicRequest.get("posicio"));
-                            insertPositionStmt.executeUpdate();
-                        }
+                        // Position does not exist, return error
+                        //throw new SQLException("Position does not exist");
+                        System.out.println("Position already exists");
+                        return false;
                     }
-
-
                 }
             }
 
             // Insert the new tecnic
             try (PreparedStatement insertTecnicStmt = connection.prepareStatement(insertTecnicQuery)) {
-                insertTecnicStmt.setString(1, realName);
+                insertTecnicStmt.setString(1, newTecnicRequest.get("username"));
                 insertTecnicStmt.setInt(2, Integer.parseInt(newTecnicRequest.get("hores_contracte")));
                 insertTecnicStmt.setInt(3, Integer.parseInt(newTecnicRequest.get("sou")));
                 insertTecnicStmt.setString(4, newTecnicRequest.get("posicio"));
+                insertTecnicStmt.setString(5, realName);
                 insertTecnicStmt.executeUpdate();
             }
 
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean Tecnicremove(String username) {
+        String query = "DELETE FROM tecnics WHERE username = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, username);
+            statement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean TecnicModify(String username, Map<String, String> modifyRequest) {
+        String checkPositionQuery = "SELECT COUNT(*) FROM posicions WHERE posicio = ?";
+        String query = "UPDATE tecnics SET hores_contracte = ?, sou = ?, posicio = ? WHERE username = ?";
+        try (Connection connection = getConnection()) {
+            // Check if the position exists
+            try (PreparedStatement checkStmt = connection.prepareStatement(checkPositionQuery)) {
+                checkStmt.setString(1, modifyRequest.get("posicio"));
+                try (ResultSet resultSet = checkStmt.executeQuery()) {
+                    if (resultSet.next() && resultSet.getInt(1) == 0) {
+                        // Position does not exist, return error
+                        //throw new SQLException("Position does not exist");
+                        return false;
+                    }
+                }
+            }
+
+            try (PreparedStatement insertTecnicStmt = connection.prepareStatement(query)) {
+                insertTecnicStmt.setInt(1, Integer.parseInt(modifyRequest.get("hores_contracte")));
+                insertTecnicStmt.setInt(2, Integer.parseInt(modifyRequest.get("sou")));
+                insertTecnicStmt.setString(3, modifyRequest.get("posicio"));
+                insertTecnicStmt.executeUpdate();
+            }
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
