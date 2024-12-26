@@ -68,7 +68,7 @@ public class MainCorregit {
                 duration = Duration.between(requeriment.getStartTime(), requeriment.getEndTime());
                 for (UsuariDTO candidate : candidates) {
                     // If the duration of the act is greater than 9 hours, part-time employees are discarded
-                    if (duration.toMinutes() > 540 && candidate.getJornda().toString().equals("PARCIAL")) {
+                    if (duration.toMinutes() > 540 && candidate.getJornada().toString().equals("PARCIAL")) {
 
                         profileCandidates.remove(candidate);
                     }
