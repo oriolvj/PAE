@@ -80,7 +80,7 @@ public class ProjecteRepository {
     }
 
     public boolean addProject(Map<String, String> newprojectRequest) throws SQLException {
-        String query = "INSERT INTO projectes(nom,mes,dataInici,dataFi,numeroEmpleats,ubicacio) VALUES(?,CAST(? AS mes),?,?,?,?)";
+        String query = "INSERT INTO projectes VALUES(?,CAST(? AS mes),?,?,?,?)";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, newprojectRequest.get("nom"));
@@ -89,6 +89,7 @@ public class ProjecteRepository {
             stmt.setDate(4, Date.valueOf(newprojectRequest.get("dataFi")));
             stmt.setInt(5, Integer.valueOf(newprojectRequest.get("numeroEmpleats")));
             stmt.setString(6, newprojectRequest.get("ubicacio"));
+            System.out.println(stmt);
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
                 System.out.println("Projecte insertat correctament");
