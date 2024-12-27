@@ -35,6 +35,10 @@ public class UsuariService {
         return usuariRepository.getUsuaris();
     }
 
+    public ArrayList<String> getUsernames() {
+        return usuariRepository.getUsernames();
+    }
+
     public UsuariDTO getUsuari(String username) {
         return usuariRepository.getUsuari(username);
     }

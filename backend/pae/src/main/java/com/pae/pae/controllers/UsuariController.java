@@ -23,6 +23,12 @@ public class UsuariController {
     public ArrayList<UsuariDTO> getUsuaris() {
         return usuariService.getUsuaris();
     }
+
+    @CrossOrigin
+    @GetMapping(path = "/usernames")
+    public ArrayList<String> getUsernames() {
+        return usuariService.getUsernames();
+    }
     @CrossOrigin
     @GetMapping(path = "/{username}")
     //TODO: Remove password from username GET request

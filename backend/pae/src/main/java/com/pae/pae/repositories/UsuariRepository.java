@@ -73,6 +73,22 @@ public class UsuariRepository {
         return ja;
     }
 
+    public ArrayList<String> getUsernames() {
+        ArrayList<String> ja = new ArrayList<>();
+        String query = "SELECT username FROM usuaris";
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                ja.add(resultSet.getString("username"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
+    }
+
     public UsuariDTO getUsuari(String username) {
         String query = "SELECT * FROM usuaris WHERE username = ?";
         try (Connection connection = getConnection();
