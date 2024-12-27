@@ -153,6 +153,7 @@ public class TecnicRepository {
                 insertTecnicStmt.setInt(1, Integer.parseInt(modifyRequest.get("hores_contracte")));
                 insertTecnicStmt.setInt(2, Integer.parseInt(modifyRequest.get("sou")));
                 insertTecnicStmt.setString(3, modifyRequest.get("posicio"));
+                insertTecnicStmt.setString(4, username);
                 insertTecnicStmt.executeUpdate();
             }
             return true;
