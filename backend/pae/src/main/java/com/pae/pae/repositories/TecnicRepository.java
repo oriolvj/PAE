@@ -81,7 +81,7 @@ public class TecnicRepository {
                 getUserRealNameStmt.setString(1, newTecnicRequest.get("username"));
                 try (ResultSet resultSet = getUserRealNameStmt.executeQuery()) {
                     if (resultSet.next()) {
-                        realName = resultSet.getString("nom");
+                        realName = resultSet.getString("nom_tecnic");
                     } else {
                         //throw new SQLException("User not found");
                         System.out.println("user doesn't exist");
@@ -135,7 +135,7 @@ public class TecnicRepository {
 
     public boolean TecnicModify(String username, Map<String, String> modifyRequest) {
         String checkPositionQuery = "SELECT COUNT(*) FROM posicions WHERE posicio = ?";
-        String query = "UPDATE tecnics SET hores_contracte = ?, sou = ?, posicio = ? WHERE username = ?";
+        String query = "UPDATE tecnics SET hores_contracte = ?, sou = ?, posicio = ?, nom_tecnic = ? WHERE username = ?";
         try (Connection connection = getConnection()) {
             // Check if the position exists
             try (PreparedStatement checkStmt = connection.prepareStatement(checkPositionQuery)) {
@@ -153,7 +153,8 @@ public class TecnicRepository {
                 insertTecnicStmt.setInt(1, Integer.parseInt(modifyRequest.get("hores_contracte")));
                 insertTecnicStmt.setInt(2, Integer.parseInt(modifyRequest.get("sou")));
                 insertTecnicStmt.setString(3, modifyRequest.get("posicio"));
-                insertTecnicStmt.setString(4, username);
+                insertTecnicStmt.setString(4, modifyRequest.get("nom"));
+                insertTecnicStmt.setString(5, username);
                 insertTecnicStmt.executeUpdate();
             }
             return true;
