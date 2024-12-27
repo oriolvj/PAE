@@ -26,7 +26,7 @@ public class TecnicRepository {
         try {
             tDTO = new TecnicDTO(
                     resultSet.getInt("id"),                  // ID del tècnic
-                    resultSet.getString("nom"),             // Nom del tècnic
+                    resultSet.getString("nom_tecnic"),             // Nom del tècnic
                     resultSet.getInt("hores_contracte"),    // Hores de contracte
                     resultSet.getInt("sou"),                // Sou
                     resultSet.getString("posicio")          // Posició
