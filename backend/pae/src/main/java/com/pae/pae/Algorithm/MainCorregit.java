@@ -16,92 +16,130 @@ import java.util.*;
 
 public class MainCorregit {
     public static void main(String[] args) throws SQLException {
-        //System.out.println("Hello world!");
 
         // Create some objects as an example
-        List<UsuariDTO> allEmployees = getUsuaris();
+        List<TecnicDTO> allEmployees = getTecnics();
+        List<ProjecteDTO> projects = getProjects(); // --> PENDENT
         List<RequerimentDTO> requirementsCCCB = createRequirements("CCCB");
         List<RequerimentDTO> requirementsParlament = createRequirements("Parlament");
         List<RequerimentDTO> requirementsKingsLeague = createRequirements("Kings League");
-        //List<RequerimentsProjecteDTO> projectForms = createProjectForms(requirementsCCCB, requirementsParlament, requirementsKingsLeague);
-
-        List<UsuariDTO> candidates = new ArrayList<>();
-        List<UsuariDTO> preferenceCandidates = new ArrayList<>();
-        List<ProjecteDTO> projects = new ArrayList<>();
 
         // Automatic assignment of employees to requirements
-        List<String> nomProjectes = getNomProjectes();
-        //for (RequerimentsProjecteDTO projectForm : projectForms) {
-        for (String nom : nomProjectes) {
-            candidates.clear();
-            preferenceCandidates.clear();
-            List<RequerimentDTO> requerimentsProjecte = getRequerimentsProjecte(nom);
-
-            // First, we look for available POOL employees
-            candidates = findEmployeesByModality(allEmployees, "POOL");
-            //preferenceCandidates = findEmployeesByPreference(candidates, projectForm.getProjectName());
-            preferenceCandidates = findEmployeesByModalityandPreference("POOL", nom);
-            // Check if there are employees with preference for the project
-            if (preferenceCandidates.size() > 0) {
-                assignEmployeesToRequirements(requerimentsProjecte, preferenceCandidates);
-            } else {
-                assignEmployeesToRequirements(requerimentsProjecte, candidates);
-            }
-            // If there are still requirements without employees assigned, we look for employees in ALTAS
-            if (requerimentsProjecte.size() > 0) {
-                candidates = findEmployeesByModality(allEmployees, "ALTAS");
-                assignEmployeesToRequirements(requerimentsProjecte, candidates);
-            }
-
-            // Create a project with the assigned acts
-            //projects.add(new Project(projectForm.getProjectName(), projectForm.getStartDate(), projectForm.getEndDate(), projectForm.getRequirements()));
+        boolean allProjectsAssigned = automaticAssignment(projects, employees);
+        
+        if (allProjectsAssigned) {
+            System.out.println("All projects assigned: " + projects);
+        } else {
+            System.out.println("There are requirements that have not been assigned");
+            System.out.println("Projects: " + projects);
         }
     }
 
-    public static void assignEmployeesToRequirements(List<RequerimentDTO> requeriments, List<UsuariDTO> candidates) throws SQLException {
+    public static boolean automaticAssignment(List<ProjecteDTO> projects, List<TecnicDTO> employees) {
+        boolean allProjectsAssigned = false;
+
+        List<TecnicDTO> candidates = new ArrayList<>();
+        List<TecnicDTO> preferenceCandidates = new ArrayList<>();
+        List<RequerimentDTO> assignedRequirements = new ArrayList<>();
+        
+        // Automatic assignment of employees to requirements
+        for (ProjecteDTO project : projects) {
+            boolean allAssigned = false;
+            candidates.clear();
+            preferenceCandidates.clear();
+
+            // First, we look for available POOL employees
+            candidates = findEmployeesByModality(employees, "POOL");
+            //preferenceCandidates = findEmployeesByPreference(candidates, projectForm.getProjectName());
+            preferenceCandidates = findEmployeesByModalityandPreference("POOL", project.getNom());
+            // Check if there are employees with preference for the project
+            if (!preferenceCandidates.isEmpty()) {
+                allAssigned = assignEmployeesToRequirements(project, preferenceCandidates, assignedRequirements);
+            } 
+            // If there are still requirements without employees assigned, we look for employees in POOL
+            if (!allAssigned) {
+                allAssigned = assignEmployeesToRequirements(project, candidates, assignedRequirements);
+            }
+            // If there are still requirements without employees assigned, we look for employees in ALTAS
+            if (!allAssigned) {	
+                candidates = findEmployeesByModality(employees, "ALTAS");
+                allAssigned = assignEmployeesToRequirements(project, candidates, assignedRequirements);
+            }
+            allProjectsAssigned = allProjectsAssigned &&  allAssigned;
+        }
+        return allProjectsAssigned;        
+    }
+
+
+    public static boolean assignEmployeesToRequirements(ProjecteDTO project, List<TecnicDTO> candidates, List<RequerimentDTO> assignedRequirements) throws SQLException {
         Duration duration;
-        List<UsuariDTO> profileCandidates = new ArrayList<>();
-        for (RequerimentDTO requeriment : requeriments) {
-            // First, we look for employees with the required technical profile
-            profileCandidates = findEmployeesByRol(candidates, requeriment.getTechnicalProfile());
-            if (!profileCandidates.isEmpty()) {
-                duration = Duration.between(requeriment.getStartTime(), requeriment.getEndTime());
-                for (UsuariDTO candidate : candidates) {
-                    // If the duration of the act is greater than 9 hours, part-time employees are discarded
-                    if (duration.toMinutes() > 540 && candidate.getJornada().toString().equals("PARCIAL")) {
 
-                        profileCandidates.remove(candidate);
+        List<TecnicDTO> discardedEmployees = new ArrayList<>();
+        List<RequerimentDTO> requirements = getRequerimentsProjecte(project.getNom());
+
+        List<TecnicDTO> profileCandidates = new ArrayList<>();
+
+        for (RequerimentDTO requirement : requirements) {
+            // First, we check if the requirement is not assigned
+            if(!assignedRequirements.contains(requeriment)){
+                // First, we look for employees with the required technical profile
+                profileCandidates = findEmployeesByRol(candidates, requirement.getTechnicalProfile());
+                if (!profileCandidates.isEmpty()) {
+                    duration = Duration.between(requirement.getStartTime(), requirement.getEndTime());
+                    // We check if the employee meets the requirements of the act
+                    boolean removed = false;
+                    boolean assigned = false;
+
+                    for (Iterator<TecnicDTO> iterator2 = profileCandidates.iterator(); iterator2.hasNext() && !assigned;) {
+                        TecnicDTO candidate = iterator2.next();
+                        // If the duration of the act is greater than 9 hours, part-time employees are discarded
+                        if (duration.toMinutes() > 540 && candidate.getJornada().toString().equals("PARCIAL")) {
+                            // profileCandidates.remove(candidate);
+                            discardedEmployees.add(candidate);
+                            removed = true;
+                        }else{  // If we don't discard the employee, we check the rest of the requirements
+                            // Check if the employee is available -> check if the employee is already assigned to another act at the same time
+                            List<FeinaAssignadaDTO> feines = getFeinesCandidat(candidate.getUsername());
+                            if (!feines.isEmpty()){
+                                for (Iterator<FeinaAssignadaDTO> iterator3 = feines.iterator(); iterator3.hasNext() && !removed;) {
+                                    FeinaAssignadaDTO feina = iterator3.next();
+
+                                    // Check if the day matches
+                                    if (feina.getDay().equals(requirement.getDay())) {
+                                        // Check if the time ranges overlap
+                                        boolean overlap = feina.getStartTime().isBefore(requirement.getEndTime()) &&
+                                                        feina.getEndTime().isAfter(requirement.getStartTime());
+
+                                        if (overlap) {
+                                            discardedEmployees.add(candidate);
+                                            removed = true;
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            if (candidate.getAssignedRequirements().isEmpty() || (!removed)){
+                                // If the employee is available
+                                // We check if the employee adheres to the rules of the labor contract (CONVENI)
+                                if (checkLabourAgreement(candidate, requirement, feines)){
+                                    // Assign the employee to the act
+                                    addFeinaAssignada(requeriment.getNomProjecte(), candidate.getUsername(), requeriment.getId());
+                                    //project.getRequirements().get(project.getRequirements().indexOf(requirement)).setAssignedEmployee(candidate);
+                                    assignedRequirements.add(requirement);
+                                    assigned = true;
+                                } else {
+                                    // If the employee does not meet the requirements of the act, is discarded
+                                    discardedEmployees.add(candidate);
+                                } 
+                            }
+                        }                  
                     }
-                    // Check if the employee is available -> check if the employee is already assigned to another act at the same time
-
-                    //for (Requirement assignedAct : candidate.getAssignedRequirements()) {
-
-                    List<FeinaAssignadaDTO> feines = getFeinesCandidat(candidate.getUsername());
-                    for (FeinaAssignadaDTO feina : feines) {
-                        // If the employee is already assigned to another act the same day at the same time, is discarded
-                        if (feina.getDay().equals(requeriment.getDay()) && feina.getStart_time().equals(requeriment.getStartTime())) {
-                            profileCandidates.remove(candidate);
-                        }
-                    }
-                    // If the employee is available
-                    // We check if the employee adheres to the rules of the labor contract (CONVENI)
-                    if (checkLabourAgreement(candidate, requeriment, feines)){
-                        // Assign the employee to the act
-                        addFeinaAssignada(requeriment.getNomProjecte(), candidate.getUsername(), requeriment.getId());
-                    }
-
                 }
             }
         }
+        return assignedRequirements.size() == project.getRequirements().size(); // If all the requirements have been assigned, return true
     }
 
-    /*public static List<RequerimentsProjecteDTO> createProjectForms(List<RequerimentDTO> requirementsCCCB, List<RequerimentDTO> requirementsParlament, List<RequerimentDTO> requirementsKingsLeague) {
-        List<RequerimentsProjecteDTO> projectForms = new ArrayList<>();
-        projectForms.add(new RequerimentsProjecteDTO("CCCB", LocalDate.of(2024, 10, 14), LocalDate.of(2024, 10, 17), requirementsCCCB));
-        projectForms.add(new RequerimentsProjecteDTO("Parlament", LocalDate.of(2024, 10, 18), LocalDate.of(2024, 10, 18), requirementsParlament));
-        projectForms.add(new RequerimentsProjecteDTO("Kings League", LocalDate.of(2024, 10, 19), LocalDate.of(2024, 10, 19), requirementsKingsLeague));
-        return projectForms;
-    }*/
 
     public static List<String> getNomProjectes(){
         ProjecteController projecteController = new ProjecteController();
@@ -350,7 +388,7 @@ public class MainCorregit {
         // Calculate the maximum hours that the employee can work in a month
         int maxHoursInMonth = 9 * laborDaysInMonth;
         // Calculate the hours that the employee has worked in the month
-        List<FeinaAssignadaDTO> candidateRequirements = feines;
+        List<FeinaAssignadaDTO> candidateRequirements = new ArrayList<>(feines);
         FeinaAssignadaDTO possibleFeina = new FeinaAssignadaDTO(null, candidate.getUsername(), null, requeriment.getDay(),
                 requeriment.getStartTime(), requeriment.getEndTime());
         candidateRequirements.add(possibleFeina);
@@ -388,9 +426,9 @@ public class MainCorregit {
         return workingDays;
     }
 
-    public static List<UsuariDTO> getUsuaris() {
-        UsuariController usuariController = new UsuariController();
-        return usuariController.getUsuaris();
+    public static List<TecnicDTO> getTecnics() {
+        TecnicController tecnicController = new TecnicController();
+        return usuariController.getTecnics();
     }
 
     public static List<RequerimentDTO> createRequirements(String project) {

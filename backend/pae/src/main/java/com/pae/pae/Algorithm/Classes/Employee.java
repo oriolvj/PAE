@@ -80,7 +80,9 @@ public class Employee {
                 ", modality='" + modality + '\'' +
                 ", contractType='" + contractType + '\'' +
                 ", preferenceActs=" + preferenceActs +
-                ", assignedActs=" + assignedRequirements +
+                ", assignedActs=" + assignedRequirements.stream()
+                .map(req -> req.getActName()) // Only show the name of the act
+                .collect(Collectors.toList()) +
                 '}';
     }
 }

@@ -87,7 +87,7 @@ public class Requirement {
                 ", technicalProfile='" + technicalProfile + '\'' +
                 ", actName='" + actName + '\'' +
                 ", actRoom='" + actRoom + '\'' +
-                ", assignedEmployee=" + assignedEmployee +
-                '}';
+                ", assignedEmployee=" + (assignedEmployee != null ? assignedEmployee.getName() : "null") + // Only show the name of the employee
+                "}\n";
     }
 }

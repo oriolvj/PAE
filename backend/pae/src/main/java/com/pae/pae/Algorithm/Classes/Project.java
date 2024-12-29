@@ -56,7 +56,7 @@ public class Project {
     public String toString() {
         return "Project{" +
                 "projectName='" + projectName + '\'' +
-                ", assignedRequirements=" + assignedRequirements +
-                '}';
+                ", assignedRequirements=" + requirements +
+                "}\n";
     }
 }

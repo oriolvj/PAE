@@ -11,83 +11,136 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Iterator;
 
 import com.pae.pae.Algorithm.Classes.Employee;
 import com.pae.pae.Algorithm.Classes.Project;
-import com.pae.pae.Algorithm.Classes.ProjectForm;
 import com.pae.pae.Algorithm.Classes.Requirement;
 
 public class Main {
     public static void main(String[] args) {
-        //System.out.println("Hello world!");
 
         // Create some objects as an example
         List<Employee> employees = createEmployees();
         List<Requirement> requirementsCCCB = createRequirements("CCCB");
         List<Requirement> requirementsParlament = createRequirements("Parlament");
         List<Requirement> requirementsKingsLeague = createRequirements("Kings League");
-        List<ProjectForm> projectForms = createProjectForms(requirementsCCCB, requirementsParlament, requirementsKingsLeague);
+
+        // I recieve the list of projects to planify but with the requirements not assigned
+        List<Project> projects = new ArrayList<>();
+        projects.add(new Project("CCCB", LocalDate.of(2024, 10, 14), LocalDate.of(2024, 10, 17), requirementsCCCB));
+        projects.add(new Project("Parlament", LocalDate.of(2024, 10, 18), LocalDate.of(2024, 10, 18), requirementsParlament));
+        projects.add(new Project("Kings League", LocalDate.of(2024, 10, 19), LocalDate.of(2024, 10, 19), requirementsKingsLeague));
+
+        // Automatic assignment of employees to requirements
+        boolean allProjectsAssigned = automaticAssignment(projects, employees);
+        
+        if (allProjectsAssigned) {
+            System.out.println("All projects assigned: " + projects);
+        } else {
+            System.out.println("There are requirements that have not been assigned");
+            System.out.println("Projects: " + projects);
+        }
+    }
+
+    public static boolean automaticAssignment(List<Project> projects, List<Employee> employees) {
+        boolean allProjectsAssigned = false;
 
         List<Employee> candidates = new ArrayList<>();
         List<Employee> preferenceCandidates = new ArrayList<>();
-        List<Project> projects = new ArrayList<>();
-
+        
         // Automatic assignment of employees to requirements
-        for (ProjectForm projectForm : projectForms) {
+        for (Project project : projects) {
+            boolean allAssigned = false;
             candidates.clear();
             preferenceCandidates.clear();
 
             // First, we look for available POOL employees
             candidates = findEmployeesByModality(employees, "POOL");
-            preferenceCandidates = findEmployeesByPreference(candidates, projectForm.getProjectName());
+            preferenceCandidates = findEmployeesByPreference(candidates, project.getProjectName());
             // Check if there are employees with preference for the project
-            if (preferenceCandidates.size() > 0) {
-                assignEmployeesToRequirements(projectForm, preferenceCandidates);
+            if (!preferenceCandidates.isEmpty()) {
+                allAssigned = assignEmployeesToRequirements(project, preferenceCandidates);
             } else {
-                assignEmployeesToRequirements(projectForm, candidates);
+                allAssigned = assignEmployeesToRequirements(project, candidates);
+            }
+            // If there are still requirements without employees assigned, we look for employees in POOL
+            if (!allAssigned) {
+                allAssigned = assignEmployeesToRequirements(project, candidates);
             }
             // If there are still requirements without employees assigned, we look for employees in ALTAS
-            if (projectForm.getRequirements().size() > 0) {
+            if (!allAssigned) {	
                 candidates = findEmployeesByModality(employees, "ALTAS");
-                assignEmployeesToRequirements(projectForm, candidates);
+                allAssigned = assignEmployeesToRequirements(project, candidates);
             }
-            
-            // Create a project with the assigned acts
-            projects.add(new Project(projectForm.getProjectName(), projectForm.getStartDate(), projectForm.getEndDate(), projectForm.getRequirements()));
+            allProjectsAssigned = allProjectsAssigned &&  allAssigned;
         }
+        return allProjectsAssigned;        
     }
 
-    public static void assignEmployeesToRequirements(ProjectForm projectForm, List<Employee> candidates) {
+    public static boolean assignEmployeesToRequirements(Project project, List<Employee> candidates) {
         Duration duration;
+
+        List<Employee> discardedEmployees = new ArrayList<>();
+        List<Requirement> requirements = project.getRequirements();
+        List<Requirement> assignedRequirements = new ArrayList<>();
+
         List<Employee> profileCandidates = new ArrayList<>();
-        for (Requirement requirement : projectForm.getRequirements()) {
-            // First, we look for employees with the required technical profile
-            profileCandidates = findEmployeesByProfile(candidates, requirement.getTechnicalProfile());
-            if (!profileCandidates.isEmpty()) {
-                duration = Duration.between(requirement.getStartTime(), requirement.getEndTime());
-                for (Employee candidate : candidates) {
-                    // If the duration of the act is greater than 9 hours, part-time employees are discarded
-                    if (duration.toMinutes() > 540 && candidate.getModality().equals("PART_TIME")) {
-                        profileCandidates.remove(candidate);
+
+        for (Requirement requirement : requirements) {
+            if(requirement.getAssignedEmployee() != null){
+                assignedRequirements.add(requirement);
+            }else{
+                // First, we look for employees with the required technical profile
+                profileCandidates = findEmployeesByProfile(candidates, requirement.getTechnicalProfile());
+                if (!profileCandidates.isEmpty()) {
+                    duration = Duration.between(requirement.getStartTime(), requirement.getEndTime());
+                    // We check if the employee meets the requirements of the act
+                    boolean removed = false;
+                    boolean assigned = false;
+
+                    for (Iterator<Employee> iterator2 = profileCandidates.iterator(); iterator2.hasNext() && !assigned;) {
+                        Employee candidate = iterator2.next();
+                        // If the duration of the act is greater than 9 hours, part-time employees are discarded
+                        if (duration.toMinutes() > 540 && candidate.getModality().equals("PART_TIME")) {
+                            // profileCandidates.remove(candidate);
+                            discardedEmployees.add(candidate);
+                            removed = true;
+                        }else{  // If we don't discard the employee, we check the rest of the requirements
+                            // Check if the employee is available -> check if the employee is already assigned to another act at the same time
+                            if (!candidate.getAssignedRequirements().isEmpty()){
+                                for (Iterator<Requirement> iterator3 = candidate.getAssignedRequirements().iterator(); iterator3.hasNext() && !removed;) {
+                                    Requirement assignedAct = iterator3.next();
+                                    // If the employee is already assigned to another act the same day at the same time, is discarded
+                                    if (assignedAct.getDay().equals(requirement.getDay()) && assignedAct.getStartTime().equals(requirement.getStartTime())) {
+                                        // profileCandidates.remove(candidate);
+                                        discardedEmployees.add(candidate);
+                                        removed = true;
+                                    }
+                                }
+                            }
+                            
+                            if (candidate.getAssignedRequirements().isEmpty() || (!removed)){
+                                // If the employee is available
+                                // We check if the employee adheres to the rules of the labor contract (CONVENI)
+                                if (checkLabourAgreement(candidate, requirement)){
+                                    // Assign the employee to the act
+                                    requirement.setAssignedEmployee(candidate);
+                                    candidate.assignRequirement(requirement);
+                                    //project.getRequirements().get(project.getRequirements().indexOf(requirement)).setAssignedEmployee(candidate);
+                                    assignedRequirements.add(requirement);
+                                    assigned = true;
+                                } else {
+                                    // If the employee does not meet the requirements of the act, is discarded
+                                    discardedEmployees.add(candidate);
+                                } 
+                            }
+                        }                  
                     }
-                    // Check if the employee is available -> check if the employee is already assigned to another act at the same time
-                    for (Requirement assignedAct : candidate.getAssignedRequirements()) {
-                        // If the employee is already assigned to another act the same day at the same time, is discarded
-                        if (assignedAct.getDay().equals(requirement.getDay()) && assignedAct.getStartTime().equals(requirement.getStartTime())) {
-                            profileCandidates.remove(candidate);
-                        }
-                    }
-                    // If the employee is available
-                    // We check if the employee adheres to the rules of the labor contract (CONVENI)
-                    if (checkLabourAgreement(candidate, requirement)){
-                        // Assign the employee to the act
-                        candidate.assignRequirement(requirement);
-                        projectForm.getRequirements().get(projectForm.getRequirements().indexOf(requirement)).setAssignedEmployee(candidate);
-                        projectForm.getRequirements().remove(requirement);
-                    }                    
                 }
             }
         }
+        return assignedRequirements.size() == project.getRequirements().size(); // If all the requirements have been assigned, return true
     }
 
     public static List<ProjectForm> createProjectForms(List<Requirement> requirementsCCCB, List<Requirement> requirementsParlament, List<Requirement> requirementsKingsLeague) {
@@ -331,7 +384,7 @@ public class Main {
         // Calculate the maximum hours that the employee can work in a month
         int maxHoursInMonth = 9 * laborDaysInMonth;
         // Calculate the hours that the employee has worked in the month
-        List<Requirement> candidateRequirements = candidate.getAssignedRequirements();
+        List<Requirement> candidateRequirements = new ArrayList<>(candidate.getAssignedRequirements());
         candidateRequirements.add(requirement);
         for (Requirement assignedAct : candidateRequirements) {
             if (YearMonth.from(assignedAct.getDay()).equals(YearMonth.from(requirement.getDay()))) {
@@ -370,23 +423,23 @@ public class Main {
     public static List<Employee> createEmployees() {
         List<Employee> employees = new ArrayList<>();
         // Create an employee
-        employees.add(new Employee("Marta Ferrer", "coordinator", "POOL", "FULL_TIME", new ArrayList<>(Arrays.asList("Parlament")), null));
-        employees.add(new Employee("Pau Riera", "mixer", "ALTAS", "FULL_TIME", null, null));
-        employees.add(new Employee("Ana Gómez", "technical sound", "POOL", "PART_TIME", null, null));
-        employees.add(new Employee("Jordi Puig", "camera operator", "POOL", "FULL_TIME", null, null));
-        employees.add(new Employee("Clara Benet", "camera operator", "ALTA", "PART_TIME", null, null));
-        employees.add(new Employee("Carlos Martínez", "producer", "POOL", "FULL_TIME", null, null));
-        employees.add(new Employee("Laia Costa", "support", "POOL", "PART_TIME", null, null));
-        employees.add(new Employee("Ismael Morales", "mount auxiliary", "ALTAS", "FULL_TIME", null, null));
-        employees.add(new Employee("Sílvia Soler", "coordinator", "POOL", "FULL_TIME", new ArrayList<>(Arrays.asList("CCCB")), null));
-        employees.add(new Employee("Jaume Rovira", "technical sound", "POOL", "FULL_TIME", null, null));
-        employees.add(new Employee("Lucía Ibáñez", "producer", "POOL", "FULL_TIME", null, null));
-        employees.add(new Employee("Marc Serra", "mixer", "ALTAS", "FULL_TIME", null, null));
-        employees.add(new Employee("Alba Rodríguez", "support", "POOL", "FULL_TIME", null, null));
-        employees.add(new Employee("Óscar Aguilar", "camera operator", "POOL", "FULL_TIME", null, null));
-        employees.add(new Employee("Núria Bosch", "mount auxiliary", "ALTAS", "PART_TIME", null, null));
-        employees.add(new Employee("Daniel Vidal", "coordinator", "POOL", "FULL_TIME", null, null));
-        employees.add(new Employee("Adrià Pons", "mount auxiliary", "POOL", "FULL_TIME", null, null));
+        employees.add(new Employee("Marta Ferrer", "coordinator", "POOL", "FULL_TIME", new ArrayList<>(Arrays.asList("Parlament")), new ArrayList<Requirement>()));
+        employees.add(new Employee("Pau Riera", "mixer", "ALTAS", "FULL_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
+        employees.add(new Employee("Ana Gómez", "technical sound", "POOL", "PART_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
+        employees.add(new Employee("Jordi Puig", "camera operator", "POOL", "FULL_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
+        employees.add(new Employee("Clara Benet", "camera operator", "ALTA", "PART_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
+        employees.add(new Employee("Carlos Martínez", "producer", "POOL", "FULL_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
+        employees.add(new Employee("Laia Costa", "support", "POOL", "PART_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
+        employees.add(new Employee("Ismael Morales", "mount auxiliary", "ALTAS", "FULL_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
+        employees.add(new Employee("Sílvia Soler", "coordinator", "POOL", "FULL_TIME", new ArrayList<>(Arrays.asList("CCCB")), new ArrayList<Requirement>()));
+        employees.add(new Employee("Jaume Rovira", "technical sound", "POOL", "FULL_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
+        employees.add(new Employee("Lucía Ibáñez", "producer", "POOL", "FULL_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
+        employees.add(new Employee("Marc Serra", "mixer", "ALTAS", "FULL_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
+        employees.add(new Employee("Alba Rodríguez", "support", "POOL", "FULL_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
+        employees.add(new Employee("Óscar Aguilar", "camera operator", "POOL", "FULL_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
+        employees.add(new Employee("Núria Bosch", "mount auxiliary", "ALTAS", "PART_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
+        employees.add(new Employee("Daniel Vidal", "coordinator", "POOL", "FULL_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
+        employees.add(new Employee("Adrià Pons", "mount auxiliary", "POOL", "FULL_TIME", new ArrayList<String>(), new ArrayList<Requirement>()));
 
         return employees;
     }
