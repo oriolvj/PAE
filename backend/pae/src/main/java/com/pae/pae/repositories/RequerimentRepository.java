@@ -28,9 +28,7 @@ public class RequerimentRepository {
     private void AssignarProjecteObject(ResultSet resultSet) throws SQLException {
         try {
             Date date = resultSet.getDate("day");
-            LocalDate localDate = date.toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
+            LocalDate localDate = date.toLocalDate();
 
             LocalDate formattedDate = LocalDate.of(localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth());
 
@@ -52,10 +50,10 @@ public class RequerimentRepository {
                     formattedDate,
                     formattedStartTime,
                     formattedEndTime,
-                    resultSet.getString("technicalProfile"),
-                    resultSet.getString("actName"),
-                    resultSet.getString("actRoom"),
-                    resultSet.getString("nomProjecte")
+                    resultSet.getString("technical_profile"),
+                    resultSet.getString("act_name"),
+                    resultSet.getString("act_room"),
+                    resultSet.getString("projecte_nom")
             );
         } catch (IllegalArgumentException e) {
             throw new SQLException("Error al convertir datos de Mes o Setmana desde el ResultSet", e);
