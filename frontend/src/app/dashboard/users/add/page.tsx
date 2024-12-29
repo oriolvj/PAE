@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 
 type Rols = 'ADMINISTRADOR' | 'GESTOR_PROJECTE' | 'TREBALLADOR'
-type Jornada = 'Total' | 'Parcial' | 'Trenta_hores'
+type Jornada = "TOTAL" | "PARCIAL" | "TRENTA_HORES" | "ALTRES"
 
 type User = {
   username: string
@@ -44,7 +44,7 @@ export default function AddUserPage() {
     preferencia: '',
     actiu: true,
     contractat: false,
-    jornada: 'Total'
+    jornada: 'TOTAL'
   })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,9 +164,10 @@ export default function AddUserPage() {
                   <SelectValue placeholder="Selecciona la jornada del treballador" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Total">Completa</SelectItem>
-                  <SelectItem value="Parcial">Parcial</SelectItem>
-                  <SelectItem value="Trenta_hores">30 hores</SelectItem>
+                  <SelectItem value="TOTAL">Completa</SelectItem>
+                  <SelectItem value="PARCIAL">Parcial</SelectItem>
+                  <SelectItem value="TRENTA_HORES">30 hores</SelectItem>
+                  <SelectItem value="ALTRES">Altres</SelectItem>
                 </SelectContent>
               </Select>
             </div>
