@@ -156,7 +156,7 @@ public class MainCorregit {
         return usuariController.getUsuarisByRol(profile);
     }
 
-    public static List<UsuariDTO> findEmployeesByModality(List<UsuariDTO> employees, String modality) {
+    public static List<TecnicDTO> findEmployeesByModality(List<TecnicDTO> employees, String modality) {
         UsuariController usuariController = new UsuariController();
         return usuariController.getUsuarisByModalitat(modality);
     }
