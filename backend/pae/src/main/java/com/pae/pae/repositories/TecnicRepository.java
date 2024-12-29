@@ -81,7 +81,7 @@ public class TecnicRepository {
                 getUserRealNameStmt.setString(1, newTecnicRequest.get("username"));
                 try (ResultSet resultSet = getUserRealNameStmt.executeQuery()) {
                     if (resultSet.next()) {
-                        realName = resultSet.getString("nom_tecnic");
+                        realName = resultSet.getString("nom");
                     } else {
                         //throw new SQLException("User not found");
                         System.out.println("user doesn't exist");
