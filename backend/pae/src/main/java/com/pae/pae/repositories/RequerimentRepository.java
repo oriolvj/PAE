@@ -115,4 +115,23 @@ public class RequerimentRepository {
         }
         return ja;
     }
+
+    public RequerimentDTO registerRequeriment(RequerimentDTO newRequerimentRequest) {
+        String query = "INSERT INTO requeriments (day, start_time, end_time, technical_profile, act_name, act_room, projecte_nom) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setDate(1, Date.valueOf(newRequerimentRequest.getDay()));
+            statement.setTime(2, Time.valueOf(newRequerimentRequest.getStartTime()));
+            statement.setTime(3, Time.valueOf(newRequerimentRequest.getEndTime()));
+            statement.setString(4, newRequerimentRequest.getTechnicalProfile());
+            statement.setString(5, newRequerimentRequest.getActName());
+            statement.setString(6, newRequerimentRequest.getActRoom());
+            statement.setString(7, newRequerimentRequest.getNomProjecte());
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return newRequerimentRequest;
+    }
 }

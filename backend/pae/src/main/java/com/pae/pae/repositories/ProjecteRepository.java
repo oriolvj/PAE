@@ -89,7 +89,6 @@ public class ProjecteRepository {
             stmt.setDate(4, Date.valueOf(newprojectRequest.get("dataFi")));
             stmt.setInt(5, Integer.valueOf(newprojectRequest.get("numeroEmpleats")));
             stmt.setString(6, newprojectRequest.get("ubicacio"));
-            System.out.println(stmt);
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
                 System.out.println("Projecte insertat correctament");

@@ -28,6 +28,12 @@ public class RequerimentController {
         }
 
         @CrossOrigin
+        @PostMapping
+        public RequerimentDTO registerRequeriment (@RequestBody RequerimentDTO newRequerimentRequest) {
+            return requerimentSercice.registerRequeriment(newRequerimentRequest);
+        }
+
+        @CrossOrigin
         @GetMapping(path = "/nomProjecte/{nom}")
         public ArrayList<RequerimentDTO> getRequerimentsProjecte(@PathVariable("nom") String nom) {
             return requerimentSercice.getRequerimentsProjecte(nom);

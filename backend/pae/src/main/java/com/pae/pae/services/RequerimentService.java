@@ -26,4 +26,8 @@ public class RequerimentService {
     public ArrayList<RequerimentDTO> getRequerimentsProjecte(String nom) {
         return requerimentRepository.getRequerimentsProjecte(nom);
     }
+
+    public RequerimentDTO registerRequeriment(RequerimentDTO newRequerimentRequest) {
+        return requerimentRepository.registerRequeriment(newRequerimentRequest);
+    }
 }
