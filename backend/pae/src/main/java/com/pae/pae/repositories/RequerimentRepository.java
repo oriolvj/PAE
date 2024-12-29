@@ -117,7 +117,7 @@ public class RequerimentRepository {
     }
 
     public RequerimentDTO registerRequeriment(RequerimentDTO newRequerimentRequest) {
-        String query = "INSERT INTO requeriments (day, start_time, end_time, technical_profile, act_name, act_room, projecte_nom) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO requirements (day, start_time, end_time, technical_profile, act_name, act_room, projecte_nom) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setDate(1, Date.valueOf(newRequerimentRequest.getDay()));
