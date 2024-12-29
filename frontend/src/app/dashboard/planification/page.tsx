@@ -1,6 +1,6 @@
-'use client'
+"use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Key } from 'react'
 import { format, addDays, startOfWeek, endOfWeek, isSameDay, setDay, parseISO } from 'date-fns'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -12,7 +12,16 @@ import { toast } from "@/hooks/use-toast"
 const HOURS = Array.from({ length: 24 }, (_, i) => i) // 0 to 23
 const DAYS = ['Dll', 'Dm', 'Dc', 'Dj', 'Dv']
 
-interface Event {
+interface Project {
+  nom: string
+  mes: string
+  dataInici: string
+  dataFi: string
+  numeroEmpleats: number
+  ubicacio: string
+}
+
+interface Requeriment {
   id: string;
   day: string;
   startTime: string;
@@ -20,17 +29,20 @@ interface Event {
   technicalProfile: string;
   actName: string;
   actRoom: string;
-  assignedEmployee: string;
-  project: string;
+  nomProjecte: string;
 }
-
-const PROJECTS = ['Project A', 'Project B', 'Project C']
 
 export default function PlanificationPage() {
   const [currentWeek, setCurrentWeek] = useState(new Date())
-  const [events, setEvents] = useState<Event[]>([])
-  const [selectedProject, setSelectedProject] = useState<string>('')
-  const [formData, setFormData] = useState<Event>({
+  const [Requeriments, setRequeriments] = useState<Requeriment[]>([])
+  const [selectedProject, setSelectedProject] = useState<string>("all")
+  const [projects, setProjects] = useState<Project[]>([])
+  const [llocsTreball, setLlocsTreball] = useState<{ posicio: string }[]>([])
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true)
+  const [isLoadingLlocsTreball, setIsLoadingLlocsTreball] = useState(true)
+  const [isLoadingRequeriments, setIsLoadingRequeriments] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [formData, setFormData] = useState<Requeriment>({
     id: '',
     day: '',
     startTime: '',
@@ -38,9 +50,78 @@ export default function PlanificationPage() {
     technicalProfile: '',
     actName: '',
     actRoom: '',
-    assignedEmployee: '',
-    project: '',
+    nomProjecte: '',
   })
+  const [quantity, setQuantity] = useState<number>(1)
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      setIsLoadingProjects(true)
+      try {
+        const response = await fetch('http://10.4.41.40:8080/projectes')
+        if (!response.ok) {
+          throw new Error('Failed to fetch projects')
+        }
+        const data = await response.json()
+        setProjects(data)
+      } catch (err) {
+        setError('Failed to load projects. Please try again later.')
+        toast({
+          title: "Error",
+          description: "Failed to load projects. Please try again later.",
+          variant: "destructive",
+        })
+      } finally {
+        setIsLoadingProjects(false)
+      }
+    }
+
+    const fetchLlocsTreball = async () => {
+      setIsLoadingLlocsTreball(true)
+      try {
+        const response = await fetch('http://10.4.41.40:8080/lloctreball')
+        if (!response.ok) {
+          throw new Error('Failed to fetch llocsTreball')
+        }
+        const data = await response.json()
+        setLlocsTreball(data)
+      } catch (err) {
+        setError('Failed to load llocsTreball. Please try again later.')
+        toast({
+          title: "Error",
+          description: "Failed to load llocsTreball. Please try again later.",
+          variant: "destructive",
+        })
+      } finally {
+        setIsLoadingLlocsTreball(false)
+      }
+    }
+
+    const fetchRequeriments = async () => {
+      setIsLoadingRequeriments(true)
+      try {
+        const response = await fetch('http://10.4.41.40:8080/requeriments')
+        if (!response.ok) {
+          throw new Error('Failed to fetch requeriments')
+        }
+        const data = await response.json()
+        setRequeriments(data)
+      } catch (err) {
+        setError('Failed to load requeriments. Please try again later.')
+        toast({
+          title: "Error",
+          description: "Failed to load requeriments. Please try again later.",
+          variant: "destructive",
+        })
+      } finally {
+        setIsLoadingRequeriments(false)
+      }
+    }
+
+    fetchProjects()
+    fetchLlocsTreball()
+    fetchRequeriments()
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -48,69 +129,130 @@ export default function PlanificationPage() {
   }
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }))
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuantity(Number(e.target.value));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      const requests = Array.from({ length: quantity }, () =>
+        fetch('http://10.4.41.40:8080/requeriments', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        })
+      );
+      const responses = await Promise.all(requests);
+      const allSuccessful = responses.every(response => response.ok);
+      if (!allSuccessful) {
+        throw new Error('Failed to save one or more requirements');
+      }
+      const newRequeriments = Array.from({ length: quantity }, (_, index) => ({ ...formData, id: `${formData.id}-${index}` }));
+      setRequeriments(prev => [...prev, ...newRequeriments]);
+      setFormData({
+        id: '',
+        day: '',
+        startTime: '',
+        endTime: '',
+        technicalProfile: '',
+        actName: '',
+        actRoom: '',
+        nomProjecte: '',
+      });
+      setQuantity(1);
+      toast({
+        title: "Requirements added",
+        description: `${quantity} requirements have been added to the timetable and saved.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save the requirements. Please try again.",
+        variant: "destructive",
+      });
+    }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const newEvent = { ...formData, id: Date.now().toString() }
-    setEvents(prev => [...prev, newEvent])
-    setFormData({
-      id: '',
-      day: '',
-      startTime: '',
-      endTime: '',
-      technicalProfile: '',
-      actName: '',
-      actRoom: '',
-      assignedEmployee: '',
-      project: '',
-    })
-    toast({
-      title: "Event added",
-      description: "The event has been added to the timetable.",
-    })
-  }
+  const compactRequeriments = (requeriments: Requeriment[]) => {
+    const grouped = requeriments.reduce((acc, req) => {
+      const key = `${req.day}-${req.startTime}-${req.endTime}-${req.technicalProfile}-${req.nomProjecte}`;
+      if (!acc[key]) {
+        acc[key] = { ...req, count: 1 };
+      } else {
+        acc[key].count += 1;
+      }
+      return acc;
+    }, {} as Record<string, Requeriment & { count: number }>);
+    return Object.values(grouped);
+  };
 
   const weekDays = Array.from({ length: 5 }, (_, i) => addDays(setDay(startOfWeek(currentWeek), 1), i))
 
-  const sendEventsToEndpoint = async () => {
+  const sendRequerimentsToEndpoint = async () => {
     try {
-      const response = await fetch('/api/events', {
+      const response = await fetch('/api/Requeriments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(events),
+        body: JSON.stringify(Requeriments),
       })
       if (response.ok) {
         toast({
-          title: "Events sent",
-          description: "All events have been sent to the endpoint successfully.",
+          title: "Requeriments sent",
+          description: "All Requeriments have been sent to the endpoint successfully.",
         })
       } else {
-        throw new Error('Failed to send events')
+        throw new Error('Failed to send Requeriments')
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to send events to the endpoint.",
+        description: "Failed to send Requeriments to the endpoint.",
         variant: "destructive",
       })
     }
   }
 
-  const removeEvent = (eventId: string) => {
-    setEvents(prev => prev.filter(event => event.id !== eventId))
-    toast({
-      title: "Event removed",
-      description: "The event has been removed from the timetable.",
-    })
+  const removeRequeriment = async (RequerimentId: string) => {
+    try {
+      const response = await fetch(`/api/Requeriments/${RequerimentId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete Requeriment');
+      }
+      setRequeriments(prev => prev.filter(Requeriment => Requeriment.id !== RequerimentId));
+      toast({
+        title: "Requeriment removed",
+        description: "The Requeriment has been removed from the timetable and deleted.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete the Requeriment. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const filteredRequeriments = selectedProject === "all"
+  ? Requeriments
+  : Requeriments.filter(req => req.nomProjecte === selectedProject);
+
+  if (isLoadingProjects || isLoadingLlocsTreball || isLoadingRequeriments) {
+    return <div className="p-8">Loading data...</div>
   }
 
-  const filteredEvents = selectedProject
-    ? events.filter(event => event.project === selectedProject)
-    : events
+  if (error) {
+    return <div className="p-8">Error: {error}</div>
+  }
 
   return (
     <div className="p-8">
@@ -122,11 +264,12 @@ export default function PlanificationPage() {
           value={selectedProject}
         >
           <SelectTrigger id="projectFilter">
-            <SelectValue placeholder="Project A" />
+            <SelectValue placeholder="Select a project" />
           </SelectTrigger>
           <SelectContent>
-            {PROJECTS.map(project => (
-              <SelectItem key={project} value={project}>{project}</SelectItem>
+            <SelectItem value="all">All Projects</SelectItem>
+            {projects.map(project => (
+              <SelectItem key={project.nom} value={project.nom}>{project.nom}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -159,23 +302,22 @@ export default function PlanificationPage() {
                       <td className="border p-2">{hour.toString().padStart(2, '0')}:00</td>
                       {weekDays.map(day => (
                         <td key={`${day.toISOString()}-${hour}`} className="border p-2">
-                          {filteredEvents
-                            .filter(event => 
-                              isSameDay(parseISO(event.day), day) && 
-                              parseInt(event.startTime.split(':')[0]) <= hour &&
-                              parseInt(event.endTime.split(':')[0]) > hour
+                          {compactRequeriments(filteredRequeriments)
+                            .filter((Requeriment) =>
+                              isSameDay(parseISO(Requeriment.day), day) &&
+                              parseInt(Requeriment.startTime.split(':')[0]) <= hour &&
+                              parseInt(Requeriment.endTime.split(':')[0]) > hour
                             )
-                            .map(event => (
-                              <div 
-                                key={event.id} 
+                            .map((Requeriment) => (
+                              <div
+                                key={Requeriment.id}
                                 className="text-xs p-1 mb-1 rounded bg-blue-200 cursor-pointer hover:bg-blue-300"
-                                title={`${event.actName} - ${event.assignedEmployee}`}
-                                onClick={() => removeEvent(event.id)}
+                                title={`Act: ${Requeriment.actName}, Room: ${Requeriment.actRoom}, Profile: ${Requeriment.technicalProfile}, Project: ${Requeriment.nomProjecte}, Count: ${Requeriment.count}`}
+                                onClick={() => removeRequeriment(Requeriment.id)}
                               >
-                                {event.actName}
+                                {`${Requeriment.actName} (${Requeriment.count})`}
                               </div>
-                            ))
-                          }
+                            ))}
                         </td>
                       ))}
                     </tr>
@@ -187,7 +329,7 @@ export default function PlanificationPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Event Details</CardTitle>
+            <CardTitle>Requeriment Details</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -227,19 +369,21 @@ export default function PlanificationPage() {
                 </div>
               </div>
               <div>
-                <Label htmlFor="technicalProfile">Technical Profile</Label>
+                <Label htmlFor="technicalProfile">Lloc de Treball</Label>
                 <Select
                   onValueChange={(value) => handleSelectChange('technicalProfile', value)}
                   value={formData.technicalProfile}
                   required
                 >
                   <SelectTrigger id="technicalProfile">
-                    <SelectValue placeholder="Select a profile" />
+                    <SelectValue placeholder="Select a technicalProfile" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="profile1">Profile 1</SelectItem>
-                    <SelectItem value="profile2">Profile 2</SelectItem>
-                    <SelectItem value="profile3">Profile 3</SelectItem>
+                    {llocsTreball.map((lloc, index) => (
+                      <SelectItem key={lloc.posicio || index} value={lloc.posicio}>
+                        {lloc.posicio}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -264,50 +408,46 @@ export default function PlanificationPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="assignedEmployee">Assigned Employee</Label>
-                <Select
-                  onValueChange={(value) => handleSelectChange('assignedEmployee', value)}
-                  value={formData.assignedEmployee}
+                <Label htmlFor="quantity">Quantity</Label>
+                <Input
+                  id="quantity"
+                  name="quantity"
+                  type="number"
+                  min="1"
+                  value={quantity}
+                  onChange={handleQuantityChange}
                   required
-                >
-                  <SelectTrigger id="assignedEmployee">
-                    <SelectValue placeholder="Select an employee" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="employee1">Employee 1</SelectItem>
-                    <SelectItem value="employee2">Employee 2</SelectItem>
-                    <SelectItem value="employee3">Employee 3</SelectItem>
-                  </SelectContent>
-                </Select>
+                />
               </div>
               <div>
                 <Label htmlFor="project">Project</Label>
                 <Select
-                  onValueChange={(value) => handleSelectChange('project', value)}
-                  value={formData.project}
+                  onValueChange={(value) => handleSelectChange('nomProjecte', value)} // Correctly map to 'nomProjecte'
+                  value={formData.nomProjecte} // Ensure it binds to 'nomProjecte'
                   required
                 >
                   <SelectTrigger id="project">
                     <SelectValue placeholder="Select a project" />
                   </SelectTrigger>
                   <SelectContent>
-                    {PROJECTS.map(project => (
-                      <SelectItem key={project} value={project}>{project}</SelectItem>
+                    {projects.map(project => (
+                      <SelectItem key={project.nom} value={project.nom}>
+                        {project.nom}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <Button type="submit" className="w-full">Add Event</Button>
+              <Button type="submit" className="w-full">Add Requirements</Button>
             </form>
           </CardContent>
         </Card>
       </div>
       <div className="mt-8">
-        <Button onClick={sendEventsToEndpoint} className="w-full">
+        <Button onClick={sendRequerimentsToEndpoint} className="w-full">
           Guardar Planificació
         </Button>
       </div>
     </div>
   )
 }
-

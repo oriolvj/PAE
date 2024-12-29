@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-type Employee = {
+type Tecnic = {
   id: number
   nom: string
   hores_contracte: number
@@ -40,42 +40,42 @@ type Position = {
   posicio: string
 }
 
-export default function EmployeesPage() {
+export default function TecnicsPage() {
   const router = useRouter()
   const { toast } = useToast()
-  const [employees, setEmployees] = useState<Employee[]>([])
+  const [Tecnics, setTecnics] = useState<Tecnic[]>([])
   const [positions, setPositions] = useState<Position[]>([])
   const [usernames, setUsernames] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [newEmployee, setNewEmployee] = useState<Omit<Employee, 'id'>>({
+  const [newTecnic, setNewTecnic] = useState<Omit<Tecnic, 'id'>>({
     nom: '',
     hores_contracte: 0,
     sou: 0,
     posicio: '',
     username: ''
   })
-  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null)
+  const [editingTecnic, setEditingTecnic] = useState<Tecnic | null>(null)
 
   useEffect(() => {
-    fetchEmployees()
+    fetchTecnics()
     fetchPositions()
     fetchUsernames()
   }, [])
 
-  const fetchEmployees = async () => {
+  const fetchTecnics = async () => {
     setIsLoading(true)
     try {
       const response = await fetch('http://10.4.41.40:8080/tecnics')
       if (!response.ok) {
-        throw new Error('Hi ha hagut un error en recuperar els empleats.')
+        throw new Error('Hi ha hagut un error en recuperar els Tecnics.')
       }
       const data = await response.json()
-      setEmployees(data)
+      setTecnics(data)
     } catch (err) {
-      setError('Hi ha hagut un error en recuperar els empleats. Torna-ho a provar.')
+      setError('Hi ha hagut un error en recuperar els Tecnics. Torna-ho a provar.')
     } finally {
       setIsLoading(false)
     }
@@ -101,7 +101,7 @@ export default function EmployeesPage() {
 
   const fetchUsernames = async () => {
     try {
-      const response = await fetch('http://10.4.41.40:8080/usernames')
+      const response = await fetch('http://10.4.41.40:8080/usuaris/usernames')
       if (!response.ok) {
         throw new Error('Hi ha hagut un error en recuperar els noms d\'usuari.')
       }
@@ -117,26 +117,26 @@ export default function EmployeesPage() {
     }
   }
 
-  const handleAddEmployee = async () => {
+  const handleAddTecnic = async () => {
     try {
-      const response = await fetch('http://10.4.41.40:8080/employees', {
+      const response = await fetch('http://10.4.41.40:8080/tecnics', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newEmployee),
+        body: JSON.stringify(newTecnic),
       })
 
       if (!response.ok) {
-        throw new Error('Failed to add employee')
+        throw new Error('Failed to add Tecnic')
       }
 
       toast({
         title: "Èxit",
-        description: "Empleat afegit correctament",
+        description: "Tecnic afegit correctament",
       })
 
-      setNewEmployee({
+      setNewTecnic({
         nom: '',
         hores_contracte: 0,
         sou: 0,
@@ -144,80 +144,80 @@ export default function EmployeesPage() {
         username: ''
       })
       setIsAddDialogOpen(false)
-      fetchEmployees()
+      fetchTecnics()
     } catch (error) {
-      console.error('Error adding employee:', error)
+      console.error('Error adding Tecnic:', error)
       toast({
         title: "Error",
-        description: "No s'ha pogut afegir l'empleat. Torna-ho a provar.",
+        description: "No s'ha pogut afegir l'Tecnic. Torna-ho a provar.",
         variant: "destructive",
       })
     }
   }
 
-  const handleEditEmployee = async () => {
-    if (!editingEmployee) return
+  const handleEditTecnic = async () => {
+    if (!editingTecnic) return
 
     try {
-      const response = await fetch(`http://10.4.41.40:8080/employees/${editingEmployee.id}`, {
+      const response = await fetch(`http://10.4.41.40:8080/tecnics/${editingTecnic.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(editingEmployee),
+        body: JSON.stringify(editingTecnic),
       })
 
       if (!response.ok) {
-        throw new Error('Failed to update employee')
+        throw new Error('Failed to update Tecnic')
       }
 
       toast({
         title: "Èxit",
-        description: "Empleat actualitzat correctament",
+        description: "Tecnic actualitzat correctament",
       })
 
-      setEditingEmployee(null)
-      fetchEmployees()
+      setEditingTecnic(null)
+      fetchTecnics()
     } catch (error) {
-      console.error('Error updating employee:', error)
+      console.error('Error updating Tecnic:', error)
       toast({
         title: "Error",
-        description: "No s'ha pogut actualitzar l'empleat. Torna-ho a provar.",
+        description: "No s'ha pogut actualitzar l'Tecnic. Torna-ho a provar.",
         variant: "destructive",
       })
     }
   }
 
-  const handleDeleteEmployee = async (id: number) => {
+  const handleDeleteTecnic = async (id: number) => {
     try {
-      const response = await fetch(`http://10.4.41.40:8080/employees/${id}`, {
+      const response = await fetch(`http://10.4.41.40:8080/tecnics/${id}`, {
         method: 'DELETE',
       })
 
       if (!response.ok) {
-        throw new Error('Failed to delete employee')
+        throw new Error('Fallada al borrar el tècnic')
       }
 
       toast({
         title: "Èxit",
-        description: "Empleat eliminat correctament",
+        description: "Tècnic eliminat correctament",
       })
 
-      fetchEmployees()
+      fetchTecnics()
     } catch (error) {
-      console.error('Error deleting employee:', error)
+      console.error('Error esborrant el tècnic:', error)
       toast({
         title: "Error",
-        description: "No s'ha pogut eliminar l'empleat. Torna-ho a provar.",
+        description: "No s'ha pogut eliminar el tècnic. Torna-ho a provar.",
         variant: "destructive",
       })
     }
   }
 
-  const filteredEmployees = employees.filter(employee =>
-    employee.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    employee.posicio.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    employee.username.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTecnics = Tecnics.filter(Tecnic =>
+    Tecnic.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    Tecnic.posicio.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    Tecnic.username.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   if (error) {
@@ -234,18 +234,18 @@ export default function EmployeesPage() {
     <div className="container mx-auto py-10">
       <Card className="mb-8">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-2xl font-bold">Gestió d'Empleats</CardTitle>
+          <CardTitle className="text-2xl font-bold">Gestió d'Tecnics</CardTitle>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button>
-                <PlusCircle className="mr-2 h-4 w-4" /> Afegir Empleat
+                <PlusCircle className="mr-2 h-4 w-4" /> Afegir Tecnic
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Afegir Nou Empleat</DialogTitle>
+                <DialogTitle>Afegir Nou Tecnic</DialogTitle>
                 <DialogDescription>
-                  Introdueix les dades del nou empleat aquí.
+                  Introdueix les dades del nou Tecnic aquí.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -255,8 +255,8 @@ export default function EmployeesPage() {
                   </Label>
                   <Input
                     id="nom"
-                    value={newEmployee.nom}
-                    onChange={(e) => setNewEmployee({...newEmployee, nom: e.target.value})}
+                    value={newTecnic.nom}
+                    onChange={(e) => setNewTecnic({...newTecnic, nom: e.target.value})}
                     className="col-span-3"
                   />
                 </div>
@@ -267,8 +267,8 @@ export default function EmployeesPage() {
                   <Input
                     id="hores_contracte"
                     type="number"
-                    value={newEmployee.hores_contracte}
-                    onChange={(e) => setNewEmployee({...newEmployee, hores_contracte: parseInt(e.target.value)})}
+                    value={newTecnic.hores_contracte}
+                    onChange={(e) => setNewTecnic({...newTecnic, hores_contracte: parseInt(e.target.value)})}
                     className="col-span-3"
                   />
                 </div>
@@ -279,8 +279,8 @@ export default function EmployeesPage() {
                   <Input
                     id="sou"
                     type="number"
-                    value={newEmployee.sou}
-                    onChange={(e) => setNewEmployee({...newEmployee, sou: parseInt(e.target.value)})}
+                    value={newTecnic.sou}
+                    onChange={(e) => setNewTecnic({...newTecnic, sou: parseInt(e.target.value)})}
                     className="col-span-3"
                   />
                 </div>
@@ -289,8 +289,8 @@ export default function EmployeesPage() {
                     Posició
                   </Label>
                   <Select
-                    value={newEmployee.posicio}
-                    onValueChange={(value) => setNewEmployee({...newEmployee, posicio: value})}
+                    value={newTecnic.posicio}
+                    onValueChange={(value) => setNewTecnic({...newTecnic, posicio: value})}
                   >
                     <SelectTrigger className="col-span-3">
                       <SelectValue placeholder="Selecciona una posició" />
@@ -309,8 +309,8 @@ export default function EmployeesPage() {
                     Nom d'usuari
                   </Label>
                   <Select
-                    value={newEmployee.username}
-                    onValueChange={(value) => setNewEmployee({...newEmployee, username: value})}
+                    value={newTecnic.username}
+                    onValueChange={(value) => setNewTecnic({...newTecnic, username: value})}
                   >
                     <SelectTrigger className="col-span-3">
                       <SelectValue placeholder="Selecciona un nom d'usuari" />
@@ -326,7 +326,7 @@ export default function EmployeesPage() {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" onClick={handleAddEmployee}>Afegir</Button>
+                <Button type="submit" onClick={handleAddTecnic}>Afegir</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -334,7 +334,7 @@ export default function EmployeesPage() {
         <CardContent>
           <div className="mb-4">
             <Input
-              placeholder="Cercar empleats..."
+              placeholder="Cercar Tecnics..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-sm"
@@ -356,31 +356,31 @@ export default function EmployeesPage() {
                 <TableRow>
                   <TableCell colSpan={6} className="text-center">Carregant...</TableCell>
                 </TableRow>
-              ) : filteredEmployees.length === 0 ? (
+              ) : filteredTecnics.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center">No s'han trobat empleats</TableCell>
+                  <TableCell colSpan={6} className="text-center">No s'han trobat Tecnics</TableCell>
                 </TableRow>
               ) : (
-                filteredEmployees.map((employee) => (
-                  <TableRow key={employee.id}>
-                    <TableCell className="font-medium">{employee.nom}</TableCell>
-                    <TableCell>{employee.hores_contracte}</TableCell>
-                    <TableCell>{employee.sou}</TableCell>
-                    <TableCell>{employee.posicio}</TableCell>
-                    <TableCell>{employee.username}</TableCell>
+                filteredTecnics.map((Tecnic) => (
+                  <TableRow key={Tecnic.id}>
+                    <TableCell className="font-medium">{Tecnic.nom}</TableCell>
+                    <TableCell>{Tecnic.hores_contracte}</TableCell>
+                    <TableCell>{Tecnic.sou}</TableCell>
+                    <TableCell>{Tecnic.posicio}</TableCell>
+                    <TableCell>{Tecnic.username}</TableCell>
                     <TableCell className="text-right">
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" className="mr-2" onClick={() => setEditingEmployee(employee)}>
+                          <Button variant="outline" size="sm" className="mr-2" onClick={() => setEditingTecnic(Tecnic)}>
                             <Pencil className="mr-2 h-4 w-4" />
                             Editar
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[425px]">
                           <DialogHeader>
-                            <DialogTitle>Editar Empleat</DialogTitle>
+                            <DialogTitle>Editar Tecnic</DialogTitle>
                             <DialogDescription>
-                              Modifica les dades de l'empleat aquí.
+                              Modifica les dades de l'Tecnic aquí.
                             </DialogDescription>
                           </DialogHeader>
                           <div className="grid gap-4 py-4">
@@ -390,8 +390,8 @@ export default function EmployeesPage() {
                               </Label>
                               <Input
                                 id="edit-nom"
-                                value={editingEmployee?.nom || ''}
-                                onChange={(e) => setEditingEmployee(editingEmployee ? { ...editingEmployee, nom: e.target.value } : null)}
+                                value={editingTecnic?.nom || ''}
+                                onChange={(e) => setEditingTecnic(editingTecnic ? { ...editingTecnic, nom: e.target.value } : null)}
                                 className="col-span-3"
                               />
                             </div>
@@ -402,8 +402,8 @@ export default function EmployeesPage() {
                               <Input
                                 id="edit-hores_contracte"
                                 type="number"
-                                value={editingEmployee?.hores_contracte || 0}
-                                onChange={(e) => setEditingEmployee(editingEmployee ? { ...editingEmployee, hores_contracte: parseInt(e.target.value) } : null)}
+                                value={editingTecnic?.hores_contracte || 0}
+                                onChange={(e) => setEditingTecnic(editingTecnic ? { ...editingTecnic, hores_contracte: parseInt(e.target.value) } : null)}
                                 className="col-span-3"
                               />
                             </div>
@@ -414,8 +414,8 @@ export default function EmployeesPage() {
                               <Input
                                 id="edit-sou"
                                 type="number"
-                                value={editingEmployee?.sou || 0}
-                                onChange={(e) => setEditingEmployee(editingEmployee ? { ...editingEmployee, sou: parseInt(e.target.value) } : null)}
+                                value={editingTecnic?.sou || 0}
+                                onChange={(e) => setEditingTecnic(editingTecnic ? { ...editingTecnic, sou: parseInt(e.target.value) } : null)}
                                 className="col-span-3"
                               />
                             </div>
@@ -424,8 +424,8 @@ export default function EmployeesPage() {
                                 Posició
                               </Label>
                               <Select
-                                value={editingEmployee?.posicio || ''}
-                                onValueChange={(value) => setEditingEmployee(editingEmployee ? { ...editingEmployee, posicio: value } : null)}
+                                value={editingTecnic?.posicio || ''}
+                                onValueChange={(value) => setEditingTecnic(editingTecnic ? { ...editingTecnic, posicio: value } : null)}
                               >
                                 <SelectTrigger className="col-span-3">
                                   <SelectValue placeholder="Selecciona una posició" />
@@ -444,8 +444,8 @@ export default function EmployeesPage() {
                                 Nom d'usuari
                               </Label>
                               <Select
-                                value={editingEmployee?.username || ''}
-                                onValueChange={(value) => setEditingEmployee(editingEmployee ? { ...editingEmployee, username: value } : null)}
+                                value={editingTecnic?.username || ''}
+                                onValueChange={(value) => setEditingTecnic(editingTecnic ? { ...editingTecnic, username: value } : null)}
                               >
                                 <SelectTrigger className="col-span-3">
                                   <SelectValue placeholder="Selecciona un nom d'usuari" />
@@ -461,11 +461,11 @@ export default function EmployeesPage() {
                             </div>
                           </div>
                           <DialogFooter>
-                            <Button type="submit" onClick={handleEditEmployee}>Desar Canvis</Button>
+                            <Button type="submit" onClick={handleEditTecnic}>Desar Canvis</Button>
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
-                      <Button variant="outline" size="sm" className="text-red-600" onClick={() => handleDeleteEmployee(employee.id)}>
+                      <Button variant="outline" size="sm" className="text-red-600" onClick={() => handleDeleteTecnic(Tecnic.id)}>
                         <Trash2 className="mr-2 h-4 w-4" />
                         Eliminar
                       </Button>
