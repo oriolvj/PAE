@@ -70,7 +70,7 @@ public class RequerimentRepository {
 
     public ArrayList<RequerimentDTO> getRequeriments() {
         ArrayList<RequerimentDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM requeriments";
+        String query = "SELECT * FROM requirements";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
@@ -85,7 +85,7 @@ public class RequerimentRepository {
     }
 
     public RequerimentDTO getRequeriment(Integer id) {
-        String query = "SELECT * FROM requeriments WHERE id = ?";
+        String query = "SELECT * FROM requirements WHERE id = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
@@ -102,7 +102,7 @@ public class RequerimentRepository {
 
     public ArrayList<RequerimentDTO> getRequerimentsProjecte(String nom) {
         ArrayList<RequerimentDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM requeriments WHERE projecte_nom = ?";
+        String query = "SELECT * FROM requirements WHERE projecte_nom = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
