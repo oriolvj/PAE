@@ -29,7 +29,8 @@ public class TecnicRepository {
             String jornadaString = resultSet.getString("jornada");
             Jornada jornada = (jornadaString != null) ? Jornada.valueOf(jornadaString) : null;
             tDTO = new TecnicDTO(
-                    resultSet.getInt("id"),                  // ID del tècnic// Nom del tècnic
+                    resultSet.getInt("id"),
+                    resultSet.getString("username"),// ID del tècnic// Nom del tècnic
                     resultSet.getInt("sou"),                // Sou
                     resultSet.getString("posicio"),
                     resultSet.getString("preferencia"),
