@@ -1,7 +1,5 @@
 package com.pae.pae.models;
 
-import com.pae.pae.Algorithm.Classes.Requirement;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -9,9 +7,9 @@ public class RequerimentsProjecteDTO {
     private String projectName;
     private LocalDate startDate;
     private LocalDate endDate;
-    private List<Requirement> requirements;
+    private List<RequerimentDTO> requirements;
 
-    public RequerimentsProjecteDTO(String projectName, LocalDate startDate, LocalDate endDate, List<Requirement> requirements) {
+    public RequerimentsProjecteDTO(String projectName, LocalDate startDate, LocalDate endDate, List<RequerimentDTO> requirements) {
         this.projectName = projectName;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -43,11 +41,11 @@ public class RequerimentsProjecteDTO {
         this.endDate = endDate;
     }
 
-    public List<Requirement> getRequirements() {
+    public List<RequerimentDTO> getRequirements() {
         return requirements;
     }
 
-    public void setRequirements(List<Requirement> requirements) {
+    public void setRequirements(List<RequerimentDTO> requirements) {
         this.requirements = requirements;
     }
 
