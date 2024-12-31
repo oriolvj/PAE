@@ -145,27 +145,29 @@ public class TecnicRepository {
 
     public boolean TecnicModify(String username, Map<String, String> modifyRequest) {
         String checkPositionQuery = "SELECT COUNT(*) FROM posicions WHERE posicio = ?";
-        String query = "UPDATE tecnics SET sou = ?, posicio = ?, nom_tecnic = ? WHERE username = ?";
+        String query = "UPDATE tecnics SET sou = ?, posicio = ?, preferencia = ?, actiu = ?, contractat = ?, jornada = CAST(? AS jornada) WHERE username = ?";
         try (Connection connection = getConnection()) {
             // Check if the position exists
             try (PreparedStatement checkStmt = connection.prepareStatement(checkPositionQuery)) {
                 checkStmt.setString(1, modifyRequest.get("posicio"));
                 try (ResultSet resultSet = checkStmt.executeQuery()) {
                     if (resultSet.next() && resultSet.getInt(1) == 0) {
-                        // Position does not exist, return error
-                        //throw new SQLException("Position does not exist");
+                        System.out.println("Position does not exist");
                         return false;
                     }
                 }
             }
 
-            try (PreparedStatement insertTecnicStmt = connection.prepareStatement(query)) {
-                insertTecnicStmt.setInt(1, Integer.parseInt(modifyRequest.get("hores_contracte")));
-                insertTecnicStmt.setInt(2, Integer.parseInt(modifyRequest.get("sou")));
-                insertTecnicStmt.setString(3, modifyRequest.get("posicio"));
-                insertTecnicStmt.setString(4, modifyRequest.get("nom"));
-                insertTecnicStmt.setString(5, username);
-                insertTecnicStmt.executeUpdate();
+            // Update the tecnic
+            try (PreparedStatement updateTecnicStmt = connection.prepareStatement(query)) {
+                updateTecnicStmt.setInt(1, Integer.parseInt(modifyRequest.get("sou")));
+                updateTecnicStmt.setString(2, modifyRequest.get("posicio"));
+                updateTecnicStmt.setString(4, modifyRequest.get("preferencia"));
+                updateTecnicStmt.setBoolean(5, Boolean.parseBoolean(modifyRequest.get("actiu")));
+                updateTecnicStmt.setBoolean(6, Boolean.parseBoolean(modifyRequest.get("contractat")));
+                updateTecnicStmt.setString(7, modifyRequest.get("jornada"));
+                updateTecnicStmt.setString(8, username);
+                updateTecnicStmt.executeUpdate();
             }
             return true;
         } catch (SQLException e) {
