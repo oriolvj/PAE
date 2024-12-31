@@ -7,8 +7,7 @@ import lombok.ToString;
 
 import java.util.Date;
 
-@Getter
-@Setter
+
 @NoArgsConstructor
 @ToString
 public class ProjecteDTO {
@@ -28,5 +27,51 @@ public class ProjecteDTO {
         this.ubicacio = ubicacio;
     }
 
+    public String getNom() {
+        return nom;
+    }
 
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public Mes getMes() {
+        return mes;
+    }
+
+    public void setMes(Mes mes) {
+        this.mes = mes;
+    }
+
+    public Date getDataInici() {
+        return dataInici;
+    }
+
+    public void setDataInici(Date dataInici) {
+        this.dataInici = dataInici;
+    }
+
+    public Date getDataFi() {
+        return dataFi;
+    }
+
+    public void setDataFi(Date dataFi) {
+        this.dataFi = dataFi;
+    }
+
+    public int getNumeroEmpleats() {
+        return numeroEmpleats;
+    }
+
+    public void setNumeroEmpleats(int numeroEmpleats) {
+        this.numeroEmpleats = numeroEmpleats;
+    }
+
+    public String getUbicacio() {
+        return ubicacio;
+    }
+
+    public void setUbicacio(String ubicacio) {
+        this.ubicacio = ubicacio;
+    }
 }

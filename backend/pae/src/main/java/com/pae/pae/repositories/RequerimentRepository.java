@@ -102,12 +102,14 @@ public class RequerimentRepository {
         ArrayList<RequerimentDTO> ja = new ArrayList<>();
         String query = "SELECT * FROM requirements WHERE projecte_nom = ?";
         try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
-            while (resultSet.next()) {
-                AssignarProjecteObject(resultSet);
-                ja.add(rDTO);
-            }
+             PreparedStatement statement = connection.prepareStatement(query)){
+             statement.setString(1, nom);
+             try (ResultSet resultSet = statement.executeQuery()) {
+                 while (resultSet.next()) {
+                     AssignarProjecteObject(resultSet);
+                     ja.add(rDTO);
+                 }
+             }
         } catch (SQLException e) {
             e.printStackTrace();
         }

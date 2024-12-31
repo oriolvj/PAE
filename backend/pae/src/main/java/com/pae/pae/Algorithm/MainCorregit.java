@@ -1,10 +1,6 @@
 package com.pae.pae.Algorithm;
 
-import com.pae.pae.Algorithm.Classes.Requirement;
-import com.pae.pae.controllers.FeinaAssignadaController;
-import com.pae.pae.controllers.ProjecteController;
-import com.pae.pae.controllers.RequerimentController;
-import com.pae.pae.controllers.UsuariController;
+import com.pae.pae.controllers.*;
 import com.pae.pae.models.*;
 
 
@@ -19,13 +15,13 @@ public class MainCorregit {
 
         // Create some objects as an example
         List<TecnicDTO> allEmployees = getTecnics();
-        List<ProjecteDTO> projects = getProjects(); // --> PENDENT
+        List<ProjecteDTO> projects = getProjectes(); // --> PENDENT
         List<RequerimentDTO> requirementsCCCB = createRequirements("CCCB");
         List<RequerimentDTO> requirementsParlament = createRequirements("Parlament");
         List<RequerimentDTO> requirementsKingsLeague = createRequirements("Kings League");
 
         // Automatic assignment of employees to requirements
-        boolean allProjectsAssigned = automaticAssignment(projects, employees);
+        boolean allProjectsAssigned = automaticAssignment(projects, allEmployees);
         
         if (allProjectsAssigned) {
             System.out.println("All projects assigned: " + projects);
@@ -35,7 +31,7 @@ public class MainCorregit {
         }
     }
 
-    public static boolean automaticAssignment(List<ProjecteDTO> projects, List<TecnicDTO> employees) {
+    public static boolean automaticAssignment(List<ProjecteDTO> projects, List<TecnicDTO> employees) throws SQLException {
         boolean allProjectsAssigned = false;
 
         List<TecnicDTO> candidates = new ArrayList<>();
@@ -79,13 +75,13 @@ public class MainCorregit {
 
         List<TecnicDTO> profileCandidates = new ArrayList<>();
 
-        for (RequerimentDTO requirement : requirements) {
+        for (RequerimentDTO requeriment : requirements) {
             // First, we check if the requirement is not assigned
             if(!assignedRequirements.contains(requeriment)){
                 // First, we look for employees with the required technical profile
-                profileCandidates = findEmployeesByRol(candidates, requirement.getTechnicalProfile());
+                profileCandidates = findEmployeesByRol(candidates, requeriment.getTechnicalProfile());
                 if (!profileCandidates.isEmpty()) {
-                    duration = Duration.between(requirement.getStartTime(), requirement.getEndTime());
+                    duration = Duration.between(requeriment.getStartTime(), requeriment.getEndTime());
                     // We check if the employee meets the requirements of the act
                     boolean removed = false;
                     boolean assigned = false;
@@ -105,10 +101,10 @@ public class MainCorregit {
                                     FeinaAssignadaDTO feina = iterator3.next();
 
                                     // Check if the day matches
-                                    if (feina.getDay().equals(requirement.getDay())) {
+                                    if (feina.getDay().equals(requeriment.getDay())) {
                                         // Check if the time ranges overlap
-                                        boolean overlap = feina.getStartTime().isBefore(requirement.getEndTime()) &&
-                                                        feina.getEndTime().isAfter(requirement.getStartTime());
+                                        boolean overlap = feina.getStartTime().isBefore(requeriment.getEndTime()) &&
+                                                        feina.getEndTime().isAfter(requeriment.getStartTime());
 
                                         if (overlap) {
                                             discardedEmployees.add(candidate);
@@ -118,26 +114,27 @@ public class MainCorregit {
                                 }
                             }
                             
-                            if (candidate.getAssignedRequirements().isEmpty() || (!removed)){
+                            //if (candidate.getAssignedRequirements().isEmpty() || (!removed)){
+                            if (feines.isEmpty() || (!removed)){
                                 // If the employee is available
                                 // We check if the employee adheres to the rules of the labor contract (CONVENI)
-                                if (checkLabourAgreement(candidate, requirement, feines)){
+                                if (checkLabourAgreement(candidate, requeriment, feines)){
                                     // Assign the employee to the act
                                     addFeinaAssignada(requeriment.getNomProjecte(), candidate.getUsername(), requeriment.getId());
                                     //project.getRequirements().get(project.getRequirements().indexOf(requirement)).setAssignedEmployee(candidate);
-                                    assignedRequirements.add(requirement);
+                                    assignedRequirements.add(requeriment);
                                     assigned = true;
                                 } else {
                                     // If the employee does not meet the requirements of the act, is discarded
                                     discardedEmployees.add(candidate);
-                                } 
+                                }
                             }
                         }                  
                     }
                 }
             }
         }
-        return assignedRequirements.size() == project.getRequirements().size(); // If all the requirements have been assigned, return true
+        return assignedRequirements.size() == getRequerimentsProjecte(project.getNom()).size(); // If all the requirements have been assigned, return true
     }
 
 
@@ -146,29 +143,34 @@ public class MainCorregit {
         return projecteController.getNomProjectes();
     }
 
+    public static List<ProjecteDTO> getProjectes(){
+        ProjecteController projecteController = new ProjecteController();
+        return projecteController.getProjectes();
+    }
+
     public static List<RequerimentDTO> getRequerimentsProjecte(String nom){
         RequerimentController requerimentController = new RequerimentController();
         return requerimentController.getRequerimentsProjecte(nom);
     }
 
-    public static List<UsuariDTO> findEmployeesByRol(List<UsuariDTO> employees, String profile) {
-        UsuariController usuariController = new UsuariController();
-        return usuariController.getUsuarisByRol(profile);
+    public static List<TecnicDTO> findEmployeesByRol(List<TecnicDTO> employees, String profile) {
+        TecnicController tecnicController = new TecnicController();
+        return tecnicController.getTecnicsByLlocDeTreball(profile);
     }
 
     public static List<TecnicDTO> findEmployeesByModality(List<TecnicDTO> employees, String modality) {
-        UsuariController usuariController = new UsuariController();
-        return usuariController.getUsuarisByModalitat(modality);
+        TecnicController tecnicController = new TecnicController();
+        return tecnicController.getTecnicsByModalitat(modality);
     }
 
-    public static List<UsuariDTO> findEmployeesByPreference(List<UsuariDTO> employees, String project) {
-        UsuariController usuariController = new UsuariController();
-        return usuariController.getUsuarisByPreferencia(project);
+    public static List<TecnicDTO> findEmployeesByPreference(List<TecnicDTO> employees, String project) {
+        TecnicController tecnicController = new TecnicController();
+        return tecnicController.getTecnicsByPreferencia(project);
     }
 
-    public static List<UsuariDTO> findEmployeesByModalityandPreference(String modality, String project) {
-        UsuariController usuariController = new UsuariController();
-        return usuariController.getUsuarisByModalitatAndPreferencia(modality, project);
+    public static List<TecnicDTO> findEmployeesByModalityandPreference(String modality, String project) {
+        TecnicController tecnicController = new TecnicController();
+        return tecnicController.getTecnicsByModalitatAndPreferencia(modality, project);
     }
 
     public static List<FeinaAssignadaDTO> getFeinesCandidat(String username) {
@@ -178,7 +180,7 @@ public class MainCorregit {
 
 
 
-    public static boolean checkLabourAgreement(UsuariDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
+    public static boolean checkLabourAgreement(TecnicDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         // Comprovar:
         // Superar las 9h/d máximo 3 dias consecutivos
         // Nunca superar las 50h/semana
@@ -204,7 +206,7 @@ public class MainCorregit {
         return false;
     }
 
-    public static boolean chechkMaximumDailyHours(UsuariDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
+    public static boolean chechkMaximumDailyHours(TecnicDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         Boolean maximumDailyHoursNotExceeded = true;
         // Check if the employee is going to work more than 12 hours in a day
         List<FeinaAssignadaDTO> sameDayFeines = new ArrayList<>();
@@ -221,7 +223,7 @@ public class MainCorregit {
             // Check if the employee is going to work more than 12 hours in a day
             long totalHours = 0;
             for (FeinaAssignadaDTO act : sameDayFeines) {
-                totalHours += Duration.between(act.getStart_time(), act.getEnd_time()).toHours();
+                totalHours += Duration.between(act.getStartTime(), act.getEndTime()).toHours();
             }
             totalHours += Duration.between(requeriment.getStartTime(), requeriment.getEndTime()).toHours();
             if (totalHours > 12) {
@@ -232,15 +234,15 @@ public class MainCorregit {
         return maximumDailyHoursNotExceeded;
     }
 
-    public static boolean checkMinimumRestBetweenActs(UsuariDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
+    public static boolean checkMinimumRestBetweenActs(TecnicDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         Boolean minimumRest = true;
         // Check if the employee has a minimum rest of 12 hours between acts
         if (!feines.isEmpty()){
             for (FeinaAssignadaDTO assignedAct : feines) {
                 // If the end time of the assigned act is less than 12 hours before the start time of the new act, the employee is discarded
-                if (Duration.between(assignedAct.getEnd_time(), requeriment.getStartTime()).toHours() < 12) {
+                if (Duration.between(assignedAct.getStartTime(), requeriment.getStartTime()).toHours() < 12) {
                     minimumRest = false;
-                }else if (Duration.between(requeriment.getEndTime(), assignedAct.getStart_time()).toHours() < 12) {
+                }else if (Duration.between(requeriment.getEndTime(), assignedAct.getStartTime()).toHours() < 12) {
                     // If the start time of the assigned act is less than 12 hours before the end time of the new act, the employee is discarded
                     minimumRest = false;
                 }
@@ -249,7 +251,7 @@ public class MainCorregit {
         return minimumRest;
     }
 
-    public static boolean checkWeeklyRest(UsuariDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
+    public static boolean checkWeeklyRest(TecnicDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         Boolean rest = false;
         // Check if the employee has a minimum rest of 48 hours on a week
         List<FeinaAssignadaDTO> sameWeekRequirements = new ArrayList<>();
@@ -266,7 +268,7 @@ public class MainCorregit {
             sameWeekRequirements.add(possibleFeina);
             // Sort the list by day and start time
             sameWeekRequirements.sort(Comparator.comparing(FeinaAssignadaDTO::getDay)
-                    .thenComparing(FeinaAssignadaDTO::getStart_time));
+                    .thenComparing(FeinaAssignadaDTO::getStartTime));
 
             // Obtain startWeek and endWeek
             LocalDateTime weekStart = requeriment.getDay().with(DayOfWeek.MONDAY).atStartOfDay();   // Monday 00:00
@@ -274,19 +276,19 @@ public class MainCorregit {
 
             // Check 3 different cases:
             // 1. If the rest between the start of the week and the first act is more or equal than 48 hours
-            LocalDateTime firstAct = LocalDateTime.of(sameWeekRequirements.get(0).getDay(),sameWeekRequirements.get(0).getStart_time());
+            LocalDateTime firstAct = LocalDateTime.of(sameWeekRequirements.get(0).getDay(),sameWeekRequirements.get(0).getStartTime());
             if (Duration.between(weekStart, firstAct).toHours() >= 48) {
                 rest = true;
             }else{
                 // 2. If the rest between the last act and the end of the week is more or equal than 48 hours
-                LocalDateTime lastAct = LocalDateTime.of(sameWeekRequirements.get(sameWeekRequirements.size()-1).getDay(),sameWeekRequirements.get(sameWeekRequirements.size()-1).getEnd_time());
+                LocalDateTime lastAct = LocalDateTime.of(sameWeekRequirements.get(sameWeekRequirements.size()-1).getDay(),sameWeekRequirements.get(sameWeekRequirements.size()-1).getEndTime());
                 if (Duration.between(lastAct, weekEnd).toHours() >= 48) {
                     rest = true;
                 }else{
                     // 3. If the rest between two consecutive acts is more or equal than 48 hours
                     for (int i = 0; i < sameWeekRequirements.size()-1; i++) {   // go across the list
-                        LocalDateTime act1 = LocalDateTime.of(sameWeekRequirements.get(i).getDay(),sameWeekRequirements.get(i).getEnd_time());
-                        LocalDateTime act2 = LocalDateTime.of(sameWeekRequirements.get(i+1).getDay(),sameWeekRequirements.get(i+1).getStart_time());
+                        LocalDateTime act1 = LocalDateTime.of(sameWeekRequirements.get(i).getDay(),sameWeekRequirements.get(i).getEndTime());
+                        LocalDateTime act2 = LocalDateTime.of(sameWeekRequirements.get(i+1).getDay(),sameWeekRequirements.get(i+1).getStartTime());
                         if (Duration.between(act1, act2).toHours() >= 48) {
                             rest = true;
                         }else{
@@ -303,7 +305,7 @@ public class MainCorregit {
         return rest;
     }
 
-    public static boolean checkConsecutiveDailyHours(UsuariDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
+    public static boolean checkConsecutiveDailyHours(TecnicDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         Boolean consecutiveHoursNotExceeded = true;
         // We only check this if the duration of the act is greater than 9 hours
         long duration = Duration.between(requeriment.getStartTime(), requeriment.getEndTime()).toMinutes();
@@ -311,7 +313,7 @@ public class MainCorregit {
             // Check if the employee has more than 9 hours in 3 consecutive days
             List<FeinaAssignadaDTO> relevantLongWorkRequirements = new ArrayList<>();
             for (FeinaAssignadaDTO assignedAct : feines){
-                if (Duration.between(assignedAct.getStart_time(), assignedAct.getEnd_time()).toMinutes() > 540 &&
+                if (Duration.between(assignedAct.getStartTime(), assignedAct.getEndTime()).toMinutes() > 540 &&
                         (assignedAct.getDay().isAfter(requeriment.getDay().minusDays(4)) && assignedAct.getDay().isBefore(requeriment.getDay().plusDays(4)))){
                     relevantLongWorkRequirements.add(assignedAct);
                 }
@@ -351,7 +353,7 @@ public class MainCorregit {
         return consecutiveHoursNotExceeded;
     }
 
-    public static boolean checkMaxWeeklyHours(UsuariDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
+    public static boolean checkMaxWeeklyHours(TecnicDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         boolean maxWeeklyHoursNotExceeded = true;
         // Check if the employee has worked more than 50 hours in a week
         List<FeinaAssignadaDTO> sameWeekRequirements = new ArrayList<>();
@@ -370,7 +372,7 @@ public class MainCorregit {
             // Check if the employee has worked more than 50 hours in a week
             long totalHours = 0;
             for (FeinaAssignadaDTO act : sameWeekRequirements) {
-                totalHours += Duration.between(act.getStart_time(), act.getEnd_time()).toHours();
+                totalHours += Duration.between(act.getStartTime(), act.getEndTime()).toHours();
             }
             if (totalHours > 50) {
                 maxWeeklyHoursNotExceeded = false;
@@ -380,7 +382,7 @@ public class MainCorregit {
         return maxWeeklyHoursNotExceeded;
     }
 
-    public static boolean checkAverageWeeklyHours(UsuariDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
+    public static boolean checkAverageWeeklyHours(TecnicDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         boolean averageWeeklyHoursNotExceeded = true;
         // Maximum of 9h/d * labor days in a month
         // Determine the labor days in the requirement month
@@ -394,7 +396,7 @@ public class MainCorregit {
         candidateRequirements.add(possibleFeina);
         for (FeinaAssignadaDTO assignedAct : candidateRequirements) {
             if (YearMonth.from(assignedAct.getDay()).equals(YearMonth.from(requeriment.getDay()))) {
-                maxHoursInMonth -= Duration.between(assignedAct.getStart_time(), assignedAct.getEnd_time()).toHours();
+                maxHoursInMonth -= Duration.between(assignedAct.getStartTime(), assignedAct.getEndTime()).toHours();
             }
         }
         if (maxHoursInMonth < 0) {
@@ -428,7 +430,7 @@ public class MainCorregit {
 
     public static List<TecnicDTO> getTecnics() {
         TecnicController tecnicController = new TecnicController();
-        return usuariController.getTecnics();
+        return tecnicController.getTecnics();
     }
 
     public static List<RequerimentDTO> createRequirements(String project) {

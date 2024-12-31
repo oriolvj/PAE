@@ -10,16 +10,16 @@ public class FeinaAssignadaDTO {
     private String username;
     private Integer id;
     private LocalDate day;
-    private LocalTime start_time;
-    private LocalTime end_time;
+    private LocalTime startTime;
+    private LocalTime endTime;
 
     public FeinaAssignadaDTO(String nomProjecte, String username, Integer id, LocalDate day, LocalTime start_time, LocalTime end_time) {
         this.nomProjecte = nomProjecte;
         this.username = username;
         this.id = id;
         this.day = day;
-        this.start_time = start_time;
-        this.end_time = end_time;
+        this.startTime = start_time;
+        this.endTime = end_time;
     }
 
     public String getNomProjecte() {
@@ -54,19 +54,19 @@ public class FeinaAssignadaDTO {
         this.day = day;
     }
 
-    public LocalTime getStart_time() {
-        return start_time;
+    public LocalTime getStartTime() {
+        return startTime;
     }
 
-    public void setStart_time(LocalTime start_time) {
-        this.start_time = start_time;
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
     }
 
-    public LocalTime getEnd_time() {
-        return end_time;
+    public LocalTime getEndTime() {
+        return endTime;
     }
 
-    public void setEnd_time(LocalTime end_time) {
-        this.end_time = end_time;
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
     }
 }
