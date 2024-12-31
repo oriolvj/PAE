@@ -129,8 +129,8 @@ public class FeinaAssignadaRepository {
                     // Crear LocalTime en formato LocalTime.of(hour, minute)
                     LocalTime formattedEndTime = LocalTime.of(localEndTime.getHour(), localEndTime.getMinute());
                     fDTO.setDay(formattedDate);
-                    fDTO.setStart_time(formattedStartTime);
-                    fDTO.setEnd_time(formattedEndTime);
+                    fDTO.setStartTime(formattedStartTime);
+                    fDTO.setEndTime(formattedEndTime);
                     ja.add(fDTO);
                 }
             }
