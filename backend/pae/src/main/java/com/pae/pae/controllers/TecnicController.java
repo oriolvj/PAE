@@ -45,4 +45,6 @@ public class TecnicController {
         return tecnicService.TecnicModify(username,modifyRequest);
     }
 
+    //funcio per obtenir el nom del tecnic anat a usuari
+
 }

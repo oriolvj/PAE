@@ -12,7 +12,6 @@ import lombok.ToString;
 @ToString
 public class TecnicDTO {
     private int id;
-    private String nom;
     private int sou;
     private String posicio;
     private String preferencia;
@@ -20,9 +19,8 @@ public class TecnicDTO {
     private boolean contractat;//True si es de l'empresa, false altrement
     private Jornada jornada;
 
-    public TecnicDTO(int id, String nom, int sou, String posicio, String preferencia, boolean actiu, boolean contractat, Jornada jornada) {
+    public TecnicDTO(int id, int sou, String posicio, String preferencia, boolean actiu, boolean contractat, Jornada jornada) {
         this.id = id;
-        this.nom = nom;
         this.sou = sou;
         this.posicio = posicio;
         this.preferencia = preferencia;

@@ -28,8 +28,7 @@ public class TecnicRepository {
             String jornadaString = resultSet.getString("jornada");
             Jornada jornada = (jornadaString != null) ? Jornada.valueOf(jornadaString) : null;
             tDTO = new TecnicDTO(
-                    resultSet.getInt("id"),                  // ID del tècnic
-                    resultSet.getString("nom_tecnic"),             // Nom del tècnic
+                    resultSet.getInt("id"),                  // ID del tècnic// Nom del tècnic
                     resultSet.getInt("sou"),                // Sou
                     resultSet.getString("posicio"),
                     resultSet.getString("preferencia"),
@@ -76,25 +75,10 @@ public class TecnicRepository {
     }
 
     public boolean registerTecnic(Map<String, String> newTecnicRequest) {
-        String getUserRealNameQuery = "SELECT nom FROM usuaris WHERE username = ?";
         String checkPositionQuery = "SELECT COUNT(*) FROM posicions WHERE posicio = ?";
         String insertTecnicQuery = "INSERT INTO tecnics (username, sou, posicio, nom_tecnic, preferencia, actiu, contractat, jornada) VALUES (?, ?, ?, ?, ?, ?, ?, CAST(? AS jornada))";
 
         try (Connection connection = getConnection()) {
-            // Get the real name of the user
-            String realName;
-            try (PreparedStatement getUserRealNameStmt = connection.prepareStatement(getUserRealNameQuery)) {
-                getUserRealNameStmt.setString(1, newTecnicRequest.get("username"));
-                try (ResultSet resultSet = getUserRealNameStmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        realName = resultSet.getString("nom");
-                    } else {
-                        //throw new SQLException("User not found");
-                        System.out.println("user doesn't exist");
-                        return false;
-                    }
-                }
-            }
 
             // Check if the position exists
             try (PreparedStatement checkStmt = connection.prepareStatement(checkPositionQuery)) {
@@ -114,11 +98,10 @@ public class TecnicRepository {
                 insertTecnicStmt.setString(1, newTecnicRequest.get("username"));
                 insertTecnicStmt.setInt(2, Integer.parseInt(newTecnicRequest.get("sou")));
                 insertTecnicStmt.setString(3, newTecnicRequest.get("posicio"));
-                insertTecnicStmt.setString(4, realName);
-                insertTecnicStmt.setString(5, newTecnicRequest.get("preferencia"));
-                insertTecnicStmt.setBoolean(6, Boolean.parseBoolean(newTecnicRequest.get("actiu")));
-                insertTecnicStmt.setBoolean(7, Boolean.parseBoolean(newTecnicRequest.get("contractat")));
-                insertTecnicStmt.setString(8, newTecnicRequest.get("jornada"));
+                insertTecnicStmt.setString(4, newTecnicRequest.get("preferencia"));
+                insertTecnicStmt.setBoolean(5, Boolean.parseBoolean(newTecnicRequest.get("actiu")));
+                insertTecnicStmt.setBoolean(6, Boolean.parseBoolean(newTecnicRequest.get("contractat")));
+                insertTecnicStmt.setString(7, newTecnicRequest.get("jornada"));
 
                 insertTecnicStmt.executeUpdate();
             }
