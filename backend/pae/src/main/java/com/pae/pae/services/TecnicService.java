@@ -2,6 +2,7 @@ package com.pae.pae.services;
 
 import com.pae.pae.models.TecnicDTO;
 
+import com.pae.pae.models.UsuariDTO;
 import com.pae.pae.repositories.TecnicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,5 +30,26 @@ public class TecnicService {
 
     public boolean TecnicModify(String username, Map<String, String> modifyRequest) {
         return tecnicRepository.TecnicModify(username, modifyRequest);
+    }
+
+    public ArrayList<TecnicDTO> getTecnicsByModalitat(String modalitat) {
+        if(modalitat.equals("POOL")){
+            return tecnicRepository.getTecnicsByModalitat(true);
+        } else return tecnicRepository.getTecnicsByModalitat(false);
+
+    }
+
+    public ArrayList<TecnicDTO> getTecnicsByPreferencia(String preferencia) {
+        return tecnicRepository.getTecnicsByPreferencia(preferencia);
+    }
+
+    public ArrayList<TecnicDTO> getTecnicsByJornada(String jornada) {
+        return tecnicRepository.getTecnicsByJornada(jornada);
+    }
+
+    public ArrayList<TecnicDTO> getTecnicsByModalitatAndPreferencia(String modalitat, String preferencia) {
+        if(modalitat.equals("POOL")){
+            return tecnicRepository.getTecnicsByModalitatAndPreferencia(true, preferencia);
+        } else return tecnicRepository.getTecnicsByModalitatAndPreferencia(false, preferencia);
     }
 }

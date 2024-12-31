@@ -42,30 +42,6 @@ public class UsuariController {
     }
 
     @CrossOrigin
-    @GetMapping(path = "/modalitat/{modalitat}")
-    public ArrayList<UsuariDTO> getUsuarisByModalitat(@PathVariable("modalitat") String modalitat) {
-        return usuariService.getUsuarisByModalitat(modalitat);
-    }
-
-    @CrossOrigin
-    @GetMapping(path = "/preferencia/{preferencia}")
-    public ArrayList<UsuariDTO> getUsuarisByPreferencia(@PathVariable("preferencia") String preferencia) {
-        return usuariService.getUsuarisByPreferencia(preferencia);
-    }
-
-    @CrossOrigin
-    @GetMapping(path = "/jornada/{jornada}")
-    public ArrayList<UsuariDTO> getUsuarisByJornada(@PathVariable("jornada") String jornada) {
-        return usuariService.getUsuarisByJornada(jornada);
-    }
-
-    @CrossOrigin
-    @GetMapping(path = "/modalitat/{modalitat}/preferencia/{preferencia}")
-    public ArrayList<UsuariDTO> getUsuarisByModalitatAndPreferencia(@PathVariable("preferencia") String modalitat, @PathVariable("preferencia") String preferencia) {
-        return usuariService.getUsuarisByModalitatAndPreferencia(modalitat, preferencia);
-    }
-
-    @CrossOrigin
     @PutMapping(path = "/rol/{rol}")
     public List<UsuariDTO> getUsuarisByRol(String rol) {
         return usuariService.getUsuarisByRol(rol);

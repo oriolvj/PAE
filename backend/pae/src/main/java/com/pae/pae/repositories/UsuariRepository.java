@@ -164,11 +164,7 @@ public class UsuariRepository {
             stmt.setString(5, modifyRequest.get("email"));
             stmt.setString(6, modifyRequest.get("pwd"));
             stmt.setString(7, Rols.valueOf(modifyRequest.get("rol")).toString());
-            stmt.setString(8, modifyRequest.get("preferencia"));
-            stmt.setBoolean(9, Boolean.parseBoolean(modifyRequest.get("actiu")));
-            stmt.setBoolean(10, Boolean.parseBoolean(modifyRequest.get("contractat")));
-            stmt.setString(11, modifyRequest.get("jornada"));
-            stmt.setString(12, modifyRequest.get("username"));
+            stmt.setString(8, modifyRequest.get("username"));
 
             int rowsUpdated = stmt.executeUpdate();
             if (rowsUpdated > 0) {
@@ -198,78 +194,7 @@ public class UsuariRepository {
     }
 
 
-    public ArrayList<UsuariDTO> getUsuarisByModalitat(boolean modalitat) {
-        ArrayList<UsuariDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM usuaris WHERE contractat = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setBoolean(1, modalitat);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    AssignUsuariObject(resultSet);
-                    ja.add(uDTO);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return ja;
-    }
 
-    public ArrayList<UsuariDTO> getUsuarisByPreferencia(String preferencia) {
-        ArrayList<UsuariDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM usuaris WHERE preferencia = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, preferencia);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    AssignUsuariObject(resultSet);
-                    ja.add(uDTO);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return ja;
-    }
-
-    public ArrayList<UsuariDTO> getUsuarisByJornada(String jornada) {
-        ArrayList<UsuariDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM usuaris WHERE contractat = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, jornada);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    AssignUsuariObject(resultSet);
-                    ja.add(uDTO);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return ja;
-    }
-
-    public ArrayList<UsuariDTO> getUsuarisByModalitatAndPreferencia(boolean modalitat, String preferencia) {
-        ArrayList<UsuariDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM usuaris WHERE contractat = ? and preferencia = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setBoolean(1, modalitat);
-            statement.setString(2, preferencia);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    AssignUsuariObject(resultSet);
-                    ja.add(uDTO);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return ja;
-    }
 
     public List<UsuariDTO> getUsuarisByRol(String rol) {
         ArrayList<UsuariDTO> ja = new ArrayList<>();

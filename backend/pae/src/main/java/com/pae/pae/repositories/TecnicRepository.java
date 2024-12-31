@@ -2,6 +2,7 @@ package com.pae.pae.repositories;
 
 import com.pae.pae.models.Jornada;
 import com.pae.pae.models.TecnicDTO;
+import com.pae.pae.models.UsuariDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -157,5 +158,78 @@ public class TecnicRepository {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public ArrayList<TecnicDTO> getTecnicsByModalitat(boolean modalitat) {
+        ArrayList<TecnicDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM tecncis WHERE contractat = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setBoolean(1, modalitat);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignTecnicsObject(resultSet);
+                    ja.add(tDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
+    }
+
+    public ArrayList<TecnicDTO> getTecnicsByPreferencia(String preferencia) {
+        ArrayList<TecnicDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM tecnics WHERE preferencia = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, preferencia);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignTecnicsObject(resultSet);
+                    ja.add(tDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
+    }
+
+    public ArrayList<TecnicDTO> getTecnicsByJornada(String jornada) {
+        ArrayList<TecnicDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM tecnics WHERE contractat = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, jornada);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignTecnicsObject(resultSet);
+                    ja.add(tDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
+    }
+
+    public ArrayList<TecnicDTO> getTecnicsByModalitatAndPreferencia(boolean modalitat, String preferencia) {
+        ArrayList<TecnicDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM tecnics WHERE contractat = ? and preferencia = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setBoolean(1, modalitat);
+            statement.setString(2, preferencia);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignTecnicsObject(resultSet);
+                    ja.add(tDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
     }
 }
