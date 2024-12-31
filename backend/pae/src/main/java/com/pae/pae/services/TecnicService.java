@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -55,5 +56,9 @@ public class TecnicService {
 
     public String getNomTecnic(String username) {
         return tecnicRepository.getNomTecnic(username);
+    }
+
+    public List<TecnicDTO> getTecnicsByLlocDeTreball(String llocTreball) {
+        return tecnicRepository.getTecnicsByLlocDeTreball(llocTreball);
     }
 }

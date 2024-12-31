@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -248,5 +249,23 @@ public class TecnicRepository {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public List<TecnicDTO> getTecnicsByLlocDeTreball(String llocTreball) {
+        ArrayList<TecnicDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM tecnics WHERE posicio = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, llocTreball);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignTecnicsObject(resultSet);
+                    ja.add(tDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
     }
 }

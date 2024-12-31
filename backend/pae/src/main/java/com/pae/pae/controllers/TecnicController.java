@@ -1,6 +1,7 @@
 package com.pae.pae.controllers;
 
 
+import com.pae.pae.models.LlocTreballDTO;
 import com.pae.pae.models.TecnicDTO;
 import com.pae.pae.models.UsuariDTO;
 import com.pae.pae.services.TecnicService;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -73,6 +75,12 @@ public class TecnicController {
     @GetMapping(path = "/usuaris/{username}")
     public String getNomTecnic(@PathVariable("username") String username) {
         return tecnicService.getNomTecnic(username);
+    }
+
+    @CrossOrigin
+    @PutMapping(path = "/llocTreball/{llocTreball}")
+    public List<TecnicDTO> getTecnicsByLlocDeTreball(@PathVariable("llocTreball")String llocTreball) {
+        return tecnicService.getTecnicsByLlocDeTreball(llocTreball);
     }
     //funcio per obtenir el nom del tecnic anat a usuari
 
