@@ -76,27 +76,6 @@ public class UsuariService {
         return usuariRepository.usuariModify(username, modifyRequest);
     }
 
-    public ArrayList<UsuariDTO> getUsuarisByModalitat(String modalitat) {
-        if(modalitat.equals("POOL")){
-            return usuariRepository.getUsuarisByModalitat(true);
-        } else return usuariRepository.getUsuarisByModalitat(false);
-
-    }
-
-    public ArrayList<UsuariDTO> getUsuarisByPreferencia(String preferencia) {
-        return usuariRepository.getUsuarisByPreferencia(preferencia);
-    }
-
-    public ArrayList<UsuariDTO> getUsuarisByJornada(String jornada) {
-        return usuariRepository.getUsuarisByJornada(jornada);
-    }
-
-    public ArrayList<UsuariDTO> getUsuarisByModalitatAndPreferencia(String modalitat, String preferencia) {
-        if(modalitat.equals("POOL")){
-            return usuariRepository.getUsuarisByModalitatAndPreferencia(true, preferencia);
-        } else return usuariRepository.getUsuarisByModalitatAndPreferencia(false, preferencia);
-    }
-
     public List<UsuariDTO> getUsuarisByRol(String rol) {
         return usuariRepository.getUsuarisByRol(rol);
     }

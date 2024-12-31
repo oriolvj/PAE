@@ -12,21 +12,31 @@ import lombok.ToString;
 @ToString
 public class TecnicDTO {
     private int id;
+    private String username;
     private int sou;
-    private String posicio;
+    private String posicio; //lloc de treball
     private String preferencia;
     private boolean actiu;
     private boolean contractat;//True si es de l'empresa, false altrement
     private Jornada jornada;
 
-    public TecnicDTO(int id, int sou, String posicio, String preferencia, boolean actiu, boolean contractat, Jornada jornada) {
+    public TecnicDTO(int id, String username, int sou, String posicio, String preferencia, boolean actiu, boolean contractat, Jornada jornada) {
         this.id = id;
+        this.username = username;
         this.sou = sou;
         this.posicio = posicio;
         this.preferencia = preferencia;
         this.actiu = actiu;
         this.contractat = contractat;
         this.jornada = jornada;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPreferencia() {
@@ -67,14 +77,6 @@ public class TecnicDTO {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
     }
 
     public int getSou() {

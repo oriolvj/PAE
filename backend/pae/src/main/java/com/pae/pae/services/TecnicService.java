@@ -52,4 +52,8 @@ public class TecnicService {
             return tecnicRepository.getTecnicsByModalitatAndPreferencia(true, preferencia);
         } else return tecnicRepository.getTecnicsByModalitatAndPreferencia(false, preferencia);
     }
+
+    public String getNomTecnic(String username) {
+        return tecnicRepository.getNomTecnic(username);
+    }
 }

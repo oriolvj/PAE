@@ -42,7 +42,7 @@ public class TecnicController {
 
     @CrossOrigin
     @PutMapping(path = "/{username}")
-    public boolean usuariModify (@PathVariable("username") String username, @RequestBody Map<String, String> modifyRequest){
+    public boolean TecnicModify (@PathVariable("username") String username, @RequestBody Map<String, String> modifyRequest){
         return tecnicService.TecnicModify(username,modifyRequest);
     }
     @CrossOrigin
@@ -69,6 +69,11 @@ public class TecnicController {
         return tecnicService.getTecnicsByModalitatAndPreferencia(modalitat, preferencia);
     }
 
+    @CrossOrigin
+    @GetMapping(path = "/usuaris/{username}")
+    public String getNomTecnic(@PathVariable("username") String username) {
+        return tecnicService.getNomTecnic(username);
+    }
     //funcio per obtenir el nom del tecnic anat a usuari
 
 }

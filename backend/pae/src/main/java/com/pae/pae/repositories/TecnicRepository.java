@@ -76,7 +76,7 @@ public class TecnicRepository {
     }
 
     public boolean registerTecnic(Map<String, String> newTecnicRequest) {
-        String checkPositionQuery = "SELECT COUNT(*) FROM posicions WHERE posicio = ?";
+        String checkPositionQuery = "SELECT COUNT(*) FROM lloc_treball WHERE posicio = ?";
         String insertTecnicQuery = "INSERT INTO tecnics (username, sou, posicio, nom_tecnic, preferencia, actiu, contractat, jornada) VALUES (?, ?, ?, ?, ?, ?, ?, CAST(? AS jornada))";
 
         try (Connection connection = getConnection()) {
@@ -128,7 +128,7 @@ public class TecnicRepository {
     }
 
     public boolean TecnicModify(String username, Map<String, String> modifyRequest) {
-        String checkPositionQuery = "SELECT COUNT(*) FROM posicions WHERE posicio = ?";
+        String checkPositionQuery = "SELECT COUNT(*) FROM lloc_treball WHERE posicio = ?";
         String query = "UPDATE tecnics SET sou = ?, posicio = ?, preferencia = ?, actiu = ?, contractat = ?, jornada = CAST(? AS jornada) WHERE username = ?";
         try (Connection connection = getConnection()) {
             // Check if the position exists
@@ -231,5 +231,21 @@ public class TecnicRepository {
             e.printStackTrace();
         }
         return ja;
+    }
+
+    public String getNomTecnic(String username) {
+        String query = "SELECT nom FROM usuaris WHERE username = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, username);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString("nom");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
