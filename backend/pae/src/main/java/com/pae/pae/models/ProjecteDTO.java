@@ -27,4 +27,6 @@ public class ProjecteDTO {
         this.numeroEmpleats = numeroEmpleats;
         this.ubicacio = ubicacio;
     }
+
+
 }

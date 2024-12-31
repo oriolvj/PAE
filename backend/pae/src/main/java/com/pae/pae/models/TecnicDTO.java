@@ -13,19 +13,55 @@ import lombok.ToString;
 public class TecnicDTO {
     private int id;
     private String nom;
-    private int hores_contracte;
     private int sou;
     private String posicio;
+    private String preferencia;
+    private boolean actiu;
+    private boolean contractat;//True si es de l'empresa, false altrement
+    private Jornada jornada;
 
-    public TecnicDTO(int id, String nom, int hores_contracte, int sou, String posicio) {
+    public TecnicDTO(int id, String nom, int sou, String posicio, String preferencia, boolean actiu, boolean contractat, Jornada jornada) {
         this.id = id;
         this.nom = nom;
-        this.hores_contracte = hores_contracte;
         this.sou = sou;
         this.posicio = posicio;
+        this.preferencia = preferencia;
+        this.actiu = actiu;
+        this.contractat = contractat;
+        this.jornada = jornada;
     }
 
+    public String getPreferencia() {
+        return preferencia;
+    }
 
+    public void setPreferencia(String preferencia) {
+        this.preferencia = preferencia;
+    }
+
+    public boolean isActiu() {
+        return actiu;
+    }
+
+    public void setActiu(boolean actiu) {
+        this.actiu = actiu;
+    }
+
+    public boolean isContractat() {
+        return contractat;
+    }
+
+    public void setContractat(boolean contractat) {
+        this.contractat = contractat;
+    }
+
+    public Jornada getJornada() {
+        return jornada;
+    }
+
+    public void setJornada(Jornada jornada) {
+        this.jornada = jornada;
+    }
 
     public int getId() {
         return id;
@@ -41,14 +77,6 @@ public class TecnicDTO {
 
     public void setNom(String nom) {
         this.nom = nom;
-    }
-
-    public int getHores_contracte() {
-        return hores_contracte;
-    }
-
-    public void setHores_contracte(int hores_contracte) {
-        this.hores_contracte = hores_contracte;
     }
 
     public int getSou() {

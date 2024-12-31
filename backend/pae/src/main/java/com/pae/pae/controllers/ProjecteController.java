@@ -39,8 +39,6 @@ public class ProjecteController {
     @PostMapping
     public boolean addProject(@RequestBody Map<String, String> newprojectRequest) throws SQLException {
         return projecteService.addProject(newprojectRequest);
-
-
     }
 
     @CrossOrigin
@@ -48,4 +46,6 @@ public class ProjecteController {
     public List<String> getNomProjectes() {
         return projecteService.getNomProjectes();
     }
+
+     
 }

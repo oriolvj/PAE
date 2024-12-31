@@ -1,5 +1,6 @@
 package com.pae.pae.repositories;
 
+import com.pae.pae.models.Jornada;
 import com.pae.pae.models.TecnicDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -24,12 +25,17 @@ public class TecnicRepository {
 
     private void AssignTecnicsObject(ResultSet resultSet) throws SQLException {
         try {
+            String jornadaString = resultSet.getString("jornada");
+            Jornada jornada = (jornadaString != null) ? Jornada.valueOf(jornadaString) : null;
             tDTO = new TecnicDTO(
                     resultSet.getInt("id"),                  // ID del tècnic
                     resultSet.getString("nom_tecnic"),             // Nom del tècnic
-                    resultSet.getInt("hores_contracte"),    // Hores de contracte
                     resultSet.getInt("sou"),                // Sou
-                    resultSet.getString("posicio")          // Posició
+                    resultSet.getString("posicio"),
+                    resultSet.getString("preferencia"),
+                    resultSet.getBoolean("actiu"),
+                    resultSet.getBoolean("contractat"),
+                    jornada// Posició
             );
         } catch (SQLException e) {
             throw new SQLException("Error al obtenir dades del ResultSet per a TecnicDTO", e);
@@ -72,7 +78,7 @@ public class TecnicRepository {
     public boolean registerTecnic(Map<String, String> newTecnicRequest) {
         String getUserRealNameQuery = "SELECT nom FROM usuaris WHERE username = ?";
         String checkPositionQuery = "SELECT COUNT(*) FROM posicions WHERE posicio = ?";
-        String insertTecnicQuery = "INSERT INTO tecnics (username, hores_contracte, sou, posicio, nom_tecnic) VALUES (?, ?, ?, ?, ?)";
+        String insertTecnicQuery = "INSERT INTO tecnics (username, sou, posicio, nom_tecnic, preferencia, actiu, contractat, jornada) VALUES (?, ?, ?, ?, ?, ?, ?, CAST(? AS jornada))";
 
         try (Connection connection = getConnection()) {
             // Get the real name of the user
@@ -106,10 +112,14 @@ public class TecnicRepository {
             // Insert the new tecnic
             try (PreparedStatement insertTecnicStmt = connection.prepareStatement(insertTecnicQuery)) {
                 insertTecnicStmt.setString(1, newTecnicRequest.get("username"));
-                insertTecnicStmt.setInt(2, Integer.parseInt(newTecnicRequest.get("hores_contracte")));
-                insertTecnicStmt.setInt(3, Integer.parseInt(newTecnicRequest.get("sou")));
-                insertTecnicStmt.setString(4, newTecnicRequest.get("posicio"));
-                insertTecnicStmt.setString(5, realName);
+                insertTecnicStmt.setInt(2, Integer.parseInt(newTecnicRequest.get("sou")));
+                insertTecnicStmt.setString(3, newTecnicRequest.get("posicio"));
+                insertTecnicStmt.setString(4, realName);
+                insertTecnicStmt.setString(5, newTecnicRequest.get("preferencia"));
+                insertTecnicStmt.setBoolean(6, Boolean.parseBoolean(newTecnicRequest.get("actiu")));
+                insertTecnicStmt.setBoolean(7, Boolean.parseBoolean(newTecnicRequest.get("contractat")));
+                insertTecnicStmt.setString(8, newTecnicRequest.get("jornada"));
+
                 insertTecnicStmt.executeUpdate();
             }
 
@@ -135,7 +145,7 @@ public class TecnicRepository {
 
     public boolean TecnicModify(String username, Map<String, String> modifyRequest) {
         String checkPositionQuery = "SELECT COUNT(*) FROM posicions WHERE posicio = ?";
-        String query = "UPDATE tecnics SET hores_contracte = ?, sou = ?, posicio = ?, nom_tecnic = ? WHERE username = ?";
+        String query = "UPDATE tecnics SET sou = ?, posicio = ?, nom_tecnic = ? WHERE username = ?";
         try (Connection connection = getConnection()) {
             // Check if the position exists
             try (PreparedStatement checkStmt = connection.prepareStatement(checkPositionQuery)) {

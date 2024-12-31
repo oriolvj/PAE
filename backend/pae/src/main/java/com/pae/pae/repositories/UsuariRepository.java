@@ -32,9 +32,6 @@ public class UsuariRepository {
             String rolString = resultSet.getString("rol");
             Rols rol = (rolString != null) ? Rols.valueOf(rolString) : null;
 
-            String jornadaString = resultSet.getString("jornada");
-            Jornada jornada = (jornadaString != null) ? Jornada.valueOf(jornadaString) : null;
-
             uDTO = new UsuariDTO(
                     resultSet.getString("username"),
                     resultSet.getString("nom"),
@@ -42,11 +39,7 @@ public class UsuariRepository {
                     (resultSet.getObject("tlf") != null) ? resultSet.getInt("tlf") : null,
                     resultSet.getString("email"),
                     resultSet.getString("pwd"),
-                    rol,
-                    resultSet.getString("preferencia"),
-                    resultSet.getBoolean("actiu"),
-                    resultSet.getBoolean("contractat"),
-                    jornada
+                    rol
             );
         } catch (IllegalArgumentException e) {
             throw new SQLException("Error al convertir datos de Rol o Jornada desde el ResultSet", e);
@@ -120,7 +113,7 @@ public class UsuariRepository {
     }
 
     public boolean RegisterUser (Map<String, String> newUserRequest) throws SQLException {
-        String query = "INSERT INTO usuaris (username, nom, edat, tlf, email, pwd, rol, preferencia, actiu, contractat, jornada) VALUES (?, ?, ?, ?, ?, ?, CAST(? AS rols), ?, ?,?,CAST(? AS jornada))";
+        String query = "INSERT INTO usuaris (username, nom, edat, tlf, email, pwd, rol) VALUES (?, ?, ?, ?, ?, ?, CAST(? AS rols))";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, newUserRequest.get("username"));
@@ -130,12 +123,6 @@ public class UsuariRepository {
             stmt.setString(5, newUserRequest.get("email"));
             stmt.setString(6, newUserRequest.get("pwd"));
             stmt.setString(7, Rols.valueOf(newUserRequest.get("rol")).toString());
-            stmt.setString(8, newUserRequest.get("preferencia"));
-            stmt.setBoolean(9, Boolean.parseBoolean(newUserRequest.get("actiu")));
-            stmt.setBoolean(10, Boolean.parseBoolean(newUserRequest.get("contractat")));
-            stmt.setString(11, newUserRequest.get("jornada"));
-
-
 
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
