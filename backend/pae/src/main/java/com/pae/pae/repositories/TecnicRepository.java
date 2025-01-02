@@ -162,7 +162,7 @@ public class TecnicRepository {
 
     public ArrayList<TecnicDTO> getTecnicsByModalitat(boolean modalitat) {
         ArrayList<TecnicDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM tecncis WHERE contractat = ?";
+        String query = "SELECT * FROM tecnics WHERE contractat = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setBoolean(1, modalitat);
