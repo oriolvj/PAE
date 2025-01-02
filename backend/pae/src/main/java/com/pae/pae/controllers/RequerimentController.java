@@ -38,4 +38,10 @@ public class RequerimentController {
         public ArrayList<RequerimentDTO> getRequerimentsProjecte(@PathVariable("nom") String nom) {
             return requerimentSercice.getRequerimentsProjecte(nom);
         }
+
+        @CrossOrigin
+        @DeleteMapping(path = "/{id}")
+        public boolean removeRequeriment(@PathVariable("id") Integer id) {
+            return requerimentSercice.removeRequeriment(id);
+        }
 }

@@ -134,4 +134,16 @@ public class RequerimentRepository {
         }
         return newRequerimentRequest;
     }
+
+    public boolean removeRequeriment(Integer id) {
+        String query = "DELETE FROM requirements WHERE id = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, id);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

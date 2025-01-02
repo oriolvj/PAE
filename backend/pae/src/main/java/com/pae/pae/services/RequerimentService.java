@@ -30,4 +30,8 @@ public class RequerimentService {
     public RequerimentDTO registerRequeriment(RequerimentDTO newRequerimentRequest) {
         return requerimentRepository.registerRequeriment(newRequerimentRequest);
     }
+
+    public boolean removeRequeriment(Integer id) {
+        return requerimentRepository.removeRequeriment(id);
+    }
 }
