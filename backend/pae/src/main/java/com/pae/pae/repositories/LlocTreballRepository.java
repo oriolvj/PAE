@@ -35,7 +35,7 @@ public class LlocTreballRepository {
 
     public ArrayList<LlocTreballDTO> getLlocsTreball() {
         ArrayList<LlocTreballDTO> llocsTreball = new ArrayList<>();
-        String query = "SELECT * FROM posicions";
+        String query = "SELECT * FROM llocTreball";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
@@ -50,8 +50,8 @@ public class LlocTreballRepository {
     }
 
     public boolean addlloctreball(Map<String, String> newlloctreballRequest) {
-    String checkQuery = "SELECT COUNT(*) FROM posicions WHERE posicio = ?";
-    String insertQuery = "INSERT INTO posicions (posicio) VALUES (?)";
+    String checkQuery = "SELECT COUNT(*) FROM llocTreball WHERE posicio = ?";
+    String insertQuery = "INSERT INTO llocTreball (posicio) VALUES (?)";
     try (Connection connection = getConnection()) {
         // Check if the position already exists
         try (PreparedStatement checkStatement = connection.prepareStatement(checkQuery)) {
@@ -78,7 +78,7 @@ public class LlocTreballRepository {
 }
 
     public boolean lloctreballremove(String posicio) {
-        String query = "DELETE FROM posicions WHERE posicio = ?";
+        String query = "DELETE FROM llocTreball WHERE posicio = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, posicio);
@@ -90,8 +90,8 @@ public class LlocTreballRepository {
     }
 
     public boolean lloctreballModify(String posicio_ant, Map<String, String> modifyRequest) {
-        String checkQuery = "SELECT COUNT(*) FROM posicions WHERE posicio = ?";
-        String updateQuery = "UPDATE posicions SET posicio = ? WHERE posicio = ?";
+        String checkQuery = "SELECT COUNT(*) FROM llocTreball WHERE posicio = ?";
+        String updateQuery = "UPDATE llocTreball SET posicio = ? WHERE posicio = ?";
         try (Connection connection = getConnection()) {
             // Check if posicio_ant exists
             try (PreparedStatement checkStatement = connection.prepareStatement(checkQuery)) {
