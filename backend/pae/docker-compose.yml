@@ -7,9 +7,5 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ./src/main/resources/.env    
-    environment:
-      DB_URL: ${DB_URL}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
     ports:
       - "8080:8080"
