@@ -78,8 +78,8 @@ public class TecnicRepository {
     }
 
     public boolean registerTecnic(Map<String, String> newTecnicRequest) {
-        String checkPositionQuery = "SELECT COUNT(*) FROM lloc_treball WHERE posicio = ?";
-        String insertTecnicQuery = "INSERT INTO tecnics (username, sou, posicio, nom_tecnic, preferencia, actiu, contractat, jornada) VALUES (?, ?, ?, ?, ?, ?, ?, CAST(? AS jornada))";
+        String checkPositionQuery = "SELECT COUNT(*) FROM lloctreball WHERE posicio = ?";
+        String insertTecnicQuery = "INSERT INTO tecnics (username, sou, posicio, preferencia, actiu, contractat, jornada) VALUES (?, ?, ?, ?, ?, ?, CAST(? AS jornada))";
 
         try (Connection connection = getConnection()) {
 
@@ -88,8 +88,6 @@ public class TecnicRepository {
                 checkStmt.setString(1, newTecnicRequest.get("posicio"));
                 try (ResultSet resultSet = checkStmt.executeQuery()) {
                     if (resultSet.next() && resultSet.getInt(1) == 0) {
-                        // Position does not exist, return error
-                        //throw new SQLException("Position does not exist");
                         System.out.println("Position already exists");
                         return false;
                     }
@@ -130,7 +128,7 @@ public class TecnicRepository {
     }
 
     public boolean TecnicModify(String username, Map<String, String> modifyRequest) {
-        String checkPositionQuery = "SELECT COUNT(*) FROM lloc_treball WHERE posicio = ?";
+        String checkPositionQuery = "SELECT COUNT(*) FROM lloctreball WHERE posicio = ?";
         String query = "UPDATE tecnics SET sou = ?, posicio = ?, preferencia = ?, actiu = ?, contractat = ?, jornada = CAST(? AS jornada) WHERE username = ?";
         try (Connection connection = getConnection()) {
             // Check if the position exists
