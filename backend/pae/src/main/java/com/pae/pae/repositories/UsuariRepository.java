@@ -2,6 +2,7 @@ package com.pae.pae.repositories;
 
 import com.pae.pae.models.Jornada;
 import com.pae.pae.models.UsuariDTO;
+import com.pae.pae.utils.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -14,17 +15,10 @@ import java.util.Map;
 
 @Repository
 public class UsuariRepository {
-
-    @Value("${SPRING_DATASOURCE_URL}")
-    private String URL = "";
-    @Value("${SPRING_DATASOURCE_USERNAME}")
-    private String USER = "";
-    @Value("${SPRING_DATASOURCE_PASSWORD}")
-    private String PWD = "";
     private UsuariDTO uDTO = null;
 
     protected Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PWD);
+        return DriverManager.getConnection(Config.URL, Config.USER, Config.PWD);
     }
 
     private void AssignUsuariObject(ResultSet resultSet) throws SQLException {

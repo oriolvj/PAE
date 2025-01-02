@@ -4,6 +4,7 @@ import com.pae.pae.models.Mes;
 import com.pae.pae.models.ProjecteDTO;
 import com.pae.pae.models.RequerimentDTO;
 import com.pae.pae.models.Setmana;
+import com.pae.pae.utils.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -15,13 +16,6 @@ import java.util.ArrayList;
 
 @Repository
 public class RequerimentRepository {
-
-    @Value("${SPRING_DATASOURCE_URL}")
-    private String URL = "";
-    @Value("${SPRING_DATASOURCE_USERNAME}")
-    private String USER = "";
-    @Value("${SPRING_DATASOURCE_PASSWORD}")
-    private String PWD = "";
 
     private RequerimentDTO rDTO = null;
 
@@ -65,7 +59,7 @@ public class RequerimentRepository {
     }
 
     protected Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PWD);
+        return DriverManager.getConnection(Config.URL, Config.USER, Config.PWD);
     }
 
     public ArrayList<RequerimentDTO> getRequeriments() {

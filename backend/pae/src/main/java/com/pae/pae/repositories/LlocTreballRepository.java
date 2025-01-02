@@ -1,6 +1,7 @@
 package com.pae.pae.repositories;
 
 import com.pae.pae.models.LlocTreballDTO;
+import com.pae.pae.utils.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -10,16 +11,11 @@ import java.util.Map;
 
 @Repository
 public class LlocTreballRepository {
-    @Value("${SPRING_DATASOURCE_URL}")
-    private String URL = "";
-    @Value("${SPRING_DATASOURCE_USERNAME}")
-    private String USER = "";
-    @Value("${SPRING_DATASOURCE_PASSWORD}")
-    private String PWD = "";
+
     private LlocTreballDTO lltDTO = null;
 
     protected Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PWD);
+        return DriverManager.getConnection(Config.URL, Config.USER, Config.PWD);
     }
 
     private void AssignarLlocTreballObject(ResultSet resultSet) throws SQLException {
