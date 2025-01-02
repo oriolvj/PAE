@@ -31,8 +31,8 @@ public class TecnicRepository {
             Jornada jornada = (jornadaString != null) ? Jornada.valueOf(jornadaString) : null;
             tDTO = new TecnicDTO(
                     resultSet.getInt("id"),
-                    resultSet.getString("username"),// ID del tècnic// Nom del tècnic
-                    resultSet.getInt("sou"),                // Sou
+                    resultSet.getString("username"),
+                    resultSet.getInt("sou"),
                     resultSet.getString("posicio"),
                     resultSet.getString("preferencia"),
                     resultSet.getBoolean("actiu"),
@@ -146,11 +146,11 @@ public class TecnicRepository {
             try (PreparedStatement updateTecnicStmt = connection.prepareStatement(query)) {
                 updateTecnicStmt.setInt(1, Integer.parseInt(modifyRequest.get("sou")));
                 updateTecnicStmt.setString(2, modifyRequest.get("posicio"));
-                updateTecnicStmt.setString(4, modifyRequest.get("preferencia"));
-                updateTecnicStmt.setBoolean(5, Boolean.parseBoolean(modifyRequest.get("actiu")));
-                updateTecnicStmt.setBoolean(6, Boolean.parseBoolean(modifyRequest.get("contractat")));
-                updateTecnicStmt.setString(7, modifyRequest.get("jornada"));
-                updateTecnicStmt.setString(8, username);
+                updateTecnicStmt.setString(3, modifyRequest.get("preferencia"));
+                updateTecnicStmt.setBoolean(4, Boolean.parseBoolean(modifyRequest.get("actiu")));
+                updateTecnicStmt.setBoolean(5, Boolean.parseBoolean(modifyRequest.get("contractat")));
+                updateTecnicStmt.setString(6, modifyRequest.get("jornada"));
+                updateTecnicStmt.setString(7, username);
                 updateTecnicStmt.executeUpdate();
             }
             return true;
