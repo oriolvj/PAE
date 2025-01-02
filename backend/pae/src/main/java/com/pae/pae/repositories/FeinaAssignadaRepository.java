@@ -40,7 +40,7 @@ public class FeinaAssignadaRepository {
     public ArrayList<FeinaAssignadaDTO> getfeinaAssignades() {
 
         ArrayList<FeinaAssignadaDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM feinassignada";
+        String query = "SELECT * FROM feinaassignada";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
@@ -55,7 +55,7 @@ public class FeinaAssignadaRepository {
     }
 
     public FeinaAssignadaDTO getfeinaAssignada(String nomProjecte, String username, Integer id) {
-        String query = "SELECT * FROM feinassignada WHERE id = ?";
+        String query = "SELECT * FROM feinaassignada WHERE id = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
@@ -71,7 +71,7 @@ public class FeinaAssignadaRepository {
     }
 
     public boolean addfeinaAssignada(Map<String, String> newfeinaRequest) throws SQLException{
-        String query = "INSERT INTO feinassignada(projecte_nom, nom_empleat, requeriment_id) VALUES(?,?,?)";
+        String query = "INSERT INTO feinaassignada(projecte_nom, nom_empleat, requeriment_id) VALUES(?,?,?)";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, newfeinaRequest.get("nom_projecte"));
