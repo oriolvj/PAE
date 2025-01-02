@@ -16,9 +16,9 @@ public class MainCorregit {
         // Create some objects as an example
         List<TecnicDTO> allEmployees = getTecnics();
         List<ProjecteDTO> projects = getProjectes(); // --> PENDENT
-        List<RequerimentDTO> requirementsCCCB = createRequirements("CCCB");
-        List<RequerimentDTO> requirementsParlament = createRequirements("Parlament");
-        List<RequerimentDTO> requirementsKingsLeague = createRequirements("Kings League");
+        //List<RequerimentDTO> requirementsCCCB = createRequirements("CCCB");
+        //List<RequerimentDTO> requirementsParlament = createRequirements("Parlament");
+        //List<RequerimentDTO> requirementsKingsLeague = createRequirements("Kings League");
 
         // Automatic assignment of employees to requirements
         boolean allProjectsAssigned = automaticAssignment(projects, allEmployees);
@@ -433,7 +433,7 @@ public class MainCorregit {
         return tecnicController.getTecnics();
     }
 
-    public static List<RequerimentDTO> createRequirements(String project) {
+    /*public static List<RequerimentDTO> createRequirements(String project) {
         List<RequerimentDTO> requeriments = new ArrayList<>();
 
         if (project.equals("CCCB")){
@@ -489,7 +489,7 @@ public class MainCorregit {
             requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "mount auxiliary", "Draft de Jugadores", "Kings league plant", "Kings League"));
         }
         return requeriments;
-    }
+    }*/
 
 
     public static void addFeinaAssignada(String nomProjecte, String username, Integer id) throws SQLException {
