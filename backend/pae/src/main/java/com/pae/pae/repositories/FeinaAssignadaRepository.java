@@ -76,7 +76,7 @@ public class FeinaAssignadaRepository {
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, newfeinaRequest.get("nom_projecte"));
             stmt.setString(2, newfeinaRequest.get("username"));
-            stmt.setString(3, newfeinaRequest.get("id"));
+            stmt.setString(3, String.valueOf(newfeinaRequest.get("id")));
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
                 System.out.println("Projecte insertat correctament");
