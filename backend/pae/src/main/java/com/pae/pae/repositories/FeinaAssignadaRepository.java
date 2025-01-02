@@ -71,7 +71,7 @@ public class FeinaAssignadaRepository {
     }
 
     public boolean addfeinaAssignada(Map<String, String> newfeinaRequest) throws SQLException{
-        String query = "INSERT INTO feinassignada(projecte_nom, nom_empleat, requeriment_id VALUES(?,?,?)";
+        String query = "INSERT INTO feinassignada(projecte_nom, nom_empleat, requeriment_id) VALUES(?,?,?)";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, newfeinaRequest.get("nom_projecte"));
@@ -93,7 +93,7 @@ public class FeinaAssignadaRepository {
         "feinaassignada f JOIN  requeriment r ON" +
         "f.id_requeriment = r.id_requeriment" +
         "WHERE" +
-        "p.username = ?";
+        "f.username = ?";
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
