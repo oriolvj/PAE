@@ -2,6 +2,7 @@ package com.pae.pae.repositories;
 
 import com.pae.pae.controllers.*;
 import com.pae.pae.models.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 
@@ -13,6 +14,16 @@ import java.util.*;
 
 @Repository
 public class AlgorithmRepository {
+
+    @Autowired
+    private TecnicController tecnicController = new TecnicController();
+    @Autowired
+    private ProjecteController projecteController = new ProjecteController();
+    @Autowired
+    private RequerimentController requerimentController = new RequerimentController();
+    @Autowired
+    private FeinaAssignadaController feinaAssignadaController = new FeinaAssignadaController();
+
     public boolean execute() throws SQLException {
 
         // Create some objects as an example
@@ -37,7 +48,7 @@ public class AlgorithmRepository {
         }
     }
 
-    public static boolean automaticAssignment(List<ProjecteDTO> projects, List<TecnicDTO> employees) throws SQLException {
+    public boolean automaticAssignment(List<ProjecteDTO> projects, List<TecnicDTO> employees) throws SQLException {
         boolean allProjectsAssigned = false;
 
         List<TecnicDTO> candidates = new ArrayList<>();
@@ -73,7 +84,7 @@ public class AlgorithmRepository {
     }
 
 
-    public static boolean assignEmployeesToRequirements(ProjecteDTO project, List<TecnicDTO> candidates, List<RequerimentDTO> assignedRequirements) throws SQLException {
+    public boolean assignEmployeesToRequirements(ProjecteDTO project, List<TecnicDTO> candidates, List<RequerimentDTO> assignedRequirements) throws SQLException {
         Duration duration;
 
         List<TecnicDTO> discardedEmployees = new ArrayList<>();
@@ -144,43 +155,35 @@ public class AlgorithmRepository {
     }
 
 
-    public static List<String> getNomProjectes(){
-        ProjecteController projecteController = new ProjecteController();
+    public List<String> getNomProjectes(){
         return projecteController.getNomProjectes();
     }
 
-    public static List<ProjecteDTO> getProjectes(){
-        ProjecteController projecteController = new ProjecteController();
+    public List<ProjecteDTO> getProjectes(){
         return projecteController.getProjectes();
     }
 
-    public static List<RequerimentDTO> getRequerimentsProjecte(String nom){
-        RequerimentController requerimentController = new RequerimentController();
+    public List<RequerimentDTO> getRequerimentsProjecte(String nom){
         return requerimentController.getRequerimentsProjecte(nom);
     }
 
-    public static List<TecnicDTO> findEmployeesByRol(List<TecnicDTO> employees, String profile) {
-        TecnicController tecnicController = new TecnicController();
+    public List<TecnicDTO> findEmployeesByRol(List<TecnicDTO> employees, String profile) {
         return tecnicController.getTecnicsByLlocDeTreball(profile);
     }
 
-    public static List<TecnicDTO> findEmployeesByModality(List<TecnicDTO> employees, String modality) {
-        TecnicController tecnicController = new TecnicController();
+    public List<TecnicDTO> findEmployeesByModality(List<TecnicDTO> employees, String modality) {
         return tecnicController.getTecnicsByModalitat(modality);
     }
 
-    public static List<TecnicDTO> findEmployeesByPreference(List<TecnicDTO> employees, String project) {
-        TecnicController tecnicController = new TecnicController();
+    public List<TecnicDTO> findEmployeesByPreference(List<TecnicDTO> employees, String project) {
         return tecnicController.getTecnicsByPreferencia(project);
     }
 
-    public static List<TecnicDTO> findEmployeesByModalityandPreference(String modality, String project) {
-        TecnicController tecnicController = new TecnicController();
+    public List<TecnicDTO> findEmployeesByModalityandPreference(String modality, String project) {
         return tecnicController.getTecnicsByModalitatAndPreferencia(modality, project);
     }
 
-    public static List<FeinaAssignadaDTO> getFeinesCandidat(String username) {
-        FeinaAssignadaController feinaAssignadaController = new FeinaAssignadaController();
+    public List<FeinaAssignadaDTO> getFeinesCandidat(String username) {
         return feinaAssignadaController.getfeinesAssignadaUsuari(username);
     }
 

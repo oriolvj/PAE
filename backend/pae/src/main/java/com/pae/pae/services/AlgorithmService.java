@@ -10,7 +10,7 @@ import java.sql.SQLException;
 @Service
 public class AlgorithmService {
     @Autowired
-    private AlgorithmRepository algorithmRepository = new AlgorithmRepository();
+    private AlgorithmRepository algorithmRepository;
 
     public boolean execute() throws SQLException {
         return algorithmRepository.execute();
