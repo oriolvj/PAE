@@ -15,7 +15,8 @@ public class RequerimentDTO {
     private String nomProjecte;
 
 
-    public RequerimentDTO(LocalDate day, LocalTime startTime, LocalTime endTime, String technicalProfile, String actName, String actRoom, String nomProjecte) {
+    public RequerimentDTO(int id, LocalDate day, LocalTime startTime, LocalTime endTime, String technicalProfile, String actName, String actRoom, String nomProjecte) {
+        this.id = id;
         this.day = day;
         this.startTime = startTime;
         this.endTime = endTime;

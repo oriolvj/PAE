@@ -27,6 +27,7 @@ public class RequerimentRepository {
 
     private void AssignarProjecteObject(ResultSet resultSet) throws SQLException {
         try {
+            int id = resultSet.getInt("id");
             Date date = resultSet.getDate("day");
             LocalDate localDate = date.toLocalDate();
 
@@ -47,6 +48,7 @@ public class RequerimentRepository {
             LocalTime formattedEndTime = LocalTime.of(localEndTime.getHour(), localEndTime.getMinute());
 
             rDTO = new RequerimentDTO(
+                    id,
                     formattedDate,
                     formattedStartTime,
                     formattedEndTime,
