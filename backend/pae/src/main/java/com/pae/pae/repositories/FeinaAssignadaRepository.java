@@ -76,7 +76,7 @@ public class FeinaAssignadaRepository {
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, newfeinaRequest.get("nom_projecte"));
             stmt.setString(2, newfeinaRequest.get("username"));
-            stmt.setString(3, String.valueOf(newfeinaRequest.get("id")));
+            stmt.setInt(3, Integer.parseInt(newfeinaRequest.get("id")));
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
                 System.out.println("Projecte insertat correctament");
@@ -88,12 +88,13 @@ public class FeinaAssignadaRepository {
 
     public ArrayList<FeinaAssignadaDTO> getfeinesAssignadaUsuari(String username) {
         ArrayList<FeinaAssignadaDTO> ja = new ArrayList<>();
-        String query = "SELECT f.nom_empleat, f.projecte_nom, r.dia, r.start_time" +
-        "FROM " +
-        "feinaassignada f JOIN  requeriment r ON" +
-        "f.id_requeriment = r.id_requeriment" +
-        "WHERE" +
-        "f.username = ?";
+        String query = "SELECT f.nom_empleat, f.projecte_nom, r.day, r.start_time, r.end_time " +
+                "FROM feinaassignada f " +
+                "JOIN  requirements r " +
+                "ON f.requeriment_id = r.id " +
+                "WHERE f.nom_empleat = 'hugo.tienza'";
+
+        System.out.println(query);
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
