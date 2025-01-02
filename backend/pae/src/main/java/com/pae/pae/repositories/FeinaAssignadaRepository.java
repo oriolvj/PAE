@@ -25,7 +25,7 @@ public class FeinaAssignadaRepository {
             fDTO = new FeinaAssignadaDTO(
                     resultSet.getString("projecte_nom"),
                     resultSet.getString("nom_empleat"),
-                    resultSet.getInt("id_requeriment"),
+                    resultSet.getInt("requeriment_id"),
                     null,
                     null,
                     null
@@ -92,7 +92,7 @@ public class FeinaAssignadaRepository {
                 "FROM feinaassignada f " +
                 "JOIN  requirements r " +
                 "ON f.requeriment_id = r.id " +
-                "WHERE f.nom_empleat = 'hugo.tienza'";
+                "WHERE f.nom_empleat = ?";
 
         System.out.println(query);
 
