@@ -14,7 +14,7 @@ import java.util.Map;
 @Service
 public class TecnicService {
     @Autowired
-    private TecnicRepository tecnicRepository;
+    private TecnicRepository tecnicRepository = new TecnicRepository();
 
     public ArrayList<TecnicDTO> getTecnics() {return tecnicRepository.getTecnics();}
 
