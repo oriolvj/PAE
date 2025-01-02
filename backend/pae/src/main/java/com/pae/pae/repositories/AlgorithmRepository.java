@@ -1,7 +1,8 @@
-package com.pae.pae.Algorithm;
+package com.pae.pae.repositories;
 
 import com.pae.pae.controllers.*;
 import com.pae.pae.models.*;
+import org.springframework.stereotype.Repository;
 
 
 import java.sql.SQLException;
@@ -10,12 +11,14 @@ import java.time.*;
 import java.time.temporal.IsoFields;
 import java.util.*;
 
-public class MainCorregit {
-    public static void main(String[] args) throws SQLException {
+@Repository
+public class AlgorithmRepository {
+    public boolean execute() throws SQLException {
 
         // Create some objects as an example
         List<TecnicDTO> allEmployees = getTecnics();
         List<ProjecteDTO> projects = getProjectes(); // --> PENDENT
+
         //List<RequerimentDTO> requirementsCCCB = createRequirements("CCCB");
         //List<RequerimentDTO> requirementsParlament = createRequirements("Parlament");
         //List<RequerimentDTO> requirementsKingsLeague = createRequirements("Kings League");
@@ -24,10 +27,13 @@ public class MainCorregit {
         boolean allProjectsAssigned = automaticAssignment(projects, allEmployees);
         
         if (allProjectsAssigned) {
+
             System.out.println("All projects assigned: " + projects);
+            return true;
         } else {
             System.out.println("There are requirements that have not been assigned");
             System.out.println("Projects: " + projects);
+            return false;
         }
     }
 
