@@ -2,6 +2,7 @@ package com.pae.pae.repositories;
 
 import com.pae.pae.controllers.*;
 import com.pae.pae.models.*;
+import com.pae.pae.services.TecnicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,13 +17,15 @@ import java.util.*;
 public class AlgorithmRepository {
 
     @Autowired
-    private TecnicController tecnicController = new TecnicController();
+    private TecnicRepository tecnicRepository = new TecnicRepository();
     @Autowired
-    private ProjecteController projecteController = new ProjecteController();
+    private TecnicService tecnicService = new TecnicService();
     @Autowired
-    private RequerimentController requerimentController = new RequerimentController();
+    private ProjecteRepository projecteRepository = new ProjecteRepository();
     @Autowired
-    private FeinaAssignadaController feinaAssignadaController = new FeinaAssignadaController();
+    private RequerimentRepository requerimentRepository = new RequerimentRepository();
+    @Autowired
+    private FeinaAssignadaRepository feinaAssignadaRepository = new FeinaAssignadaRepository();
 
     public boolean execute() throws SQLException {
 
@@ -156,35 +159,35 @@ public class AlgorithmRepository {
 
 
     public List<String> getNomProjectes(){
-        return projecteController.getNomProjectes();
+        return projecteRepository.getNomProjectes();
     }
 
     public List<ProjecteDTO> getProjectes(){
-        return projecteController.getProjectes();
+        return projecteRepository.getProjectes();
     }
 
     public List<RequerimentDTO> getRequerimentsProjecte(String nom){
-        return requerimentController.getRequerimentsProjecte(nom);
+        return requerimentRepository.getRequerimentsProjecte(nom);
     }
 
     public List<TecnicDTO> findEmployeesByRol(List<TecnicDTO> employees, String profile) {
-        return tecnicController.getTecnicsByLlocDeTreball(profile);
+        return tecnicRepository.getTecnicsByLlocDeTreball(profile);
     }
 
     public List<TecnicDTO> findEmployeesByModality(List<TecnicDTO> employees, String modality) {
-        return tecnicController.getTecnicsByModalitat(modality);
+        return tecnicService.getTecnicsByModalitat(modality);
     }
 
     public List<TecnicDTO> findEmployeesByPreference(List<TecnicDTO> employees, String project) {
-        return tecnicController.getTecnicsByPreferencia(project);
+        return tecnicRepository.getTecnicsByPreferencia(project);
     }
 
     public List<TecnicDTO> findEmployeesByModalityandPreference(String modality, String project) {
-        return tecnicController.getTecnicsByModalitatAndPreferencia(modality, project);
+        return tecnicService.getTecnicsByModalitatAndPreferencia(modality, project);
     }
 
     public List<FeinaAssignadaDTO> getFeinesCandidat(String username) {
-        return feinaAssignadaController.getfeinesAssignadaUsuari(username);
+        return feinaAssignadaRepository.getfeinesAssignadaUsuari(username);
     }
 
 
