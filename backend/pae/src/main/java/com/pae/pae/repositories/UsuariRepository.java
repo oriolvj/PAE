@@ -151,7 +151,7 @@ public class UsuariRepository {
 
         String oldPassword = getOldPassword(username);
 
-        String query = "UPDATE usuaris SET username = ?, nom = ?, edat = ?, tlf = ?, email = ?, pwd = ?, rol = CAST(? AS rols), preferencia = ?, actiu = ?, contractat = ?, jornada = CAST(? AS jornada) WHERE username = ?";
+        String query = "UPDATE usuaris SET username = ?, nom = ?, edat = ?, tlf = ?, email = ?, pwd = ?, rol = CAST(? AS rols) WHERE username = ?";
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
 
