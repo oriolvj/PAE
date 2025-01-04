@@ -94,4 +94,8 @@ public class TecnicDTO {
     public void setPosicio(String posicio) {
         this.posicio = posicio;
     }
+
+    public boolean equals(TecnicDTO tecnic) {
+        return this.username.equals(tecnic.getUsername());
+    }
 }

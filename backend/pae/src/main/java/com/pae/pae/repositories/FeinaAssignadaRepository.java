@@ -107,14 +107,12 @@ public class FeinaAssignadaRepository {
 
     public ArrayList<FeinaAssignadaDTO> getfeinesAssignadaUsuari(String username) {
         ArrayList<FeinaAssignadaDTO> ja = new ArrayList<>();
-        String query = "SELECT f.nom_empleat, f.projecte_nom, r.day, r.start_time, r.end_time " +
+        String query = "SELECT f.nom_empleat, f.projecte_nom, f.requeriment_id, r.day, r.start_time, r.end_time " +
                 "FROM feinaassignada f " +
-                "JOIN  requirements r " +
+                "JOIN requirements r " +
                 "ON f.requeriment_id = r.id " +
                 "WHERE f.nom_empleat = ?";
-
         System.out.println(query);
-
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, username);
@@ -122,12 +120,9 @@ public class FeinaAssignadaRepository {
                 while (resultSet.next()) {
                     AssignarFeinaObject(resultSet);
                     Date date = resultSet.getDate("day");
-                    LocalDate localDate = date.toInstant()
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDate();
+                    LocalDate localDate = date.toLocalDate();
 
                     LocalDate formattedDate = LocalDate.of(localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth());
-
 
                     Time startTime = resultSet.getTime("start_time");
                     LocalTime localStartTime = startTime.toLocalTime();

@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.time.*;
 import java.time.temporal.IsoFields;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class AlgorithmRepository {
@@ -189,7 +190,16 @@ public class AlgorithmRepository {
     }
 
     public List<TecnicDTO> findEmployeesByRol(List<TecnicDTO> employees, String profile) {
-        return tecnicRepository.getTecnicsByLlocDeTreball(profile);
+        List<TecnicDTO> tecnicRol = tecnicRepository.getTecnicsByLlocDeTreball(profile);
+        List<TecnicDTO> duplicates = new ArrayList<>();
+        for(TecnicDTO employee : employees){
+            for(TecnicDTO tecnic : tecnicRol){
+                if(employee.equals(tecnic)){
+                    duplicates.add(employee);
+                }
+            }
+        }
+        return duplicates;
     }
 
     public List<TecnicDTO> findEmployeesByModality(List<TecnicDTO> employees, String modality) {
