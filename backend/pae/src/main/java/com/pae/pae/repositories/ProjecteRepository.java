@@ -30,8 +30,8 @@ public class ProjecteRepository {
             pDTO = new ProjecteDTO(
                     resultSet.getString("nom"),
                     mes,
-                    resultSet.getDate("data_inici"),
-                    resultSet.getDate("data_fi"),
+                    resultSet.getDate("dataInici"),
+                    resultSet.getDate("dataFi"),
                     resultSet.getInt("numeroEmpleats"),
                     resultSet.getString("ubicacio")
             );
@@ -82,8 +82,8 @@ public class ProjecteRepository {
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, newprojectRequest.get("nom"));
             stmt.setString(2, newprojectRequest.get("mes").toString());
-            stmt.setDate(3, java.sql.Date.valueOf(newprojectRequest.get("data_inici")));
-            stmt.setDate(4, java.sql.Date.valueOf(newprojectRequest.get("data_fi")));
+            stmt.setDate(3, java.sql.Date.valueOf(newprojectRequest.get("dataInici")));
+            stmt.setDate(4, java.sql.Date.valueOf(newprojectRequest.get("dataFi")));
             stmt.setInt(5, Integer.valueOf(newprojectRequest.get("numeroEmpleats")));
             stmt.setString(6, newprojectRequest.get("ubicacio"));
             int rowsInserted = stmt.executeUpdate();
@@ -113,7 +113,7 @@ public class ProjecteRepository {
 
     public List<ProjecteDTO> getProjectesDesdeData(Date date) {
         ArrayList<ProjecteDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM projectes WHERE ? >= data_inici AND ? <= data_fi";
+        String query = "SELECT * FROM projectes WHERE ? >= dataInici AND ? <= dataFi";
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
