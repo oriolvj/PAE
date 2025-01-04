@@ -1,10 +1,7 @@
 package com.pae.pae.controllers;
 
 import com.pae.pae.models.FeinaAssignadaDTO;
-import com.pae.pae.models.FeinaAssignadaLlocTreballDTO;
-import com.pae.pae.models.ProjecteDTO;
 import com.pae.pae.services.FeinaAssignadaService;
-import com.pae.pae.services.ProjecteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +24,7 @@ public class FeinaAssignadaController {
 
     @CrossOrigin
     @GetMapping(path = "/horari")
-    public ArrayList<FeinaAssignadaLlocTreballDTO> getfeinaAssignadesHorari() {
+    public ArrayList<FeinaAssignadaDTO> getfeinaAssignadesHorari() {
         return feinaAssignadaService.getfeinaAssignadesHorari();
     }
 

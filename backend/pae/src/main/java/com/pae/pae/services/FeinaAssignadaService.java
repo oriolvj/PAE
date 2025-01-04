@@ -1,7 +1,6 @@
 package com.pae.pae.services;
 
 import com.pae.pae.models.FeinaAssignadaDTO;
-import com.pae.pae.models.FeinaAssignadaLlocTreballDTO;
 import com.pae.pae.repositories.FeinaAssignadaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,7 @@ public class FeinaAssignadaService {
         return feinaAssignadaRepository.getfeinesAssignadaUsuari(username);
     }
 
-    public ArrayList<FeinaAssignadaLlocTreballDTO> getfeinaAssignadesHorari() {
+    public ArrayList<FeinaAssignadaDTO> getfeinaAssignadesHorari() {
         return feinaAssignadaRepository.getfeinaAssignadesHorari();
     }
 }

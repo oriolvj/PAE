@@ -12,6 +12,7 @@ public class FeinaAssignadaDTO {
     private LocalDate day;
     private LocalTime startTime;
     private LocalTime endTime;
+    private String llocTreball;
 
     public FeinaAssignadaDTO(String nomProjecte, String username, Integer id, LocalDate day, LocalTime start_time, LocalTime end_time) {
         this.nomProjecte = nomProjecte;
@@ -20,6 +21,16 @@ public class FeinaAssignadaDTO {
         this.day = day;
         this.startTime = start_time;
         this.endTime = end_time;
+    }
+
+    public FeinaAssignadaDTO(String nomProjecte, String username, Integer id, LocalDate day, LocalTime start_time, LocalTime end_time, String llocTreball) {
+        this.nomProjecte = nomProjecte;
+        this.username = username;
+        this.id = id;
+        this.day = day;
+        this.startTime = start_time;
+        this.endTime = end_time;
+        this.llocTreball = llocTreball;
     }
 
     public String getNomProjecte() {
@@ -68,5 +79,13 @@ public class FeinaAssignadaDTO {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
+    }
+
+    public String getLlocTreball() {
+        return llocTreball;
+    }
+
+    public void setLlocTreball(String llocTreball) {
+        this.llocTreball = llocTreball;
     }
 }

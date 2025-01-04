@@ -16,7 +16,6 @@ import java.util.Map;
 @Repository
 public class FeinaAssignadaRepository {
     private FeinaAssignadaDTO fDTO = null;
-    private FeinaAssignadaLlocTreballDTO ftDTO = null;
 
     protected Connection getConnection() throws SQLException {
         return DriverManager.getConnection(Config.URL, Config.USER, Config.PWD);
@@ -41,7 +40,7 @@ public class FeinaAssignadaRepository {
 
     private void AssignarFeinaTreballObject(ResultSet resultSet) throws SQLException {
         try {
-            ftDTO = new FeinaAssignadaLlocTreballDTO(
+            fDTO = new FeinaAssignadaDTO(
                     resultSet.getString("projecte_nom"),
                     resultSet.getString("nom_empleat"),
                     resultSet.getInt("requeriment_id"),
@@ -154,8 +153,8 @@ public class FeinaAssignadaRepository {
         return ja;
     }
 
-    public ArrayList<FeinaAssignadaLlocTreballDTO> getfeinaAssignadesHorari() {
-        ArrayList<FeinaAssignadaLlocTreballDTO> ja = new ArrayList<>();
+    public ArrayList<FeinaAssignadaDTO> getfeinaAssignadesHorari() {
+        ArrayList<FeinaAssignadaDTO> ja = new ArrayList<>();
         String query = "SELECT f.nom_empleat, f.projecte_nom, f.requeriment_id, r.id, r.day, r.start_time, r.end_time, r.technical_profile " +
                 "FROM feinaassignada f " +
                 "JOIN  requirements r " +
@@ -184,11 +183,11 @@ public class FeinaAssignadaRepository {
 
                     // Crear LocalTime en formato LocalTime.of(hour, minute)
                     LocalTime formattedEndTime = LocalTime.of(localEndTime.getHour(), localEndTime.getMinute());
-                    ftDTO.setDay(formattedDate);
-                    ftDTO.setStartTime(formattedStartTime);
-                    ftDTO.setEndTime(formattedEndTime);
-                    ftDTO.setTechnicalProfile(resultSet.getString("technical_profile"));
-                    ja.add(ftDTO);
+                    fDTO.setDay(formattedDate);
+                    fDTO.setStartTime(formattedStartTime);
+                    fDTO.setEndTime(formattedEndTime);
+                    fDTO.setLlocTreball(resultSet.getString("technical_profile"));
+                    ja.add(fDTO);
                 }
             }
         } catch (SQLException e) {
