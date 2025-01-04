@@ -27,15 +27,22 @@ public class AlgorithmRepository {
     @Autowired
     private FeinaAssignadaRepository feinaAssignadaRepository = new FeinaAssignadaRepository();
 
+    private Date iniciSetmana;
+
+    private Date fiSetmana;
+
     public boolean execute(Date date) throws SQLException {
+
+        iniciSetmana = date;
+        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate finSemanaLocal = localDate.with(java.time.temporal.TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        fiSetmana = Date.from(finSemanaLocal.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+
 
         // Create some objects as an example
         List<TecnicDTO> allEmployees = getTecnics();
-        List<ProjecteDTO> projects = getProjectes(); // --> PENDENT
-
-        //List<RequerimentDTO> requirementsCCCB = createRequirements("CCCB");
-        //List<RequerimentDTO> requirementsParlament = createRequirements("Parlament");
-        //List<RequerimentDTO> requirementsKingsLeague = createRequirements("Kings League");
+        List<ProjecteDTO> projects = getProjectesDesde();
 
         // Automatic assignment of employees to requirements
         boolean allProjectsAssigned = automaticAssignment(projects, allEmployees);
@@ -91,7 +98,7 @@ public class AlgorithmRepository {
         Duration duration;
 
         List<TecnicDTO> discardedEmployees = new ArrayList<>();
-        List<RequerimentDTO> requirements = getRequerimentsProjecte(project.getNom());
+        List<RequerimentDTO> requirements = getRequerimentsProjecteSetmana(project.getNom());
 
         List<TecnicDTO> profileCandidates = new ArrayList<>();
 
@@ -154,7 +161,7 @@ public class AlgorithmRepository {
                 }
             }
         }
-        return assignedRequirements.size() == getRequerimentsProjecte(project.getNom()).size(); // If all the requirements have been assigned, return true
+        return assignedRequirements.size() == getRequerimentsProjecteSetmana(project.getNom()).size(); // If all the requirements have been assigned, return true
     }
 
 
@@ -166,8 +173,19 @@ public class AlgorithmRepository {
         return projecteRepository.getProjectes();
     }
 
+    public List<ProjecteDTO> getProjectesDesde(){
+        return projecteRepository.getProjectesDesdeData(iniciSetmana);
+    }
+
     public List<RequerimentDTO> getRequerimentsProjecte(String nom){
         return requerimentRepository.getRequerimentsProjecte(nom);
+    }
+
+    public List<RequerimentDTO> getRequerimentsProjecteSetmana(String nom){
+        return requerimentRepository.getRequerimentsProjecteSetmana(nom, iniciSetmana, fiSetmana);
+    }
+    public List<RequerimentDTO> getRequerimentsSetmana(String nom){
+        return requerimentRepository.getRequerimentsSetmana(iniciSetmana, fiSetmana);
     }
 
     public List<TecnicDTO> findEmployeesByRol(List<TecnicDTO> employees, String profile) {
