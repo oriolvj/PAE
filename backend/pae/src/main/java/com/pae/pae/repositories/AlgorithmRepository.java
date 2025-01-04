@@ -64,7 +64,6 @@ public class AlgorithmRepository {
 
         List<TecnicDTO> candidates = new ArrayList<>();
         List<TecnicDTO> preferenceCandidates = new ArrayList<>();
-        List<RequerimentDTO> assignedRequirements = new ArrayList<>();
         
         // Automatic assignment of employees to requirements
         for (ProjecteDTO project : projects) {
@@ -78,16 +77,16 @@ public class AlgorithmRepository {
             preferenceCandidates = findEmployeesByModalityandPreference("POOL", project.getNom());
             // Check if there are employees with preference for the project
             if (!preferenceCandidates.isEmpty()) {
-                allAssigned = assignEmployeesToRequirements(project, preferenceCandidates, assignedRequirements);
+                allAssigned = assignEmployeesToRequirements(project, preferenceCandidates);
             } 
             // If there are still requirements without employees assigned, we look for employees in POOL
             if (!allAssigned) {
-                allAssigned = assignEmployeesToRequirements(project, candidates, assignedRequirements);
+                allAssigned = assignEmployeesToRequirements(project, candidates);
             }
             // If there are still requirements without employees assigned, we look for employees in ALTAS
             if (!allAssigned) {	
                 candidates = findEmployeesByModality(employees, "ALTAS");
-                allAssigned = assignEmployeesToRequirements(project, candidates, assignedRequirements);
+                allAssigned = assignEmployeesToRequirements(project, candidates);
             }
             allProjectsAssigned = allProjectsAssigned &&  allAssigned;
         }
@@ -95,9 +94,10 @@ public class AlgorithmRepository {
     }
 
 
-    public boolean assignEmployeesToRequirements(ProjecteDTO project, List<TecnicDTO> candidates, List<RequerimentDTO> assignedRequirements) throws SQLException {
+    public boolean assignEmployeesToRequirements(ProjecteDTO project, List<TecnicDTO> candidates) throws SQLException {
         Duration duration;
 
+        List<RequerimentDTO> assignedRequirements = new ArrayList<>();
         List<TecnicDTO> discardedEmployees = new ArrayList<>();
         List<RequerimentDTO> requirements = getRequerimentsProjecteSetmanaNoAssignats(project.getNom());
 
@@ -105,64 +105,62 @@ public class AlgorithmRepository {
 
         for (RequerimentDTO requeriment : requirements) {
             // First, we check if the requirement is not assigned
-            if(!assignedRequirements.contains(requeriment)){
-                // First, we look for employees with the required technical profile
-                profileCandidates = findEmployeesByRol(candidates, requeriment.getTechnicalProfile());
-                if (!profileCandidates.isEmpty()) {
-                    duration = Duration.between(requeriment.getStartTime(), requeriment.getEndTime());
-                    // We check if the employee meets the requirements of the act
-                    boolean removed = false;
-                    boolean assigned = false;
+            // First, we look for employees with the required technical profile
+            profileCandidates = findEmployeesByRol(candidates, requeriment.getTechnicalProfile());
+            if (!profileCandidates.isEmpty()) {
+                duration = Duration.between(requeriment.getStartTime(), requeriment.getEndTime());
+                // We check if the employee meets the requirements of the act
+                boolean removed = false;
+                boolean assigned = false;
 
-                    for (Iterator<TecnicDTO> iterator2 = profileCandidates.iterator(); iterator2.hasNext() && !assigned;) {
-                        TecnicDTO candidate = iterator2.next();
-                        // If the duration of the act is greater than 9 hours, part-time employees are discarded
-                        if (duration.toMinutes() > 540 && candidate.getJornada().toString().equals("PARCIAL")) {
-                            // profileCandidates.remove(candidate);
-                            discardedEmployees.add(candidate);
-                            removed = true;
-                        }else{  // If we don't discard the employee, we check the rest of the requirements
-                            // Check if the employee is available -> check if the employee is already assigned to another act at the same time
-                            List<FeinaAssignadaDTO> feines = getFeinesCandidat(candidate.getUsername());
-                            if (!feines.isEmpty()){
-                                for (Iterator<FeinaAssignadaDTO> iterator3 = feines.iterator(); iterator3.hasNext() && !removed;) {
-                                    FeinaAssignadaDTO feina = iterator3.next();
+                for (Iterator<TecnicDTO> iterator2 = profileCandidates.iterator(); iterator2.hasNext() && !assigned; ) {
+                    TecnicDTO candidate = iterator2.next();
+                    // If the duration of the act is greater than 9 hours, part-time employees are discarded
+                    if (duration.toMinutes() > 540 && candidate.getJornada().toString().equals("PARCIAL")) {
+                        // profileCandidates.remove(candidate);
+                        discardedEmployees.add(candidate);
+                        removed = true;
+                    } else {  // If we don't discard the employee, we check the rest of the requirements
+                        // Check if the employee is available -> check if the employee is already assigned to another act at the same time
+                        List<FeinaAssignadaDTO> feines = getFeinesCandidat(candidate.getUsername());
+                        if (!feines.isEmpty()) {
+                            for (Iterator<FeinaAssignadaDTO> iterator3 = feines.iterator(); iterator3.hasNext() && !removed; ) {
+                                FeinaAssignadaDTO feina = iterator3.next();
 
-                                    // Check if the day matches
-                                    if (feina.getDay().equals(requeriment.getDay())) {
-                                        // Check if the time ranges overlap
-                                        boolean overlap = feina.getStartTime().isBefore(requeriment.getEndTime()) &&
-                                                        feina.getEndTime().isAfter(requeriment.getStartTime());
+                                // Check if the day matches
+                                if (feina.getDay().equals(requeriment.getDay())) {
+                                    // Check if the time ranges overlap
+                                    boolean overlap = feina.getStartTime().isBefore(requeriment.getEndTime()) &&
+                                            feina.getEndTime().isAfter(requeriment.getStartTime());
 
-                                        if (overlap) {
-                                            discardedEmployees.add(candidate);
-                                            removed = true;
-                                        }
+                                    if (overlap) {
+                                        discardedEmployees.add(candidate);
+                                        removed = true;
                                     }
                                 }
                             }
-                            
-                            //if (candidate.getAssignedRequirements().isEmpty() || (!removed)){
-                            if (feines.isEmpty() || (!removed)){
-                                // If the employee is available
-                                // We check if the employee adheres to the rules of the labor contract (CONVENI)
-                                if (checkLabourAgreement(candidate, requeriment, feines)){
-                                    // Assign the employee to the act
-                                    addFeinaAssignada(requeriment.getNomProjecte(), candidate.getUsername(), requeriment.getId());
-                                    //project.getRequirements().get(project.getRequirements().indexOf(requirement)).setAssignedEmployee(candidate);
-                                    assignedRequirements.add(requeriment);
-                                    assigned = true;
-                                } else {
-                                    // If the employee does not meet the requirements of the act, is discarded
-                                    discardedEmployees.add(candidate);
-                                }
+                        }
+
+                        //if (candidate.getAssignedRequirements().isEmpty() || (!removed)){
+                        if (feines.isEmpty() || (!removed)) {
+                            // If the employee is available
+                            // We check if the employee adheres to the rules of the labor contract (CONVENI)
+                            if (checkLabourAgreement(candidate, requeriment, feines)) {
+                                // Assign the employee to the act
+                                addFeinaAssignada(requeriment.getNomProjecte(), candidate.getUsername(), requeriment.getId());
+                                //project.getRequirements().get(project.getRequirements().indexOf(requirement)).setAssignedEmployee(candidate);
+                                assignedRequirements.add(requeriment);
+                                assigned = true;
+                            } else {
+                                // If the employee does not meet the requirements of the act, is discarded
+                                discardedEmployees.add(candidate);
                             }
-                        }                  
+                        }
                     }
                 }
             }
         }
-        return assignedRequirements.size() == getRequerimentsProjecteSetmanaNoAssignats(project.getNom()).size(); // If all the requirements have been assigned, return true
+        return assignedRequirements.size() == requirements.size(); // If all the requirements have been assigned, return true
     }
 
 
