@@ -52,7 +52,7 @@ public class AlgorithmRepository {
     }
 
     public boolean automaticAssignment(List<ProjecteDTO> projects, List<TecnicDTO> employees) throws SQLException {
-        boolean allProjectsAssigned = false;
+        boolean allProjectsAssigned = true;
 
         List<TecnicDTO> candidates = new ArrayList<>();
         List<TecnicDTO> preferenceCandidates = new ArrayList<>();
