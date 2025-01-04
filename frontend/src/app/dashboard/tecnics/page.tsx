@@ -27,18 +27,21 @@ import {
 } from "@/components/ui/select"
 
 type Tecnic = {
-  id: number
-  nom: string
-  hores_contracte: number
-  sou: number
-  posicio: string
-  username: string
+  id: number;
+  username: string;
+  sou: number;
+  posicio: string;
+  preferencia: string;
+  actiu: boolean;
+  contractat: boolean;
+  jornada: Jornada;
 }
 
 type Position = {
-  id: number
   posicio: string
 }
+
+type Jornada = "TOTAL" | "PARCIAL"
 
 export default function TecnicsPage() {
   const router = useRouter()
@@ -51,13 +54,16 @@ export default function TecnicsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [newTecnic, setNewTecnic] = useState<Omit<Tecnic, 'id'>>({
-    nom: '',
-    hores_contracte: 0,
+    username: '',
     sou: 0,
     posicio: '',
-    username: ''
+    preferencia: '',
+    actiu: true,
+    contractat: false,
+    jornada: 'TOTAL'
   })
   const [editingTecnic, setEditingTecnic] = useState<Tecnic | null>(null)
+  const validTecnics = Tecnics.filter((tecnic) => tecnic.username);
 
   useEffect(() => {
     fetchTecnics()
@@ -137,11 +143,13 @@ export default function TecnicsPage() {
       })
 
       setNewTecnic({
-        nom: '',
-        hores_contracte: 0,
+        username: '',
         sou: 0,
         posicio: '',
-        username: ''
+        preferencia: '',
+        actiu: true,
+        contractat: false,
+        jornada: 'TOTAL'
       })
       setIsAddDialogOpen(false)
       fetchTecnics()
@@ -159,7 +167,7 @@ export default function TecnicsPage() {
     if (!editingTecnic) return
 
     try {
-      const response = await fetch(`http://10.4.41.40:8080/tecnics/${editingTecnic.id}`, {
+      const response = await fetch(`http://10.4.41.40:8080/tecnics/${editingTecnic.username}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -188,9 +196,9 @@ export default function TecnicsPage() {
     }
   }
 
-  const handleDeleteTecnic = async (id: number) => {
+  const handleDeleteTecnic = async (username: string) => {
     try {
-      const response = await fetch(`http://10.4.41.40:8080/tecnics/${id}`, {
+      const response = await fetch(`http://10.4.41.40:8080/tecnics/${username}`, {
         method: 'DELETE',
       })
 
@@ -215,7 +223,6 @@ export default function TecnicsPage() {
   }
 
   const filteredTecnics = Tecnics.filter(Tecnic =>
-    Tecnic.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
     Tecnic.posicio.toLowerCase().includes(searchTerm.toLowerCase()) ||
     Tecnic.username.toLowerCase().includes(searchTerm.toLowerCase())
   )
@@ -250,67 +257,12 @@ export default function TecnicsPage() {
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="nom" className="text-right">
-                    Nom
-                  </Label>
-                  <Input
-                    id="nom"
-                    value={newTecnic.nom}
-                    onChange={(e) => setNewTecnic({...newTecnic, nom: e.target.value})}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="hores_contracte" className="text-right">
-                    Hores Contracte
-                  </Label>
-                  <Input
-                    id="hores_contracte"
-                    type="number"
-                    value={newTecnic.hores_contracte}
-                    onChange={(e) => setNewTecnic({...newTecnic, hores_contracte: parseInt(e.target.value)})}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="sou" className="text-right">
-                    Sou
-                  </Label>
-                  <Input
-                    id="sou"
-                    type="number"
-                    value={newTecnic.sou}
-                    onChange={(e) => setNewTecnic({...newTecnic, sou: parseInt(e.target.value)})}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="posicio" className="text-right">
-                    Posició
-                  </Label>
-                  <Select
-                    value={newTecnic.posicio}
-                    onValueChange={(value) => setNewTecnic({...newTecnic, posicio: value})}
-                  >
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Selecciona una posició" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {positions.map((position) => (
-                        <SelectItem key={position.id} value={position.posicio}>
-                          {position.posicio}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="username" className="text-right">
                     Nom d'usuari
                   </Label>
                   <Select
                     value={newTecnic.username}
-                    onValueChange={(value) => setNewTecnic({...newTecnic, username: value})}
+                    onValueChange={(value) => setNewTecnic({ ...newTecnic, username: value })}
                   >
                     <SelectTrigger className="col-span-3">
                       <SelectValue placeholder="Selecciona un nom d'usuari" />
@@ -324,6 +276,95 @@ export default function TecnicsPage() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="sou" className="text-right">
+                    Sou
+                  </Label>
+                  <Input
+                    id="sou"
+                    type="number"
+                    value={newTecnic.sou}
+                    onChange={(e) => setNewTecnic({ ...newTecnic, sou: parseInt(e.target.value) })}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="posicio" className="text-right">
+                    Posició
+                  </Label>
+                  <Select
+                    value={newTecnic.posicio}
+                    onValueChange={(value) => setNewTecnic({ ...newTecnic, posicio: value })}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Selecciona una posició" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {positions.map((position) => (
+                        <SelectItem key={position.posicio} value={position.posicio}>
+                          {position.posicio}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="preferencia" className="text-right">
+                    Preferència
+                  </Label>
+                  <Input
+                    id="preferencia"
+                    value={newTecnic.preferencia}
+                    onChange={(e) => setNewTecnic({ ...newTecnic, preferencia: e.target.value })}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="jornada" className="text-right">
+                    Jornada
+                  </Label>
+                  <Input
+                    id="jornada"
+                    value={newTecnic.jornada}
+                    onChange={(e) => setNewTecnic({ ...newTecnic, jornada: e.target.value as Jornada })}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="actiu" className="text-right">
+                    Actiu
+                  </Label>
+                  <Select
+                    value={newTecnic.actiu.toString()}
+                    onValueChange={(value) => setNewTecnic({ ...newTecnic, actiu: value === "true" })}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Selecciona" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Sí</SelectItem>
+                      <SelectItem value="false">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="contractat" className="text-right">
+                    Contractat
+                  </Label>
+                  <Select
+                    value={newTecnic.contractat.toString()}
+                    onValueChange={(value) => setNewTecnic({ ...newTecnic, contractat: value === "true" })}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Selecciona" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Sí</SelectItem>
+                      <SelectItem value="false">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
               </div>
               <DialogFooter>
                 <Button type="submit" onClick={handleAddTecnic}>Afegir</Button>
@@ -343,35 +384,39 @@ export default function TecnicsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Hores Contracte</TableHead>
+                <TableHead>Nom d'usuari</TableHead>
                 <TableHead>Sou</TableHead>
                 <TableHead>Posició</TableHead>
-                <TableHead>Nom d'usuari</TableHead>
+                <TableHead>Preferència</TableHead>
+                <TableHead>Actiu</TableHead>
+                <TableHead>Contractat</TableHead>
+                <TableHead>Jornada</TableHead>
                 <TableHead className="text-right">Accions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center">Carregant...</TableCell>
+                  <TableCell colSpan={8} className="text-center">Carregant...</TableCell>
                 </TableRow>
-              ) : filteredTecnics.length === 0 ? (
+              ) : validTecnics.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center">No s'han trobat Tecnics</TableCell>
+                  <TableCell colSpan={8} className="text-center">No s'han trobat Tecnics</TableCell>
                 </TableRow>
               ) : (
-                filteredTecnics.map((Tecnic) => (
-                  <TableRow key={Tecnic.id}>
-                    <TableCell className="font-medium">{Tecnic.nom}</TableCell>
-                    <TableCell>{Tecnic.hores_contracte}</TableCell>
-                    <TableCell>{Tecnic.sou}</TableCell>
-                    <TableCell>{Tecnic.posicio}</TableCell>
-                    <TableCell>{Tecnic.username}</TableCell>
+                validTecnics.map((tecnic) => (
+                  <TableRow key={tecnic.username}>
+                    <TableCell className="font-medium">{tecnic.username}</TableCell>
+                    <TableCell>{tecnic.sou}</TableCell>
+                    <TableCell>{tecnic.posicio}</TableCell>
+                    <TableCell>{tecnic.preferencia}</TableCell>
+                    <TableCell>{tecnic.actiu ? "Sí" : "No"}</TableCell>
+                    <TableCell>{tecnic.contractat ? "Sí" : "No"}</TableCell>
+                    <TableCell>{tecnic.jornada}</TableCell>
                     <TableCell className="text-right">
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" className="mr-2" onClick={() => setEditingTecnic(Tecnic)}>
+                          <Button variant="outline" size="sm" className="mr-2" onClick={() => setEditingTecnic(tecnic)}>
                             <Pencil className="mr-2 h-4 w-4" />
                             Editar
                           </Button>
@@ -390,20 +435,8 @@ export default function TecnicsPage() {
                               </Label>
                               <Input
                                 id="edit-nom"
-                                value={editingTecnic?.nom || ''}
-                                onChange={(e) => setEditingTecnic(editingTecnic ? { ...editingTecnic, nom: e.target.value } : null)}
-                                className="col-span-3"
-                              />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="edit-hores_contracte" className="text-right">
-                                Hores Contracte
-                              </Label>
-                              <Input
-                                id="edit-hores_contracte"
-                                type="number"
-                                value={editingTecnic?.hores_contracte || 0}
-                                onChange={(e) => setEditingTecnic(editingTecnic ? { ...editingTecnic, hores_contracte: parseInt(e.target.value) } : null)}
+                                value={editingTecnic?.username || ''}
+                                onChange={(e) => setEditingTecnic(editingTecnic ? { ...editingTecnic, username: e.target.value } : null)}
                                 className="col-span-3"
                               />
                             </div>
@@ -432,7 +465,7 @@ export default function TecnicsPage() {
                                 </SelectTrigger>
                                 <SelectContent>
                                   {positions.map((position) => (
-                                    <SelectItem key={position.id} value={position.posicio}>
+                                    <SelectItem key={position.posicio} value={position.posicio}>
                                       {position.posicio}
                                     </SelectItem>
                                   ))}
@@ -465,7 +498,7 @@ export default function TecnicsPage() {
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
-                      <Button variant="outline" size="sm" className="text-red-600" onClick={() => handleDeleteTecnic(Tecnic.id)}>
+                      <Button variant="outline" size="sm" className="text-red-600" onClick={() => handleDeleteTecnic(tecnic.username)}>
                         <Trash2 className="mr-2 h-4 w-4" />
                         Eliminar
                       </Button>
