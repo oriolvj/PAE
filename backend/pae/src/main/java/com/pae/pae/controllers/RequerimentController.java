@@ -7,6 +7,7 @@ import com.pae.pae.services.RequerimentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 
 @RestController
@@ -43,5 +44,19 @@ public class RequerimentController {
         @DeleteMapping(path = "/{id}")
         public boolean removeRequeriment(@PathVariable("id") Integer id) {
             return requerimentSercice.removeRequeriment(id);
+        }
+
+        @CrossOrigin
+        @GetMapping(path = "/nomProjecte/{nom}/setmana/{data_inici}/{data_fi}")
+        public ArrayList<RequerimentDTO> getRequerimentsProjecteSetmana(@PathVariable("nom") String nom, @PathVariable("data_inici") String data_inici,
+                                                                        @PathVariable("data_fi") String data_fi) throws ParseException {
+                return requerimentSercice.getRequerimentsProjecteSetmana(nom, data_inici, data_fi);
+        }
+
+        @CrossOrigin
+        @GetMapping(path = "/setmana/{data_inici}/{data_fi}")
+        public ArrayList<RequerimentDTO> getRequerimentsSetmana( @PathVariable("data_inici") String data_inici,
+                                                                        @PathVariable("data_fi") String data_fi) throws ParseException {
+                return requerimentSercice.getRequerimentsSetmana(data_inici, data_fi);
         }
 }

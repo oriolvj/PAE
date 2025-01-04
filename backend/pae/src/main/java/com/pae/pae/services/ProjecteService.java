@@ -38,4 +38,10 @@ public class ProjecteService {
     public List<String> getNomProjectes() {
         return projecteRepository.getNomProjectes();
     }
+
+    public List<ProjecteDTO> getProjectesDesdeData(String date) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date data = dateFormat.parse(date);
+        return projecteRepository.getProjectesDesdeData(data);
+    }
 }
