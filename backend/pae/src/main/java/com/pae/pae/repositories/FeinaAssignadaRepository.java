@@ -16,6 +16,7 @@ import java.util.Map;
 @Repository
 public class FeinaAssignadaRepository {
     private FeinaAssignadaDTO fDTO = null;
+    private FeinaAssignadaLlocTreballDTO ftDTO = null;
 
     protected Connection getConnection() throws SQLException {
         return DriverManager.getConnection(Config.URL, Config.USER, Config.PWD);
@@ -27,6 +28,24 @@ public class FeinaAssignadaRepository {
                     resultSet.getString("projecte_nom"),
                     resultSet.getString("nom_empleat"),
                     resultSet.getInt("requeriment_id"),
+                    null,
+                    null,
+                    null
+            );
+        } catch (IllegalArgumentException e) {
+            throw new SQLException("Error al convertir datos de Mes o Setmana desde el ResultSet", e);
+        } catch (SQLException e) {
+            throw new SQLException("Error al obtener datos del ResultSet", e);
+        }
+    }
+
+    private void AssignarFeinaTreballObject(ResultSet resultSet) throws SQLException {
+        try {
+            ftDTO = new FeinaAssignadaLlocTreballDTO(
+                    resultSet.getString("projecte_nom"),
+                    resultSet.getString("nom_empleat"),
+                    resultSet.getInt("requeriment_id"),
+                    null,
                     null,
                     null,
                     null
@@ -135,8 +154,8 @@ public class FeinaAssignadaRepository {
         return ja;
     }
 
-    public ArrayList<FeinaAssignadaDTO> getfeinaAssignadesHorari() {
-        ArrayList<FeinaAssignadaDTO> ja = new ArrayList<>();
+    public ArrayList<FeinaAssignadaLlocTreballDTO> getfeinaAssignadesHorari() {
+        ArrayList<FeinaAssignadaLlocTreballDTO> ja = new ArrayList<>();
         String query = "SELECT f.nom_empleat, f.projecte_nom, f.requeriment_id, r.id, r.day, r.start_time, r.end_time, r.technical_profile " +
                 "FROM feinaassignada f " +
                 "JOIN  requirements r " +
@@ -147,7 +166,7 @@ public class FeinaAssignadaRepository {
             try (ResultSet resultSet = statement.executeQuery()) {
                 System.out.println(resultSet.toString());
                 while (resultSet.next()) {
-                    AssignarFeinaObject(resultSet);
+                    AssignarFeinaTreballObject(resultSet);
                     Date date = resultSet.getDate("day");
                     LocalDate localDate = date.toLocalDate();
 
@@ -165,10 +184,11 @@ public class FeinaAssignadaRepository {
 
                     // Crear LocalTime en formato LocalTime.of(hour, minute)
                     LocalTime formattedEndTime = LocalTime.of(localEndTime.getHour(), localEndTime.getMinute());
-                    fDTO.setDay(formattedDate);
-                    fDTO.setStartTime(formattedStartTime);
-                    fDTO.setEndTime(formattedEndTime);
-                    ja.add(fDTO);
+                    ftDTO.setDay(formattedDate);
+                    ftDTO.setStartTime(formattedStartTime);
+                    ftDTO.setEndTime(formattedEndTime);
+                    ftDTO.setTechnicalProfile(resultSet.getString("technical_profile"));
+                    ja.add(ftDTO);
                 }
             }
         } catch (SQLException e) {
