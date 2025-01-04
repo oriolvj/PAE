@@ -18,6 +18,6 @@ public class AlgorithmService {
     public boolean execute(String date) throws SQLException, ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date data = dateFormat.parse(date);
-        return algorithmRepository.execute(date);
+        return algorithmRepository.execute(data);
     }
 }
