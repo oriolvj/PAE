@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -129,6 +130,50 @@ public class FeinaAssignadaRepository {
                 }
             }
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
+    }
+
+    public ArrayList<FeinaAssignadaDTO> getfeinaAssignadesHorari() {
+        ArrayList<FeinaAssignadaDTO> ja = new ArrayList<>();
+        String query = "SELECT f.nom_empleat, f.projecte_nom, f.requeriment_id, r.id, r.day, r.start_time, r.end_time, r.technical_profile " +
+                "FROM feinaassignada f " +
+                "JOIN  requirements r " +
+                "ON f.requeriment_id = r.id";
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                System.out.println(resultSet.toString());
+                while (resultSet.next()) {
+                    AssignarFeinaObject(resultSet);
+                    Date date = resultSet.getDate("day");
+                    LocalDate localDate = date.toLocalDate();
+
+                    LocalDate formattedDate = LocalDate.of(localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth());
+
+                    Time startTime = resultSet.getTime("start_time");
+                    LocalTime localStartTime = startTime.toLocalTime();
+
+                    // Crear LocalTime en formato LocalTime.of(hour, minute)
+                    LocalTime formattedStartTime = LocalTime.of(localStartTime.getHour(), localStartTime.getMinute());
+
+
+                    Time endTime = resultSet.getTime("end_time");
+                    LocalTime localEndTime = endTime.toLocalTime();
+
+                    // Crear LocalTime en formato LocalTime.of(hour, minute)
+                    LocalTime formattedEndTime = LocalTime.of(localEndTime.getHour(), localEndTime.getMinute());
+                    fDTO.setDay(formattedDate);
+                    fDTO.setStartTime(formattedStartTime);
+                    fDTO.setEndTime(formattedEndTime);
+                    ja.add(fDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (UnsupportedOperationException e) {
             e.printStackTrace();
         }
         return ja;

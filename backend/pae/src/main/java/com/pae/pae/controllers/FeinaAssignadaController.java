@@ -25,6 +25,12 @@ public class FeinaAssignadaController {
     }
 
     @CrossOrigin
+    @GetMapping(path = "/horari")
+    public ArrayList<FeinaAssignadaDTO> getfeinaAssignadesHorari() {
+        return feinaAssignadaService.getfeinaAssignadesHorari();
+    }
+
+    @CrossOrigin
     @GetMapping(path = "/{nomProjecte}/{username}/{id}")
     public FeinaAssignadaDTO getfeinaAssignada(@PathVariable("nomProjecte") String nomProjecte, @PathVariable("username") String username, @PathVariable("id") Integer id) {
         return feinaAssignadaService.getfeinaAssignada(nomProjecte, username, id);

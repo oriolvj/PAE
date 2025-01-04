@@ -29,4 +29,8 @@ public class FeinaAssignadaService {
     public ArrayList<FeinaAssignadaDTO> getfeinesAssignadaUsuari(String username) {
         return feinaAssignadaRepository.getfeinesAssignadaUsuari(username);
     }
+
+    public ArrayList<FeinaAssignadaDTO> getfeinaAssignadesHorari() {
+        return feinaAssignadaRepository.getfeinaAssignadesHorari();
+    }
 }
