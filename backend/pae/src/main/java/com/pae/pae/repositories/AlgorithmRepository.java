@@ -27,7 +27,7 @@ public class AlgorithmRepository {
     @Autowired
     private FeinaAssignadaRepository feinaAssignadaRepository = new FeinaAssignadaRepository();
 
-    public boolean execute() throws SQLException {
+    public boolean execute(Date date) throws SQLException {
 
         // Create some objects as an example
         List<TecnicDTO> allEmployees = getTecnics();

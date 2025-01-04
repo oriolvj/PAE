@@ -7,10 +7,12 @@ import com.pae.pae.utils.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 @Repository
 public class ProjecteRepository {
@@ -28,8 +30,8 @@ public class ProjecteRepository {
             pDTO = new ProjecteDTO(
                     resultSet.getString("nom"),
                     mes,
-                    resultSet.getDate("dataInici"),
-                    resultSet.getDate("dataFi"),
+                    resultSet.getDate("data_inici"),
+                    resultSet.getDate("data_fi"),
                     resultSet.getInt("numeroEmpleats"),
                     resultSet.getString("ubicacio")
             );
@@ -80,8 +82,8 @@ public class ProjecteRepository {
              PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, newprojectRequest.get("nom"));
             stmt.setString(2, newprojectRequest.get("mes").toString());
-            stmt.setDate(3, Date.valueOf(newprojectRequest.get("dataInici")));
-            stmt.setDate(4, Date.valueOf(newprojectRequest.get("dataFi")));
+            stmt.setDate(3, java.sql.Date.valueOf(newprojectRequest.get("data_inici")));
+            stmt.setDate(4, java.sql.Date.valueOf(newprojectRequest.get("data_fi")));
             stmt.setInt(5, Integer.valueOf(newprojectRequest.get("numeroEmpleats")));
             stmt.setString(6, newprojectRequest.get("ubicacio"));
             int rowsInserted = stmt.executeUpdate();
@@ -107,5 +109,25 @@ public class ProjecteRepository {
             e.printStackTrace();
         }
         return noms;
+    }
+
+    public List<ProjecteDTO> getProjectesDesdeData(Date date) {
+        ArrayList<ProjecteDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM projectes WHERE ? >= data_inici AND ? <= data_fi";
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setDate(1, new java.sql.Date(date.getTime()));
+            statement.setDate(2, new java.sql.Date(date.getTime()));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignarProjecteObject(resultSet);
+                    ja.add(pDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
     }
 }

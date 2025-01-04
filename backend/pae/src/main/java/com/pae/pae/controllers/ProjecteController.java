@@ -47,5 +47,11 @@ public class ProjecteController {
         return projecteService.getNomProjectes();
     }
 
+    @CrossOrigin
+    @GetMapping(path = "/desde/{date}")
+    public List<ProjecteDTO> getProjectesDesdeData(@PathVariable("date") String date) throws ParseException {
+        return projecteService.getProjectesDesdeData(date);
+    }
+
      
 }

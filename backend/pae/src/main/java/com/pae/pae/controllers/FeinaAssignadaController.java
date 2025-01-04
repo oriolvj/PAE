@@ -1,6 +1,7 @@
 package com.pae.pae.controllers;
 
 import com.pae.pae.models.FeinaAssignadaDTO;
+import com.pae.pae.models.FeinaAssignadaLlocTreballDTO;
 import com.pae.pae.models.ProjecteDTO;
 import com.pae.pae.services.FeinaAssignadaService;
 import com.pae.pae.services.ProjecteService;
@@ -22,6 +23,12 @@ public class FeinaAssignadaController {
     @GetMapping
     public ArrayList<FeinaAssignadaDTO> getfeinaAssignades() {
         return feinaAssignadaService.getfeinaAssignades();
+    }
+
+    @CrossOrigin
+    @GetMapping(path = "/horari")
+    public ArrayList<FeinaAssignadaLlocTreballDTO> getfeinaAssignadesHorari() {
+        return feinaAssignadaService.getfeinaAssignadesHorari();
     }
 
     @CrossOrigin
