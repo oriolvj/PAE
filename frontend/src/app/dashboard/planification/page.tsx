@@ -33,7 +33,10 @@ interface Requeriment {
 }
 
 export default function PlanificationPage() {
-  const [currentWeek, setCurrentWeek] = useState(new Date())
+  const [currentWeek, setCurrentWeek] = useState(() => {
+    const today = new Date()
+    return startOfWeek(today, { weekStartsOn: 1 })
+  })
   const [Requeriments, setRequeriments] = useState<Requeriment[]>([])
   const [selectedProject, setSelectedProject] = useState<string>("all")
   const [projects, setProjects] = useState<Project[]>([])
@@ -192,22 +195,27 @@ export default function PlanificationPage() {
     return Object.values(grouped);
   };
 
-  const weekDays = Array.from({ length: 5 }, (_, i) => addDays(setDay(startOfWeek(currentWeek), 1), i))
+  const weekDays = Array.from({ length: 5 }, (_, i) => addDays(currentWeek, i))
 
   const sendRequerimentsToEndpoint = async () => {
     try {
-      const response = await fetch('/api/Requeriments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(Requeriments),
+      const response = await fetch('http://10.4.41.40:8080/algorithm', {
+        method: 'GET'
       })
       if (response.ok) {
-        toast({
-          title: "Requeriments sent",
-          description: "All Requeriments have been sent to the endpoint successfully.",
-        })
+        const data = await response.json()
+
+        if(data === true) {
+          toast({
+            title: "Assignació de personal realitzada correctament",
+            description: "Tots els requeriments han estat satisfets correctament.",
+          });
+        } else {
+          toast({
+            title: "Warning",
+            description: "No s'ha pogut assignar personal a tots els requeriments.",
+          });
+        }
       } else {
         throw new Error('Failed to send Requeriments')
       }
@@ -222,7 +230,7 @@ export default function PlanificationPage() {
 
   const removeRequeriment = async (RequerimentId: string) => {
     try {
-      const response = await fetch(`/api/Requeriments/${RequerimentId}`, {
+      const response = await fetch(`http://10.4.41.40:8080/requeriments/${RequerimentId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -283,7 +291,7 @@ export default function PlanificationPage() {
           <CardContent>
             <div className="flex justify-between items-center mb-4">
               <Button onClick={() => setCurrentWeek(addDays(currentWeek, -7))}>Previous Week</Button>
-              <span>{format(startOfWeek(currentWeek), 'MMM d')} - {format(endOfWeek(currentWeek), 'MMM d, yyyy')}</span>
+              <span>{format(currentWeek, 'MMM d')} - {format(addDays(currentWeek, 4), 'MMM d, yyyy')}</span>
               <Button onClick={() => setCurrentWeek(addDays(currentWeek, 7))}>Next Week</Button>
             </div>
             <div className="overflow-x-auto">
@@ -300,15 +308,19 @@ export default function PlanificationPage() {
                   {HOURS.map(hour => (
                     <tr key={hour}>
                       <td className="border p-2">{hour.toString().padStart(2, '0')}:00</td>
-                      {weekDays.map(day => (
-                        <td key={`${day.toISOString()}-${hour}`} className="border p-2">
-                          {compactRequeriments(filteredRequeriments)
-                            .filter((Requeriment) =>
-                              isSameDay(parseISO(Requeriment.day), day) &&
-                              parseInt(Requeriment.startTime.split(':')[0]) <= hour &&
-                              parseInt(Requeriment.endTime.split(':')[0]) > hour
-                            )
-                            .map((Requeriment) => (
+                      {weekDays.map(day => {
+                        const requirementsForDayAndHour = compactRequeriments(filteredRequeriments)
+                          .filter((Requeriment) =>
+                            isSameDay(parseISO(Requeriment.day), day) &&
+                            parseInt(Requeriment.startTime.split(':')[0]) <= hour &&
+                            parseInt(Requeriment.endTime.split(':')[0]) > hour
+                          );
+
+                        console.log(`Requirements for ${format(day, 'yyyy-MM-dd')} at ${hour}:00:`, requirementsForDayAndHour);
+
+                        return (
+                          <td key={`${day.toISOString()}-${hour}`} className="border p-2">
+                            {requirementsForDayAndHour.map((Requeriment) => (
                               <div
                                 key={Requeriment.id}
                                 className="text-xs p-1 mb-1 rounded bg-blue-200 cursor-pointer hover:bg-blue-300"
@@ -318,8 +330,9 @@ export default function PlanificationPage() {
                                 {`${Requeriment.actName} (${Requeriment.count})`}
                               </div>
                             ))}
-                        </td>
-                      ))}
+                          </td>
+                        );
+                      })}
                     </tr>
                   ))}
                 </tbody>
