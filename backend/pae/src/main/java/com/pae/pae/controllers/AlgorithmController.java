@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Date;
 
 @RestController
@@ -16,7 +17,7 @@ public class AlgorithmController {
 
     @CrossOrigin
     @GetMapping(path = "/{date}")
-    public boolean execute(@PathVariable("date") Date date) throws SQLException {
+    public boolean execute(@PathVariable("date") String date) throws SQLException, ParseException {
         return algorithmService.execute(date);
     }
 }
