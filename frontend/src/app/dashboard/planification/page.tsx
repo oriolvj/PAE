@@ -37,6 +37,9 @@ export default function PlanificationPage() {
     const today = new Date()
     return startOfWeek(today, { weekStartsOn: 1 })
   })
+  const [currentDay] = useState(() => {
+    return new Date()
+  })
   const [Requeriments, setRequeriments] = useState<Requeriment[]>([])
   const [selectedProject, setSelectedProject] = useState<string>("all")
   const [projects, setProjects] = useState<Project[]>([])
@@ -198,9 +201,15 @@ export default function PlanificationPage() {
   const weekDays = Array.from({ length: 5 }, (_, i) => addDays(currentWeek, i))
 
   const sendRequerimentsToEndpoint = async () => {
+    var date = null
+    if(currentDay > currentWeek) {
+      date = format(currentDay, 'yyyy-MM-dd')
+    } else {
+      date = format(currentWeek, 'yyyy-MM-dd')
+    }
     try {
-      const response = await fetch('http://10.4.41.40:8080/algorithm', {
-        method: 'GET'
+      const response = await fetch(`http://10.4.41.40:8080/algorithm/${date}`, {
+        method: 'GET',
       })
       if (response.ok) {
         const data = await response.json()
@@ -458,7 +467,7 @@ export default function PlanificationPage() {
       </div>
       <div className="mt-8">
         <Button onClick={sendRequerimentsToEndpoint} className="w-full">
-          Guardar Planificació
+          Assginar treballadors setmana actual
         </Button>
       </div>
     </div>
