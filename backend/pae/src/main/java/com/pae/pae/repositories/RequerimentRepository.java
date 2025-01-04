@@ -163,6 +163,26 @@ public class RequerimentRepository {
         return ja;
     }
 
+    public ArrayList<RequerimentDTO> getRequerimentsProjecteSetmanaNoAssignats(String nom, java.util.Date dataini, java.util.Date datafi) {
+        ArrayList<RequerimentDTO> ja = new ArrayList<>();
+        String query = "SELECT * FROM requirements r WHERE r.id NOT IN (SELECT requeriment_id FROM feinaassignada) AND projecte_nom = ? AND day >= ? AND day <= ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)){
+            statement.setString(1, nom);
+            statement.setDate(2, new java.sql.Date(dataini.getTime()));
+            statement.setDate(3, new java.sql.Date(datafi.getTime()));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AssignarProjecteObject(resultSet);
+                    ja.add(rDTO);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ja;
+    }
+
     public ArrayList<RequerimentDTO> getRequerimentsSetmana(java.util.Date dataini, java.util.Date datafi) {
         ArrayList<RequerimentDTO> ja = new ArrayList<>();
         String query = "SELECT * FROM requirements WHERE day >= ? AND day <= ?";

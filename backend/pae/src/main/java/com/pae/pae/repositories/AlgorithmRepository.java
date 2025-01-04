@@ -98,7 +98,7 @@ public class AlgorithmRepository {
         Duration duration;
 
         List<TecnicDTO> discardedEmployees = new ArrayList<>();
-        List<RequerimentDTO> requirements = getRequerimentsProjecteSetmana(project.getNom());
+        List<RequerimentDTO> requirements = getRequerimentsProjecteSetmanaNoAssignats(project.getNom());
 
         List<TecnicDTO> profileCandidates = new ArrayList<>();
 
@@ -161,7 +161,7 @@ public class AlgorithmRepository {
                 }
             }
         }
-        return assignedRequirements.size() == getRequerimentsProjecteSetmana(project.getNom()).size(); // If all the requirements have been assigned, return true
+        return assignedRequirements.size() == getRequerimentsProjecteSetmanaNoAssignats(project.getNom()).size(); // If all the requirements have been assigned, return true
     }
 
 
@@ -181,8 +181,8 @@ public class AlgorithmRepository {
         return requerimentRepository.getRequerimentsProjecte(nom);
     }
 
-    public List<RequerimentDTO> getRequerimentsProjecteSetmana(String nom){
-        return requerimentRepository.getRequerimentsProjecteSetmana(nom, iniciSetmana, fiSetmana);
+    public List<RequerimentDTO> getRequerimentsProjecteSetmanaNoAssignats(String nom){
+        return requerimentRepository.getRequerimentsProjecteSetmanaNoAssignats(nom, iniciSetmana, fiSetmana);
     }
     public List<RequerimentDTO> getRequerimentsSetmana(String nom){
         return requerimentRepository.getRequerimentsSetmana(iniciSetmana, fiSetmana);
