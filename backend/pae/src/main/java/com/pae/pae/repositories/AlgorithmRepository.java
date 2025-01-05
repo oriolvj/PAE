@@ -83,6 +83,12 @@ public class AlgorithmRepository {
             if (!allAssigned) {
                 allAssigned = assignEmployeesToRequirements(project, candidates);
             }
+            // If there are still requirements without employees assigned, we look for employees in ALTAS and with preference
+            if (!allAssigned) {	
+                preferenceCandidates = findEmployeesByModalityandPreference("ALTAS", project.getNom());
+                allAssigned = assignEmployeesToRequirements(project, preferenceCandidates);
+            }
+
             // If there are still requirements without employees assigned, we look for employees in ALTAS
             if (!allAssigned) {	
                 candidates = findEmployeesByModality(employees, "ALTAS");
