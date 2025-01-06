@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/hooks/use-toast"
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i) // 0 to 23
-const DAYS = ['Dll', 'Dm', 'Dc', 'Dj', 'Dv']
+const DAYS = ['Dll', 'Dm', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg']
 
 interface Project {
   nom: string
@@ -198,7 +198,7 @@ export default function PlanificationPage() {
     return Object.values(grouped);
   };
 
-  const weekDays = Array.from({ length: 5 }, (_, i) => addDays(currentWeek, i))
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeek, i))
 
   const sendRequerimentsToEndpoint = async () => {
     var date = null

@@ -10,9 +10,10 @@ import { Button } from "@/components/ui/button"
 import { PlusCircle, Edit, Trash2, Mail, Phone, Briefcase, Calendar, FileUser, Hash } from 'lucide-react'
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { revalidatePath } from 'next/cache'
+import { toast } from '@/hooks/use-toast'
 
 type Rols = 'ADMINISTRADOR' | 'GESTOR_PROJECTE' | 'TREBALLADOR'
-type Jornada = "TOTAL" | "PARCIAL" | "TRENTA_HORES" | "ALTRES"
 
 type User = {
   username: string
@@ -21,10 +22,6 @@ type User = {
   tlf: number
   email: string
   rol: Rols
-  preferencia: string
-  actiu: boolean
-  contractat: boolean
-  jornada: Jornada
 }
 
 export default function UsersPage() {
@@ -59,6 +56,46 @@ export default function UsersPage() {
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.username.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  async function deleteUser(username: string) {
+    try {
+      const response = await fetch(`http://10.4.41.40:8080/usuaris/${username}`, {
+        method: 'DELETE',
+      })
+  
+      if (!response.ok) {
+        throw new Error('Failed to delete user')
+      }
+  
+      revalidatePath('/dashboard/users')
+      return { success: true }
+    } catch (error) {
+      console.error('Error deleting user:', error)
+      return { success: false, error: 'Failed to delete user' }
+    }
+  }
+
+  const handleDeleteUser = async (username: string) => {
+    try {
+      const result = await deleteUser(username)
+      if (result.success) {
+        setUsers(users.filter(user => user.username !== username))
+        toast({
+          title: "Èxit",
+          description: "Usuari eliminat correctament",
+        })
+      } else {
+        throw new Error(result.error)
+      }
+    } catch (error) {
+      console.error('Error esborrant l\'usuari:', error)
+      toast({
+        title: "Error",
+        description: "No s'ha pogut eliminar l'usuari. Torna-ho a provar.",
+        variant: "destructive",
+      })
+    }
+  }
 
   if (error) {
     return (
@@ -96,9 +133,6 @@ export default function UsersPage() {
                 <TableHead>Telefon</TableHead>
                 <TableHead>Edat</TableHead>
                 <TableHead>Rol</TableHead>
-                <TableHead>Estat</TableHead>
-                <TableHead>Jornada</TableHead>
-                <TableHead>Contractat</TableHead>
                 <TableHead className="text-right">Accions</TableHead>
               </TableRow>
             </TableHeader>
@@ -112,9 +146,6 @@ export default function UsersPage() {
                     <TableCell><Skeleton className="h-4 w-[200px]" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-[200px]" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-[50px]" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
                   </TableRow>
@@ -156,29 +187,6 @@ export default function UsersPage() {
                         {user.rol}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      <Badge variant={user.actiu ? 'default' : 'secondary'}>
-                        {user.actiu ? 'Actiu' : 'Inactiu'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          user?.jornada?.toUpperCase() === 'TOTAL'
-                            ? 'default'
-                            : ['PARCIAL', 'TRENTA_HORES', 'ALTRES'].includes(user?.jornada?.toUpperCase())
-                              ? 'outline'
-                              : 'destructive'
-                        }
-                      >
-                        {user?.jornada || 'Unknown'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={user.contractat ? 'default' : 'secondary'}>
-                        {user.contractat ? 'Contractat' : 'No Contractat'}
-                      </Badge>
-                    </TableCell>
                     <TableCell className="text-right">
                       <Button 
                         variant="ghost" 
@@ -188,7 +196,12 @@ export default function UsersPage() {
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-red-600">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-red-600"
+                        onClick={() => handleDeleteUser(user.username)}
+                      >
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete
                       </Button>

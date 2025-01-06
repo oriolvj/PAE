@@ -13,7 +13,6 @@ import { Separator } from '@radix-ui/react-select'
 import { useToast } from '@/hooks/use-toast'
 
 type Rols = 'ADMINISTRADOR' | 'GESTOR_PROJECTE' | 'TREBALLADOR'
-type Jornada = 'TOTAL' | 'PARCIAL' | 'TRENTA_HORES' | 'ALTRES'
 
 type User = {
   username: string
@@ -22,10 +21,6 @@ type User = {
   tlf: number
   email: string
   rol: Rols
-  preferencia: string
-  actiu: boolean
-  contractat: boolean
-  jornada: Jornada
 }
 
 export function EditUserForm({ initialUser }: { initialUser: User }) {
@@ -137,11 +132,7 @@ export function EditUserForm({ initialUser }: { initialUser: User }) {
               </div>
             </div>
           </div>
-          
-          <Separator />
-          
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Informació Laboral</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="rol" className="flex items-center space-x-2">
@@ -159,73 +150,6 @@ export function EditUserForm({ initialUser }: { initialUser: User }) {
                     <SelectItem value="ADMINISTRADOR">Administrador</SelectItem>
                     <SelectItem value="GESTOR_PROJECTE">Gestor de Projecte</SelectItem>
                     <SelectItem value="TREBALLADOR">Treballador</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="preferencia" className="flex items-center space-x-2">
-                  <Heart className="w-4 h-4" />
-                  <span>Preferència</span>
-                </Label>
-                <Input
-                  id="preferencia"
-                  value={user.preferencia}
-                  onChange={(e) => setUser({ ...user, preferencia: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="actiu" className="flex items-center space-x-2">
-                  <UserCheck className="w-4 h-4" />
-                  <span>Actiu</span>
-                </Label>
-                <Select
-                  value={user.actiu ? 'true' : 'false'}
-                  onValueChange={(value: string) => setUser({ ...user, actiu: value === 'true' })}
-                >
-                  <SelectTrigger id="actiu">
-                    <SelectValue placeholder="Selecciona l'estat" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="true">Actiu</SelectItem>
-                    <SelectItem value="false">Inactiu</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="contractat" className="flex items-center space-x-2">
-                  <Briefcase className="w-4 h-4" />
-                  <span>Contractat</span>
-                </Label>
-                <Select
-                  value={user.contractat ? 'true' : 'false'}
-                  onValueChange={(value: string) => setUser({ ...user, contractat: value === 'true' })}
-                >
-                  <SelectTrigger id="contractat">
-                    <SelectValue placeholder="Selecciona l'estat de contractació" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="true">Contractat</SelectItem>
-                    <SelectItem value="false">No Contractat</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="jornada" className="flex items-center space-x-2">
-                  <Clock className="w-4 h-4" />
-                  <span>Jornada</span>
-                </Label>
-                <Select
-                  value={user.jornada}
-                  onValueChange={(value: Jornada) => setUser({ ...user, jornada: value })}
-                >
-                  <SelectTrigger id="jornada">
-                    <SelectValue placeholder="Selecciona la jornada" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="TOTAL">Total</SelectItem>
-                    <SelectItem value="PARCIAL">Parcial</SelectItem>
-                    <SelectItem value="TRENTA_HORES">Trenta Hores</SelectItem>
-                    <SelectItem value="ALTRES">Altres</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

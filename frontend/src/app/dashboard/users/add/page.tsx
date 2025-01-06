@@ -13,7 +13,6 @@ import { useToast } from "@/hooks/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 
 type Rols = 'ADMINISTRADOR' | 'GESTOR_PROJECTE' | 'TREBALLADOR'
-type Jornada = "TOTAL" | "PARCIAL" | "TRENTA_HORES" | "ALTRES"
 
 type User = {
   username: string
@@ -23,10 +22,6 @@ type User = {
   email: string
   pwd: string
   rol: Rols
-  preferencia: string
-  actiu: boolean
-  contractat: boolean
-  jornada: Jornada
 }
 
 export default function AddUserPage() {
@@ -40,11 +35,7 @@ export default function AddUserPage() {
     tlf: 0,
     email: '',
     pwd: '',
-    rol: 'TREBALLADOR',
-    preferencia: '',
-    actiu: true,
-    contractat: false,
-    jornada: 'TOTAL'
+    rol: 'TREBALLADOR'
   })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -152,32 +143,6 @@ export default function AddUserPage() {
                   <SelectItem value="GESTOR_PROJECTE">Gestor del Projecte</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="preferencia">Preferència</Label>
-              <Input id="preferencia" name="preferencia" value={user.preferencia} onChange={handleInputChange} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="jornada">Jornada del Treballador</Label>
-              <Select name="jornada" value={user.jornada} onValueChange={handleSelectChange('jornada')}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona la jornada del treballador" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="TOTAL">Completa</SelectItem>
-                  <SelectItem value="PARCIAL">Parcial</SelectItem>
-                  <SelectItem value="TRENTA_HORES">30 hores</SelectItem>
-                  <SelectItem value="ALTRES">Altres</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Switch id="actiu" checked={user.actiu} onCheckedChange={handleSwitchChange('actiu')} />
-              <Label htmlFor="actiu">Actiu</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Switch id="contractat" checked={user.contractat} onCheckedChange={handleSwitchChange('contractat')} />
-              <Label htmlFor="contractat">Contractat</Label>
             </div>
           </CardContent>
           <CardFooter>

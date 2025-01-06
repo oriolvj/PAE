@@ -49,6 +49,7 @@ export default function TecnicsPage() {
   const [Tecnics, setTecnics] = useState<Tecnic[]>([])
   const [positions, setPositions] = useState<Position[]>([])
   const [usernames, setUsernames] = useState<string[]>([])
+  const [projectNames, setProjectNames] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -69,6 +70,7 @@ export default function TecnicsPage() {
     fetchTecnics()
     fetchPositions()
     fetchUsernames()
+    fetchProjectNames()
   }, [])
 
   const fetchTecnics = async () => {
@@ -118,6 +120,24 @@ export default function TecnicsPage() {
       toast({
         title: "Error",
         description: "No s'han pogut carregar els noms d'usuari. Torna-ho a provar.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const fetchProjectNames = async () => {
+    try {
+      const response = await fetch('http://10.4.41.40:8080/projectes/nomsprojectes')
+      if (!response.ok) {
+        throw new Error('Hi ha hagut un error en recuperar els noms dels projectes.')
+      }
+      const data = await response.json()
+      setProjectNames(data)
+    } catch (err) {
+      console.error('Error fetching project names:', err)
+      toast({
+        title: "Error",
+        description: "No s'han pogut carregar els noms dels projectes. Torna-ho a provar.",
         variant: "destructive",
       })
     }
@@ -222,9 +242,10 @@ export default function TecnicsPage() {
     }
   }
 
-  const filteredTecnics = Tecnics.filter(Tecnic =>
-    Tecnic.posicio.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    Tecnic.username.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTecnics = validTecnics.filter(tecnic =>
+    tecnic.posicio.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tecnic.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tecnic.preferencia.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   if (error) {
@@ -312,23 +333,38 @@ export default function TecnicsPage() {
                   <Label htmlFor="preferencia" className="text-right">
                     Preferència
                   </Label>
-                  <Input
-                    id="preferencia"
+                  <Select
                     value={newTecnic.preferencia}
-                    onChange={(e) => setNewTecnic({ ...newTecnic, preferencia: e.target.value })}
-                    className="col-span-3"
-                  />
+                    onValueChange={(value) => setNewTecnic({ ...newTecnic, preferencia: value })}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Selecciona una preferència" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projectNames.map((projectName) => (
+                        <SelectItem key={projectName} value={projectName}>
+                          {projectName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="jornada" className="text-right">
                     Jornada
                   </Label>
-                  <Input
-                    id="jornada"
+                  <Select
                     value={newTecnic.jornada}
-                    onChange={(e) => setNewTecnic({ ...newTecnic, jornada: e.target.value as Jornada })}
-                    className="col-span-3"
-                  />
+                    onValueChange={(value) => setNewTecnic({ ...newTecnic, jornada: value as Jornada })}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Selecciona una jornada" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="TOTAL">Total</SelectItem>
+                      <SelectItem value="PARCIAL">Parcial</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="actiu" className="text-right">
@@ -364,7 +400,6 @@ export default function TecnicsPage() {
                     </SelectContent>
                   </Select>
                 </div>
-
               </div>
               <DialogFooter>
                 <Button type="submit" onClick={handleAddTecnic}>Afegir</Button>
@@ -399,12 +434,12 @@ export default function TecnicsPage() {
                 <TableRow>
                   <TableCell colSpan={8} className="text-center">Carregant...</TableCell>
                 </TableRow>
-              ) : validTecnics.length === 0 ? (
+              ) : filteredTecnics.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center">No s'han trobat Tecnics</TableCell>
                 </TableRow>
               ) : (
-                validTecnics.map((tecnic) => (
+                filteredTecnics.map((tecnic) => (
                   <TableRow key={tecnic.username}>
                     <TableCell className="font-medium">{tecnic.username}</TableCell>
                     <TableCell>{tecnic.sou}</TableCell>
@@ -430,11 +465,11 @@ export default function TecnicsPage() {
                           </DialogHeader>
                           <div className="grid gap-4 py-4">
                             <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="edit-nom" className="text-right">
-                                Nom
+                              <Label htmlFor="edit-username" className="text-right">
+                                Nom d'usuari
                               </Label>
                               <Input
-                                id="edit-nom"
+                                id="edit-username"
                                 value={editingTecnic?.username || ''}
                                 onChange={(e) => setEditingTecnic(editingTecnic ? { ...editingTecnic, username: e.target.value } : null)}
                                 className="col-span-3"
@@ -473,22 +508,73 @@ export default function TecnicsPage() {
                               </Select>
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="edit-username" className="text-right">
-                                Nom d'usuari
+                              <Label htmlFor="edit-preferencia" className="text-right">
+                                Preferència
                               </Label>
                               <Select
-                                value={editingTecnic?.username || ''}
-                                onValueChange={(value) => setEditingTecnic(editingTecnic ? { ...editingTecnic, username: value } : null)}
+                                value={editingTecnic?.preferencia || ''}
+                                onValueChange={(value) => setEditingTecnic(editingTecnic ? { ...editingTecnic, preferencia: value } : null)}
                               >
                                 <SelectTrigger className="col-span-3">
-                                  <SelectValue placeholder="Selecciona un nom d'usuari" />
+                                  <SelectValue placeholder="Selecciona una preferència" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {usernames.map((username) => (
-                                    <SelectItem key={username} value={username}>
-                                      {username}
+                                  {projectNames.map((projectName) => (
+                                    <SelectItem key={projectName} value={projectName}>
+                                      {projectName}
                                     </SelectItem>
                                   ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="edit-jornada" className="text-right">
+                                Jornada
+                              </Label>
+                              <Select
+                                value={editingTecnic?.jornada || ''}
+                                onValueChange={(value) => setEditingTecnic(editingTecnic ? { ...editingTecnic, jornada: value as Jornada } : null)}
+                              >
+                                <SelectTrigger className="col-span-3">
+                                  <SelectValue placeholder="Selecciona una jornada" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="TOTAL">Total</SelectItem>
+                                  <SelectItem value="PARCIAL">Parcial</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="edit-actiu" className="text-right">
+                                Actiu
+                              </Label>
+                              <Select
+                                value={editingTecnic?.actiu.toString() || ''}
+                                onValueChange={(value) => setEditingTecnic(editingTecnic ? { ...editingTecnic, actiu: value === "true" } : null)}
+                              >
+                                <SelectTrigger className="col-span-3">
+                                  <SelectValue placeholder="Selecciona" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="true">Sí</SelectItem>
+                                  <SelectItem value="false">No</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="edit-contractat" className="text-right">
+                                Contractat
+                              </Label>
+                              <Select
+                                value={editingTecnic?.contractat.toString() || ''}
+                                onValueChange={(value) => setEditingTecnic(editingTecnic ? { ...editingTecnic, contractat: value === "true" } : null)}
+                              >
+                                <SelectTrigger className="col-span-3">
+                                  <SelectValue placeholder="Selecciona" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="true">Sí</SelectItem>
+                                  <SelectItem value="false">No</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>

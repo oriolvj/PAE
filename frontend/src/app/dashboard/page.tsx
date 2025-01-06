@@ -38,7 +38,7 @@ export default function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${randomStat(10000, 50000)}</div>
+            <div className="text-2xl font-bold">{randomStat(10000, 50000)}€</div>
             <p className="text-xs text-muted-foreground">
               +{randomStat(5, 30)}% des de l'últim mes
             </p>
@@ -85,11 +85,6 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </CardContent>
       </Card>
-      <div className="mt-6 flex justify-center">
-        <Button asChild>
-          <Link href="/dashboard/planification">Planificació Setmana Següent</Link>
-        </Button>
-      </div>
     </div>
   )
 }
