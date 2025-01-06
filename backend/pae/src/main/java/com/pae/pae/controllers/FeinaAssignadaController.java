@@ -48,4 +48,11 @@ public class FeinaAssignadaController {
         return feinaAssignadaService.getfeinesAssignadaUsuari(username);
     }
 
+    @CrossOrigin
+    @DeleteMapping(path = "/{nomProjecte}/{username}/{id}")
+    public Boolean deletefeinaAssignada(@PathVariable("nomProjecte") String nomProjecte, @PathVariable("username") String username, @PathVariable("id") Integer id) {
+        return feinaAssignadaService.deletefeinaAssignada(nomProjecte, username, id);
+    }
+
+
 }

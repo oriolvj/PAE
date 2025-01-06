@@ -74,10 +74,12 @@ public class FeinaAssignadaRepository {
     }
 
     public FeinaAssignadaDTO getfeinaAssignada(String nomProjecte, String username, Integer id) {
-        String query = "SELECT * FROM feinaassignada WHERE id = ?";
+        String query = "SELECT * FROM feinaassignada WHERE requeriment_id = ? AND projecte_nom = ? AND nom_empleat = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
+            statement.setString(2, nomProjecte);
+            statement.setString(3, username);
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     AssignarFeinaObject(resultSet);
@@ -191,5 +193,21 @@ public class FeinaAssignadaRepository {
             e.printStackTrace();
         }
         return ja;
+    }
+
+    public Boolean deletefeinaAssignada(String nomProjecte, String username, Integer id) {
+        String query = "DELETE FROM feinaassignada WHERE requeriment_id = ? AND projecte_nom = ? AND nom_empleat = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, id);
+            statement.setString(2, nomProjecte);
+            statement.setString(3, username);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

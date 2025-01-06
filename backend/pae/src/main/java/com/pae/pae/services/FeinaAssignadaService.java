@@ -33,4 +33,8 @@ public class FeinaAssignadaService {
     public ArrayList<FeinaAssignadaDTO> getfeinaAssignadesHorari() {
         return feinaAssignadaRepository.getfeinaAssignadesHorari();
     }
+
+    public Boolean deletefeinaAssignada(String nomProjecte, String username, Integer id) {
+        return feinaAssignadaRepository.deletefeinaAssignada(nomProjecte,username, id);
+    }
 }
