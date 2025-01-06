@@ -214,7 +214,7 @@ public class FeinaAssignadaRepository {
     public Boolean deleteSetmana(java.util.Date dataini, java.util.Date datafi) {
         String query = "DELETE FROM feinaassignada " +
                 "WHERE EXISTS (" +
-                "    SELECT 1 " +
+                "    SELECT * " +
                 "    FROM requirements r " +
                 "    WHERE r.id = feinaassignada.requeriment_id " +
                 "      AND r.day >= ? " +
