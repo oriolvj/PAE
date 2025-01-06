@@ -210,4 +210,26 @@ public class FeinaAssignadaRepository {
         }
         return false;
     }
+
+    public Boolean deleteSetmana(java.util.Date dataini, java.util.Date datafi) {
+        String query = "DELETE FROM feinaassignada " +
+                "WHERE EXISTS (" +
+                "    SELECT 1 " +
+                "    FROM requirements r " +
+                "    WHERE r.id = feinaassignada.requeriment_id " +
+                "      AND r.day >= ? " +
+                "      AND r.day <= ?" +
+                ")";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setDate(1, new java.sql.Date(dataini.getTime()));
+            statement.setDate(2, new java.sql.Date(datafi.getTime()));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

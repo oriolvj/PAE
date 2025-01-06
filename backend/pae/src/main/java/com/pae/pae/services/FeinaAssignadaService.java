@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 
 @Service
@@ -36,5 +39,12 @@ public class FeinaAssignadaService {
 
     public Boolean deletefeinaAssignada(String nomProjecte, String username, Integer id) {
         return feinaAssignadaRepository.deletefeinaAssignada(nomProjecte,username, id);
+    }
+
+    public Boolean deleteSetmana(String dataIni, String dataFi) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date dataini = dateFormat.parse(dataIni);
+        Date datafi = dateFormat.parse(dataFi);
+        return feinaAssignadaRepository.deleteSetmana(dataini, datafi);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -52,6 +53,12 @@ public class FeinaAssignadaController {
     @DeleteMapping(path = "/{nomProjecte}/{username}/{id}")
     public Boolean deletefeinaAssignada(@PathVariable("nomProjecte") String nomProjecte, @PathVariable("username") String username, @PathVariable("id") Integer id) {
         return feinaAssignadaService.deletefeinaAssignada(nomProjecte, username, id);
+    }
+
+    @CrossOrigin
+    @DeleteMapping(path = "/setmana/{dataIni}/{dataFi}")
+    public Boolean deleteSetmana(@PathVariable("dataIni") String dataIni, @PathVariable("dataFi") String dataFi) throws ParseException {
+        return feinaAssignadaService.deleteSetmana(dataIni, dataFi);
     }
 
 

@@ -36,8 +36,12 @@ public class AlgorithmRepository {
 
         iniciSetmana = date;
         LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate iniciSemanaLocal = localDate.with(java.time.temporal.TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
         LocalDate finSemanaLocal = localDate.with(java.time.temporal.TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        Date principiSetmana = Date.from(finSemanaLocal.atStartOfDay(ZoneId.systemDefault()).toInstant());
         fiSetmana = Date.from(finSemanaLocal.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+        if (iniciSetmana.equals(principiSetmana)) feinaAssignadaRepository.deleteSetmana(principiSetmana, fiSetmana);
 
 
 
