@@ -38,7 +38,7 @@ public class AlgorithmRepository {
         LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate iniciSemanaLocal = localDate.with(java.time.temporal.TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
         LocalDate finSemanaLocal = localDate.with(java.time.temporal.TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-        Date principiSetmana = Date.from(finSemanaLocal.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date principiSetmana = Date.from(iniciSemanaLocal.atStartOfDay(ZoneId.systemDefault()).toInstant());
         fiSetmana = Date.from(finSemanaLocal.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
         if (iniciSetmana.equals(principiSetmana)) feinaAssignadaRepository.deleteSetmana(principiSetmana, fiSetmana);
@@ -284,15 +284,25 @@ public class AlgorithmRepository {
 
     public static boolean checkMinimumRestBetweenActs(TecnicDTO candidate, RequerimentDTO requeriment, List<FeinaAssignadaDTO> feines){
         Boolean minimumRest = true;
+        LocalDateTime requerimentStartTime = requeriment.getDay().atTime(requeriment.getStartTime());
+        LocalDateTime requerimentEndTime = requeriment.getDay().atTime(requeriment.getEndTime());
+
         // Check if the employee has a minimum rest of 12 hours between acts
         if (!feines.isEmpty()){
             for (FeinaAssignadaDTO assignedAct : feines) {
-                // If the end time of the assigned act is less than 12 hours before the start time of the new act, the employee is discarded
-                if (Duration.between(assignedAct.getStartTime(), requeriment.getStartTime()).toHours() < 12) {
-                    minimumRest = false;
-                }else if (Duration.between(requeriment.getEndTime(), assignedAct.getStartTime()).toHours() < 12) {
-                    // If the start time of the assigned act is less than 12 hours before the end time of the new act, the employee is discarded
-                    minimumRest = false;
+                    if (assignedAct.getDay() != requeriment.getDay()) {
+                    LocalDateTime assignedEndTime = assignedAct.getDay().atTime(assignedAct.getEndTime());
+                    LocalDateTime assignedStartTime = assignedAct.getDay().atTime(assignedAct.getStartTime());
+                    long hours = Duration.between(assignedEndTime, requerimentStartTime).toHours();
+                    // If the end time of the assigned act is less than 12 hours before the start time of the new act, the employee is discarded
+                    if (Math.abs(hours) < 12) {
+                        minimumRest = false;
+                    }
+                    hours = Duration.between(requerimentEndTime, assignedStartTime).toHours();
+                    if (Math.abs(hours) < 12) {
+                        // If the start time of the assigned act is less than 12 hours before the end time of the new act, the employee is discarded
+                        minimumRest = false;
+                    }
                 }
             }
         }
@@ -476,68 +486,9 @@ public class AlgorithmRepository {
         return workingDays;
     }
 
-    public static List<TecnicDTO> getTecnics() {
-        TecnicController tecnicController = new TecnicController();
-        return tecnicController.getTecnics();
+    public List<TecnicDTO> getTecnics() {
+        return tecnicRepository.getTecnicsActius();
     }
-
-    /*public static List<RequerimentDTO> createRequirements(String project) {
-        List<RequerimentDTO> requeriments = new ArrayList<>();
-
-        if (project.equals("CCCB")){
-            // Día 1: CCCB
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(19, 0), "coordinator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(19, 30), "mixer", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(19, 30), "camera operator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 14), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 14), LocalTime.of(17, 0), LocalTime.of(20, 30), "support", "El renaixement", "Hall", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 14), LocalTime.of(17, 0), LocalTime.of(20, 30), "mount auxiliary", "El renaixement", "Hall", "CCCB"));
-
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(19, 0), "coordinator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(19, 30), "mixer", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(19, 30), "camera operator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 15), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 15), LocalTime.of(17, 0), LocalTime.of(20, 30), "support", "El renaixement", "Hall", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 15), LocalTime.of(17, 0), LocalTime.of(20, 30), "mount auxiliary", "El renaixement", "Hall", "CCCB"));
-
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(19, 0), "coordinator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(19, 30), "mixer", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(19, 30), "camera operator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 16), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 16), LocalTime.of(17, 0), LocalTime.of(20, 30), "support", "El renaixement", "Hall", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 16), LocalTime.of(17, 0), LocalTime.of(20, 30), "mount auxiliary", "El renaixement", "Hall", "CCCB"));
-
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(19, 0), "coordinator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(19, 30), "mixer", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(19, 30), "camera operator", "«Tic Tac» de Rosa Vergés", "Auditori", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 17), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Menjar amb els ulls", "Sala Teatre", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 17), LocalTime.of(17, 0), LocalTime.of(20, 30), "support", "El renaixement", "Hall", "CCCB"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 17), LocalTime.of(17, 0), LocalTime.of(20, 30), "mount auxiliary", "El renaixement", "Hall", "CCCB"));
-        } else if (project.equals("Parlament")){
-            // Día 2: Parlament
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "coordinator", "Debat Parlamentari", "Parlament", "Parlament"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "mixer", "Debat Parlamentari", "Parlament", "Parlament"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Debat Parlamentari", "Parlament", "Parlament"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Debat Parlamentari", "Parlament", "Parlament"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "camera operator", "Debat Parlamentari", "Parlament", "Parlament"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "technical sound", "Debat Parlamentari", "Parlament", "Parlament"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 18), LocalTime.of(10, 0), LocalTime.of(14, 30), "mount auxiliary", "Debat Parlamentari", "Parlament", "Parlament"));
-        } else if (project.equals("Kings League")){
-            // Día 3: Kings League
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "coordinator", "Draft de Jugadores", "Kings league plant", "Kings League"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "mixer", "Draft de Jugadores", "Kings league plant", "Kings League"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "technical sound", "Draft de Jugadores", "Kings league plant", "Kings League"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "camera operator", "Draft de Jugadores", "Kings league plant", "Kings League"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "producer", "Draft de Jugadores", "Kings league plant", "Kings League"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "support", "Draft de Jugadores", "Kings league plant", "Kings League"));
-            requeriments.add(new RequerimentDTO(LocalDate.of(2024, 10, 19), LocalTime.of(14, 0), LocalTime.of(22, 0), "mount auxiliary", "Draft de Jugadores", "Kings league plant", "Kings League"));
-        }
-        return requeriments;
-    }*/
 
 
     public static void addFeinaAssignada(String nomProjecte, String username, Integer id) throws SQLException {

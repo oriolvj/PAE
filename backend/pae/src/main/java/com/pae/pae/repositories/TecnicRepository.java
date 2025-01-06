@@ -55,6 +55,22 @@ public class TecnicRepository {
         return tecnics;
     }
 
+    public ArrayList<TecnicDTO> getTecnicsActius() {
+        ArrayList<TecnicDTO> tecnics = new ArrayList<>();
+        String query = "SELECT * FROM tecnics WHERE actiu = true";
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+            while (resultSet.next()) {
+                AssignTecnicsObject(resultSet);
+                tecnics.add(tDTO);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return tecnics;
+    }
+
 
     public TecnicDTO getTecnic(int id) {
         String query = "SELECT * FROM tecnics WHERE id = ?";
@@ -157,7 +173,7 @@ public class TecnicRepository {
 
     public ArrayList<TecnicDTO> getTecnicsByModalitat(boolean modalitat) {
         ArrayList<TecnicDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM tecnics WHERE contractat = ?";
+        String query = "SELECT * FROM tecnics WHERE contractat = ? AND actiu = true";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setBoolean(1, modalitat);
@@ -175,7 +191,7 @@ public class TecnicRepository {
 
     public ArrayList<TecnicDTO> getTecnicsByPreferencia(String preferencia) {
         ArrayList<TecnicDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM tecnics WHERE preferencia = ?";
+        String query = "SELECT * FROM tecnics WHERE preferencia = ? AND actiu = true";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, preferencia);
@@ -193,7 +209,7 @@ public class TecnicRepository {
 
     public ArrayList<TecnicDTO> getTecnicsByJornada(String jornada) {
         ArrayList<TecnicDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM tecnics WHERE contractat = ?";
+        String query = "SELECT * FROM tecnics WHERE contractat = ? AND actiu = true";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, jornada);
@@ -211,7 +227,7 @@ public class TecnicRepository {
 
     public ArrayList<TecnicDTO> getTecnicsByModalitatAndPreferencia(boolean modalitat, String preferencia) {
         ArrayList<TecnicDTO> ja = new ArrayList<>();
-        String query = "SELECT * FROM tecnics WHERE contractat = ? and preferencia = ?";
+        String query = "SELECT * FROM tecnics WHERE contractat = ? and preferencia = ? AND actiu = true";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setBoolean(1, modalitat);

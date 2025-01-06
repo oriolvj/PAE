@@ -24,6 +24,7 @@ public class TecnicController {
     public ArrayList<TecnicDTO> getTecnics() {
         return tecnicService.getTecnics();
     }
+
     @CrossOrigin
     @GetMapping(path = "/{id}")
     public TecnicDTO getTecnic(@PathVariable("id") Integer id) {

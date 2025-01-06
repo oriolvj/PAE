@@ -224,8 +224,11 @@ public class FeinaAssignadaRepository {
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setDate(1, new java.sql.Date(dataini.getTime()));
             statement.setDate(2, new java.sql.Date(datafi.getTime()));
-            try (ResultSet resultSet = statement.executeQuery()) {
+            Integer correct = statement.executeUpdate();
+            if (correct > 0) {
                 return true;
+            } else {
+                return false;
             }
         } catch (SQLException e) {
             e.printStackTrace();
