@@ -142,7 +142,7 @@ export default function TimetablePage() {
           onChange={(e) => setSelectedProject(e.target.value || null)}
           className="w-full p-2 border rounded"
         >
-          <option value="">All Projects</option>
+          <option value="">Tots els projectes</option>
           {projectNames.map((name) => (
             <option key={name} value={name}>
               {name}

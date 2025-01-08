@@ -112,14 +112,14 @@ export default function UsersPage() {
     <div className="container mx-auto py-10">
       <Card className="mb-8">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-2xl font-bold">User Management</CardTitle>
+          <CardTitle className="text-2xl font-bold">Gestió d&apos;Usuaris</CardTitle>
           <Button onClick={() => router.push('/dashboard/users/add')}>
-            <PlusCircle className="mr-2 h-4 w-4" /> Add New User
+            <PlusCircle className="mr-2 h-4 w-4" /> Afegir Nou Usuari
           </Button>
         </CardHeader>
         <CardContent>
           <Input
-            placeholder="Search users..."
+            placeholder="Buscar usuaris..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-sm mb-4"
@@ -195,7 +195,7 @@ export default function UsersPage() {
                         onClick={() => router.push(`/dashboard/users/${user.username}/edit`)}
                       >
                         <Edit className="mr-2 h-4 w-4" />
-                        Edit
+                        Editar
                       </Button>
                       <Button 
                         variant="ghost" 
@@ -204,7 +204,7 @@ export default function UsersPage() {
                         onClick={() => handleDeleteUser(user.username)}
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
+                        Esborrar
                       </Button>
                     </TableCell>
                   </TableRow>

@@ -140,7 +140,7 @@ export default function AddUserPage() {
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Afegint usuari...' : 'Usuari afegit'}
+              {isLoading ? 'Afegint usuari...' : 'Afegir usuari'}
             </Button>
           </CardFooter>
         </form>

@@ -374,10 +374,28 @@ export default function MaterialsPage() {
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
-                      <Button variant="outline" size="sm" className="text-red-600" onClick={() => handleDeleteMaterial(material.id)}>
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Eliminar
-                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="sm" className="text-red-600">
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Esborrar
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Segur que vols esborrar el material?</DialogTitle>
+                            <DialogDescription>
+                              Aquest acció no podrà ser desfeta. S&apos;esborraran totes les dades relacionades amb aquest material.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => {}}>Cancelar</Button>
+                            <Button variant="destructive" onClick={() => handleDeleteMaterial(material.id)}>
+                              Esborrar
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
                     </TableCell>
                   </TableRow>
                 ))

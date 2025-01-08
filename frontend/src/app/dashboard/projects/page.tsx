@@ -158,9 +158,9 @@ export default function ProjectsPage() {
     <div className="container mx-auto py-10">
       <Card className="mb-8">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-2xl font-bold">Project Management</CardTitle>
+          <CardTitle className="text-2xl font-bold">Gestió dels Projectes</CardTitle>
           <Button onClick={() => router.push('/dashboard/projects/add')}>
-            <PlusCircle className="mr-2 h-4 w-4" /> Add New Project
+            <PlusCircle className="mr-2 h-4 w-4" /> Afegir Nou Projecte
           </Button>
         </CardHeader>
         <CardContent>
@@ -231,7 +231,7 @@ export default function ProjectsPage() {
                         <DialogTrigger asChild>
                           <Button variant="outline" size="sm" className="mr-2" onClick={() => setEditingProject(project)}>
                             <Edit className="mr-2 h-4 w-4" />
-                            Edit
+                            Editar
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[425px]">
@@ -321,21 +321,20 @@ export default function ProjectsPage() {
                         <DialogTrigger asChild>
                           <Button variant="ghost" size="sm" className="text-red-600">
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
+                            Esborrar
                           </Button>
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
-                            <DialogTitle>Are you sure you want to delete this project?</DialogTitle>
+                            <DialogTitle>Segur que vols esborrar el projecte?</DialogTitle>
                             <DialogDescription>
-                              This action cannot be undone. This will permanently delete the project
-                              and remove all associated data from our servers.
+                              Aquest acció no podrà ser desfeta. S&apos;esborraran totes les dades relacionades amb aquest projecte.
                             </DialogDescription>
                           </DialogHeader>
                           <DialogFooter>
-                            <Button variant="outline" onClick={() => {}}>Cancel</Button>
+                            <Button variant="outline" onClick={() => {}}>Cancelar</Button>
                             <Button variant="destructive" onClick={() => handleDeleteProject(project.nom)}>
-                              Delete
+                              Esborrar
                             </Button>
                           </DialogFooter>
                         </DialogContent>

@@ -21,7 +21,7 @@ export default function DashboardLayout({
           </Link>
           <Link href="/dashboard/timetable" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
             <CalendarDays className="h-5 w-5" />
-            <span>Timetable</span>
+            <span>Horari</span>
           </Link>
           <Link href="/dashboard/project-costs" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
             <CircleDollarSign className="h-5 w-5" />
@@ -53,7 +53,7 @@ export default function DashboardLayout({
           </Link>
           <Link href="/dashboard/users" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
             <Users className="h-5 w-5" />
-            <span>Users</span>
+            <span>Usuaris</span>
           </Link>
         </nav>
       </header>

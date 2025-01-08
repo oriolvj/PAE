@@ -583,10 +583,28 @@ export default function TecnicsPage() {
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
-                      <Button variant="outline" size="sm" className="text-red-600" onClick={() => handleDeleteTecnic(tecnic.username)}>
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Eliminar
-                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="sm" className="text-red-600">
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Esborrar
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Segur que vols esborrar el tècnic?</DialogTitle>
+                            <DialogDescription>
+                              Aquest acció no podrà ser desfeta. S&apos;esborraran totes les dades relacionades amb aquest tècnic incloent les seves assignacions.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => {}}>Cancelar</Button>
+                            <Button variant="destructive" onClick={() => handleDeleteTecnic(tecnic.username)}>
+                              Esborrar
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
                     </TableCell>
                   </TableRow>
                 ))
