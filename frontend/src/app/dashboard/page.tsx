@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { Users, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react'
+import { Users, DollarSign } from 'lucide-react'
 
 // Mock data for the chart
 const data = [
