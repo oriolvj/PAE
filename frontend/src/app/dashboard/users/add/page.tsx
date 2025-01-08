@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { ArrowLeft } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
@@ -50,10 +49,6 @@ export default function AddUserPage() {
     setUser(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleSwitchChange = (name: string) => (checked: boolean) => {
-    setUser(prev => ({ ...prev, [name]: checked }))
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -71,8 +66,6 @@ export default function AddUserPage() {
         console.error('Response:', response)
         throw new Error('Failed to create user')
       }
-
-      const data = await response.json()
       toast({
         title: "Success",
         description: "User created successfully",
@@ -94,7 +87,7 @@ export default function AddUserPage() {
   return (
     <div className="container mx-auto py-10">
       <Button variant="ghost" onClick={() => router.push('/dashboard/users')} className="mb-6">
-        <ArrowLeft className="mr-2 h-4 w-4" /> Anar a la llista d'usuaris
+        <ArrowLeft className="mr-2 h-4 w-4" /> Anar a la llista d&apos;usuaris
       </Button>
       <Card className="max-w-2xl mx-auto">
         <CardHeader>

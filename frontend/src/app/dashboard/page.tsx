@@ -3,8 +3,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Users, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react'
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
 
 // Mock data for the chart
 const data = [
@@ -40,7 +38,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{randomStat(10000, 50000)}€</div>
             <p className="text-xs text-muted-foreground">
-              +{randomStat(5, 30)}% des de l'últim mes
+              +{randomStat(5, 30)}% des de l&apos;últim mes
             </p>
           </CardContent>
         </Card>

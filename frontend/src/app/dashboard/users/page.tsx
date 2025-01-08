@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { PlusCircle, Edit, Trash2, Mail, Phone, Briefcase, Calendar, FileUser, Hash } from 'lucide-react'
+import { PlusCircle, Edit, Trash2, Mail, Hash } from 'lucide-react'
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { revalidatePath } from 'next/cache'
@@ -43,6 +43,7 @@ export default function UsersPage() {
         setUsers(data)
         setIsLoading(false)
       } catch (err) {
+        console.error(err)
         setError('Hi ha hagut un error en recuperar els usuaris. Torna-ho a provar.')
         setIsLoading(false)
       }
@@ -128,7 +129,7 @@ export default function UsersPage() {
               <TableRow>
                 <TableHead className="w-[50px]">Avatar</TableHead>
                 <TableHead>Nom</TableHead>
-                <TableHead>Nom d'usuari</TableHead>
+                <TableHead>Nom d&apos;usuari</TableHead>
                 <TableHead>Correu</TableHead>
                 <TableHead>Telefon</TableHead>
                 <TableHead>Edat</TableHead>

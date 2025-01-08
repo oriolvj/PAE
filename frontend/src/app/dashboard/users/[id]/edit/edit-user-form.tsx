@@ -8,8 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { Briefcase, Calendar, Clock, Heart, Mail, Phone, User, UserCheck } from 'lucide-react'
-import { Separator } from '@radix-ui/react-select'
+import { Briefcase, Calendar, Mail, Phone, User } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
 type Rols = 'ADMINISTRADOR' | 'GESTOR_PROJECTE' | 'TREBALLADOR'
@@ -26,12 +25,10 @@ type User = {
 export function EditUserForm({ initialUser }: { initialUser: User }) {
   const router = useRouter()
   const [user, setUser] = useState<User>(initialUser)
-  const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
 
     try {
       const response = await fetch(`http://10.4.41.40:8080/usuaris/${user.username}`, {
@@ -59,8 +56,6 @@ export function EditUserForm({ initialUser }: { initialUser: User }) {
         description: "Failed to update user. Please try again.",
         variant: "destructive",
       })
-    } finally {
-      setIsLoading(false)
     }
   }
 

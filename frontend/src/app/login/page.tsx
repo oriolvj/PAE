@@ -60,7 +60,7 @@ export default function LoginPage() {
             <h1 className="text-3xl font-bold text-red-600 mb-8 text-center">Accedeix al teu compte</h1>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-sm font-medium text-gray-700">Nom d'usuari</Label>
+                <Label htmlFor="username" className="text-sm font-medium text-gray-700">Nom d&apos;usuari</Label>
                 <Input 
                   id="username" 
                   type="text" 
@@ -84,7 +84,7 @@ export default function LoginPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <Checkbox id="remember" className="mr-2 rounded" />
-                  <Label htmlFor="remember" className="text-sm text-gray-600">Recorda'm</Label>
+                  <Label htmlFor="remember" className="text-sm text-gray-600">Recorda&apos;m</Label>
                 </div>
                 <a href="#" className="text-sm text-gray-600 hover:underline">Contrasenya oblidada?</a>
               </div>

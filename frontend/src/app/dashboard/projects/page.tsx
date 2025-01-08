@@ -54,6 +54,7 @@ export default function ProjectsPage() {
       const data = await response.json()
       setProjects(data)
     } catch (err) {
+      console.error(err)
       setError('Hi ha hagut un error en recuperar els projectes. Torna-ho a provar.')
     } finally {
       setIsLoading(false)
@@ -237,7 +238,7 @@ export default function ProjectsPage() {
                           <DialogHeader>
                             <DialogTitle>Edit Project</DialogTitle>
                             <DialogDescription>
-                              Make changes to the project here. Click save when you're done.
+                              Fes els canvis en el projecte aquí.
                             </DialogDescription>
                           </DialogHeader>
                           <div className="grid gap-4 py-4">

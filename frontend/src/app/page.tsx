@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
 
 /*async function getUser() {
   const cookieStore = cookies()

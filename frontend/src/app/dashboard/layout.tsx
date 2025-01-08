@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { BookUser, BookUserIcon, Calendar, CalendarDays, CalendarPlus, CircleDollarSign, Contact2, FolderOpenDot, Home, Hourglass, PanelsTopLeft, PanelTopClose, PlaneLanding, Users, Variable, Workflow } from 'lucide-react'
+import { BookUserIcon, CalendarDays, CalendarPlus, CircleDollarSign, Contact2, FolderOpenDot, Home, Hourglass, Users, Variable, Workflow } from 'lucide-react'
 
 export default function DashboardLayout({
   children,
@@ -29,7 +29,7 @@ export default function DashboardLayout({
           </Link>
           <Link href="/dashboard/register-hours" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
             <Hourglass className="h-5 w-5" />
-            <span>Registre d'hores</span>
+            <span>Registre d&apos;hores</span>
           </Link>
           <Link href="/dashboard/lloc-de-treball" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
             <Workflow className="h-5 w-5" />

@@ -45,7 +45,7 @@ export default function RegisterHoursPage() {
     <div className="container mx-auto py-10">
       <Card>
         <CardHeader>
-          <CardTitle>Registre d'hores treballades</CardTitle>
+          <CardTitle>Registre d&apos;hores treballades</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (

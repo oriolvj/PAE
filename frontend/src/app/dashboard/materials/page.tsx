@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { PlusCircle, Pencil, Trash2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,7 +29,6 @@ type Material = {
 }
 
 export default function MaterialsPage() {
-  const router = useRouter()
   const { toast } = useToast()
   const [materials, setMaterials] = useState<Material[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -60,6 +58,7 @@ export default function MaterialsPage() {
       const data = await response.json()
       setMaterials(data)
     } catch (err) {
+      console.error(err)
       setError('Hi ha hagut un error en recuperar els materials. Torna-ho a provar.')
     } finally {
       setIsLoading(false)
@@ -287,7 +286,7 @@ export default function MaterialsPage() {
                 </TableRow>
               ) : filteredMaterials.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center">No s'han trobat materials</TableCell>
+                  <TableCell colSpan={6} className="text-center">No s&apos;han trobat materials</TableCell>
                 </TableRow>
               ) : (
                 filteredMaterials.map((material) => (

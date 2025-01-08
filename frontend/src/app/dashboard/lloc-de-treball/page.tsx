@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { PlusCircle, Pencil, Trash2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,7 +24,6 @@ type LlocTreball = {
 }
 
 export default function LlocsTreballPage() {
-  const router = useRouter()
   const { toast } = useToast()
   const [llocsTreball, setLlocsTreball] = useState<LlocTreball[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -49,6 +47,7 @@ export default function LlocsTreballPage() {
       const data = await response.json()
       setLlocsTreball(data)
     } catch (err) {
+      console.error(err)
       setError('Hi ha hagut un error en recuperar els llocs de treball. Torna-ho a provar.')
     } finally {
       setIsLoading(false)
@@ -220,7 +219,7 @@ export default function LlocsTreballPage() {
                 </TableRow>
               ) : filteredLlocsTreball.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={2} className="text-center">No s'han trobat llocs de treball</TableCell>
+                  <TableCell colSpan={2} className="text-center">No s&apos;han trobat llocs de treball</TableCell>
                 </TableRow>
               ) : (
                 filteredLlocsTreball.map((lloc) => (

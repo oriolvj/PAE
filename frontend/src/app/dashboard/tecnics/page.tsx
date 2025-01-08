@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { PlusCircle, Pencil, Trash2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -44,7 +43,6 @@ type Position = {
 type Jornada = "TOTAL" | "PARCIAL"
 
 export default function TecnicsPage() {
-  const router = useRouter()
   const { toast } = useToast()
   const [Tecnics, setTecnics] = useState<Tecnic[]>([])
   const [positions, setPositions] = useState<Position[]>([])
@@ -83,6 +81,7 @@ export default function TecnicsPage() {
       const data = await response.json()
       setTecnics(data)
     } catch (err) {
+      console.error(err)
       setError('Hi ha hagut un error en recuperar els Tecnics. Torna-ho a provar.')
     } finally {
       setIsLoading(false)
@@ -262,7 +261,7 @@ export default function TecnicsPage() {
     <div className="container mx-auto py-10">
       <Card className="mb-8">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-2xl font-bold">Gestió d'Tecnics</CardTitle>
+          <CardTitle className="text-2xl font-bold">Gestió d&apos;Tecnics</CardTitle>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button>
@@ -279,7 +278,7 @@ export default function TecnicsPage() {
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="username" className="text-right">
-                    Nom d'usuari
+                    Nom d&apos;usuari
                   </Label>
                   <Select
                     value={newTecnic.username}
@@ -419,7 +418,7 @@ export default function TecnicsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nom d'usuari</TableHead>
+                <TableHead>Nom d&apos;usuari</TableHead>
                 <TableHead>Sou</TableHead>
                 <TableHead>Posició</TableHead>
                 <TableHead>Preferència</TableHead>
@@ -436,7 +435,7 @@ export default function TecnicsPage() {
                 </TableRow>
               ) : filteredTecnics.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center">No s'han trobat Tecnics</TableCell>
+                  <TableCell colSpan={8} className="text-center">No s&apos;han trobat Tecnics</TableCell>
                 </TableRow>
               ) : (
                 filteredTecnics.map((tecnic) => (
@@ -460,13 +459,13 @@ export default function TecnicsPage() {
                           <DialogHeader>
                             <DialogTitle>Editar Tecnic</DialogTitle>
                             <DialogDescription>
-                              Modifica les dades de l'Tecnic aquí.
+                              Modifica les dades de l&apos;Tecnic aquí.
                             </DialogDescription>
                           </DialogHeader>
                           <div className="grid gap-4 py-4">
                             <div className="grid grid-cols-4 items-center gap-4">
                               <Label htmlFor="edit-username" className="text-right">
-                                Nom d'usuari
+                                Nom d&apos;usuari
                               </Label>
                               <Input
                                 id="edit-username"

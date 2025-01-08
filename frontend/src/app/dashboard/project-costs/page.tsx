@@ -66,7 +66,7 @@ export default function ProjectCostsPage() {
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Cost Mà d'Obra</CardTitle>
+                    <CardTitle>Cost Mà d&apos;Obra</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-2xl font-bold">{formatCurrency(costData.cost_ma_obra)}</p>

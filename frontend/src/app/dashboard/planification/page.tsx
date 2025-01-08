@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect, Key } from 'react'
-import { format, addDays, startOfWeek, endOfWeek, isSameDay, setDay, parseISO } from 'date-fns'
+import { useState, useEffect } from 'react'
+import { format, addDays, startOfWeek, isSameDay, parseISO } from 'date-fns'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/hooks/use-toast"
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i) // 0 to 23
-const DAYS = ['Dll', 'Dm', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg']
 
 interface Project {
   nom: string
@@ -71,6 +70,7 @@ export default function PlanificationPage() {
         const data = await response.json()
         setProjects(data)
       } catch (err) {
+        console.error(err)
         setError('Failed to load projects. Please try again later.')
         toast({
           title: "Error",
@@ -92,6 +92,7 @@ export default function PlanificationPage() {
         const data = await response.json()
         setLlocsTreball(data)
       } catch (err) {
+        console.error(err)
         setError('Failed to load llocsTreball. Please try again later.')
         toast({
           title: "Error",
@@ -113,6 +114,7 @@ export default function PlanificationPage() {
         const data = await response.json()
         setRequeriments(data)
       } catch (err) {
+        console.error(err)
         setError('Failed to load requeriments. Please try again later.')
         toast({
           title: "Error",
@@ -177,6 +179,7 @@ export default function PlanificationPage() {
         description: `${quantity} requirements have been added to the timetable and saved.`,
       });
     } catch (error) {
+      console.error(error)
       toast({
         title: "Error",
         description: "Failed to save the requirements. Please try again.",
@@ -201,7 +204,7 @@ export default function PlanificationPage() {
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeek, i))
 
   const sendRequerimentsToEndpoint = async () => {
-    var date = null
+    let date = null
     if(currentDay > currentWeek) {
       date = format(currentDay, 'yyyy-MM-dd')
     } else {
@@ -229,6 +232,7 @@ export default function PlanificationPage() {
         throw new Error('Failed to send Requeriments')
       }
     } catch (error) {
+      console.error(error)
       toast({
         title: "Error",
         description: "Failed to send Requeriments to the endpoint.",
@@ -251,6 +255,7 @@ export default function PlanificationPage() {
         description: "The Requeriment has been removed from the timetable and deleted.",
       });
     } catch (error) {
+      console.error(error)
       toast({
         title: "Error",
         description: "Failed to delete the Requeriment. Please try again.",

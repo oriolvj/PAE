@@ -68,8 +68,6 @@ export default function AddProjectPage() {
       if (!response.ok) {
         throw new Error('Failed to create project')
       }
-
-      const data = await response.json()
       toast({
         title: "Success",
         description: "Project created successfully",
@@ -129,7 +127,7 @@ export default function AddProjectPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="numeroEmpleats">Numero d'Empleats</Label>
+              <Label htmlFor="numeroEmpleats">Numero d&apos;Empleats</Label>
               <Input id="numeroEmpleats" name="numeroEmpleats" type="number" value={project.numeroEmpleats} onChange={handleInputChange} required />
             </div>
             <div className="space-y-2">

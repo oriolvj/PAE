@@ -7,14 +7,9 @@ type User = {
   tlf: number
   email: string
   rol: Rols
-  preferencia: string
-  actiu: boolean
-  contractat: boolean
-  jornada: Jornada
 }
 
 type Rols = 'ADMINISTRADOR' | 'GESTOR_PROJECTE' | 'TREBALLADOR'
-type Jornada = 'TOTAL' | 'PARCIAL' | 'TRENTA_HORES' | 'ALTRES'
 
 async function getUser(id: string): Promise<User> {
   try {
@@ -35,30 +30,25 @@ async function getUser(id: string): Promise<User> {
       edat: typeof data.edat === 'number' ? data.edat : 0,
       tlf: typeof data.tlf === 'number' ? data.tlf : 0,
       email: data.email || '',
-      rol: ['ADMINISTRADOR', 'GESTOR_PROJECTE', 'TREBALLADOR'].includes(data.rol) ? data.rol as Rols : 'TREBALLADOR',
-      preferencia: data.preferencia || '',
-      actiu: Boolean(data.actiu),
-      contractat: Boolean(data.contractat),
-      jornada: ['TOTAL', 'PARCIAL', 'TRENTA_HORES', 'ALTRES'].includes(data.jornada) ? data.jornada as Jornada : 'ALTRES'
+      rol: ['ADMINISTRADOR', 'GESTOR_PROJECTE', 'TREBALLADOR'].includes(data.rol) ? data.rol as Rols : 'TREBALLADOR'
     }
-    
-    console.log(user)
 
     return user
   } catch (error) {
-    console.error('Error fetching user:', error)
+    console.error(error)
     throw error
   }
 }
 
-export default async function EditUserPage({ params }: { params: { id: string } }) {
-  const user = await getUser(params.id)
-
-  return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">Edit User</h1>
-      <EditUserForm initialUser={user} />
-    </div>
-  )
+type PageProps = {
+  params: Promise<{
+    id: string
+  }>
 }
 
+export default async function Page({ params }: PageProps) {
+  const { id } = await params
+  const user = await getUser(id)
+
+  return <EditUserForm initialUser={user} />
+}
