@@ -58,7 +58,7 @@ public class CostosRepository {
                                     String jornadaStr = empRs.getString("jornada");
                                     Jornada jornada = Jornada.valueOf(jornadaStr);
                                     int j = (jornada == Jornada.TOTAL) ? 40 : 20;
-                                    double costPerHour = salary / j;
+                                    double costPerHour = salary / (4*j);
 
                                     // Obtener id_requeriment de feina_assignada
                                     String requerimentQuery = "SELECT requeriment_id FROM feinaassignada WHERE nom_empleat = ?";
