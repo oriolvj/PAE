@@ -1,18 +1,16 @@
-import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { format } from 'date-fns'
 
-type FeinaAssignada = {
-    nomProjecte: string;
-    username: string;
-    id: number;
-    day: string;
-    startTime: string;
-    endTime: string;
-    llocTreball: string;
-};
-type FeinaAssignadaWithCount = FeinaAssignada & {
-    count: number;
+type FeinaAssignadaWithCount = {
+  nomProjecte: string;
+  username: string;
+  id: number;
+  day: string;
+  startTime: string;
+  endTime: string;
+  llocTreball: string;
+  count: number;
 };
 
 interface AssignmentPopupProps {
@@ -20,28 +18,35 @@ interface AssignmentPopupProps {
   onClose: () => void;
   assignments: FeinaAssignadaWithCount[];
   date: Date;
+  onDelete: (assignment: FeinaAssignadaWithCount) => void;
 }
 
-export function AssignmentPopup({ isOpen, onClose, assignments, date }: AssignmentPopupProps) {
+export function AssignmentPopup({ isOpen, onClose, assignments, date, onDelete }: AssignmentPopupProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>Assignments for {date.toLocaleDateString()}</DialogTitle>
+          <DialogTitle>Assignments for {format(date, 'MMMM d, yyyy')}</DialogTitle>
         </DialogHeader>
-        <ScrollArea className="mt-4 max-h-[60vh]">
+        <div className="space-y-4">
           {assignments.map((assignment, index) => (
-            <div key={index} className="mb-4 p-2 bg-gray-100 rounded">
-              <h3 className="font-semibold">{assignment.nomProjecte}</h3>
+            <div key={`${assignment.id}-${index}`} className="border p-4 rounded-md">
+              <h3 className="font-bold">{assignment.nomProjecte}</h3>
               <p>Time: {assignment.startTime} - {assignment.endTime}</p>
-              <p>Profile: {assignment.llocTreball}</p>
-              <p>User: {assignment.username}</p>
-              <p>Count: {assignment.count}</p>
+              <p>Location: {assignment.llocTreball}</p>
+              <p>Occurrences: {assignment.count}</p>
+              <Button 
+                variant="destructive" 
+                size="sm" 
+                className="mt-2"
+                onClick={() => onDelete(assignment)}
+              >
+                Delete
+              </Button>
             </div>
           ))}
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
-

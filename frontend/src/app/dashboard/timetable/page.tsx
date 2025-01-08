@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AssignmentPopup } from '@/components/AssignmentPopup';
 import React from 'react';
+import { toast } from '@/hooks/use-toast';
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i); // 0 to 23
 
@@ -48,6 +49,29 @@ export default function TimetablePage() {
       setFeinesAssignades(compactedData);
     } catch (error) {
       console.error('Error fetching assignments:', error);
+    }
+  };
+
+  const handleDelete = async (assignment: FeinaAssignadaWithCount) => {
+    try {
+      const response = await fetch(`http://10.4.41.40/feinaassignada/${assignment.nomProjecte}/${assignment.username}/${assignment.id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete assignment');
+      }
+      toast({
+        title: "Assignment deleted",
+        description: `Successfully deleted assignment for ${assignment.nomProjecte}`,
+      });
+      fetchAssignments(); // Refresh the assignments after deletion
+    } catch (error) {
+      console.error('Error deleting assignment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete assignment. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -200,6 +224,7 @@ export default function TimetablePage() {
           onClose={() => setIsPopupOpen(false)}
           assignments={selectedAssignments}
           date={selectedDate}
+          onDelete={handleDelete}
         />
       )}
     </div>
