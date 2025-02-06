@@ -54,9 +54,10 @@ export default function TimetablePage() {
 
   const handleDelete = async (assignment: FeinaAssignadaWithCount) => {
     try {
-      const response = await fetch(`http://10.4.41.33/feinaassignada/${assignment.nomProjecte}/${assignment.username}/${assignment.id}`, {
+      const response = await fetch(`http://10.4.41.33:8080/feinaassignada/${assignment.nomProjecte}/${assignment.username}/${assignment.id}`, {
         method: 'DELETE',
       });
+      console.log(response)
       if (!response.ok) {
         throw new Error('Failed to delete assignment');
       }
@@ -73,6 +74,7 @@ export default function TimetablePage() {
         variant: "destructive",
       });
     }
+    setIsPopupOpen(false)
   };
 
   const fetchProjectNames = async () => {

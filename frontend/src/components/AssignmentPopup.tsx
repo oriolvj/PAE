@@ -34,6 +34,7 @@ export function AssignmentPopup({ isOpen, onClose, assignments, date, onDelete }
               <h3 className="font-bold">{assignment.nomProjecte}</h3>
               <p>Time: {assignment.startTime} - {assignment.endTime}</p>
               <p>Location: {assignment.llocTreball}</p>
+              <p>Username: {assignment.username}</p>
               <p>Occurrences: {assignment.count}</p>
               <Button 
                 variant="destructive" 

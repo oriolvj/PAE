@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/hooks/use-toast"
+import { useRouter } from 'next/navigation'
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i) // 0 to 23
 
@@ -58,7 +59,7 @@ export default function PlanificationPage() {
     nomProjecte: '',
   })
   const [quantity, setQuantity] = useState<number>(1)
-
+  const router = useRouter()
   useEffect(() => {
     const fetchProjects = async () => {
       setIsLoadingProjects(true)
@@ -204,6 +205,7 @@ export default function PlanificationPage() {
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeek, i))
 
   const sendRequerimentsToEndpoint = async () => {
+
     let date = null
     if(currentDay > currentWeek) {
       date = format(currentDay, 'yyyy-MM-dd')
@@ -239,6 +241,8 @@ export default function PlanificationPage() {
         variant: "destructive",
       })
     }
+
+    router.push('/dashboard/timetable')
   }
 
   const removeRequeriment = async (RequerimentId: string) => {
