@@ -40,7 +40,7 @@ export default function TimetablePage() {
 
   const fetchAssignments = async () => {
     try {
-      const response = await fetch('http://10.4.41.40:8080/feinaassignada/horari');
+      const response = await fetch('http://10.4.41.33:8080/feinaassignada/horari');
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -54,7 +54,7 @@ export default function TimetablePage() {
 
   const handleDelete = async (assignment: FeinaAssignadaWithCount) => {
     try {
-      const response = await fetch(`http://10.4.41.40/feinaassignada/${assignment.nomProjecte}/${assignment.username}/${assignment.id}`, {
+      const response = await fetch(`http://10.4.41.33/feinaassignada/${assignment.nomProjecte}/${assignment.username}/${assignment.id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -77,7 +77,7 @@ export default function TimetablePage() {
 
   const fetchProjectNames = async () => {
     try {
-      const response = await fetch('http://10.4.41.40:8080/projectes/nomsprojectes'); // Replace with correct endpoint
+      const response = await fetch('http://10.4.41.33:8080/projectes/nomsprojectes'); // Replace with correct endpoint
       if (!response.ok) {
         throw new Error('Failed to fetch project names');
       }

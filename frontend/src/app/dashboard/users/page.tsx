@@ -34,7 +34,7 @@ export default function UsersPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://10.4.41.40:8080/usuaris')
+        const response = await fetch('http://10.4.41.33:8080/usuaris')
         if (!response.ok) {
           throw new Error('Hi ha hagut un error en recuperar els usuaris.')
         }
@@ -60,7 +60,7 @@ export default function UsersPage() {
 
   async function deleteUser(username: string) {
     try {
-      const response = await fetch(`http://10.4.41.40:8080/usuaris/${username}`, {
+      const response = await fetch(`http://10.4.41.33:8080/usuaris/${username}`, {
         method: 'DELETE',
       })
   

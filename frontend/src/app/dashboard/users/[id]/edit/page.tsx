@@ -13,7 +13,7 @@ type Rols = 'ADMINISTRADOR' | 'GESTOR_PROJECTE' | 'TREBALLADOR'
 
 async function getUser(id: string): Promise<User> {
   try {
-    const response = await fetch(`http://10.4.41.40:8080/usuaris/${id}`)
+    const response = await fetch(`http://10.4.41.33:8080/usuaris/${id}`)
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)

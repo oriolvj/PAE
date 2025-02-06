@@ -63,7 +63,7 @@ export default function PlanificationPage() {
     const fetchProjects = async () => {
       setIsLoadingProjects(true)
       try {
-        const response = await fetch('http://10.4.41.40:8080/projectes')
+        const response = await fetch('http://10.4.41.33:8080/projectes')
         if (!response.ok) {
           throw new Error('Failed to fetch projects')
         }
@@ -85,7 +85,7 @@ export default function PlanificationPage() {
     const fetchLlocsTreball = async () => {
       setIsLoadingLlocsTreball(true)
       try {
-        const response = await fetch('http://10.4.41.40:8080/lloctreball')
+        const response = await fetch('http://10.4.41.33:8080/lloctreball')
         if (!response.ok) {
           throw new Error('Failed to fetch llocsTreball')
         }
@@ -107,7 +107,7 @@ export default function PlanificationPage() {
     const fetchRequeriments = async () => {
       setIsLoadingRequeriments(true)
       try {
-        const response = await fetch('http://10.4.41.40:8080/requeriments')
+        const response = await fetch('http://10.4.41.33:8080/requeriments')
         if (!response.ok) {
           throw new Error('Failed to fetch requeriments')
         }
@@ -148,7 +148,7 @@ export default function PlanificationPage() {
     e.preventDefault()
     try {
       const requests = Array.from({ length: quantity }, () =>
-        fetch('http://10.4.41.40:8080/requeriments', {
+        fetch('http://10.4.41.33:8080/requeriments', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -211,7 +211,7 @@ export default function PlanificationPage() {
       date = format(currentWeek, 'yyyy-MM-dd')
     }
     try {
-      const response = await fetch(`http://10.4.41.40:8080/algorithm/${date}`, {
+      const response = await fetch(`http://10.4.41.33:8080/algorithm/${date}`, {
         method: 'GET',
       })
       if (response.ok) {
@@ -243,7 +243,7 @@ export default function PlanificationPage() {
 
   const removeRequeriment = async (RequerimentId: string) => {
     try {
-      const response = await fetch(`http://10.4.41.40:8080/requeriments/${RequerimentId}`, {
+      const response = await fetch(`http://10.4.41.33:8080/requeriments/${RequerimentId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

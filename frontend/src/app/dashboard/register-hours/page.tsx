@@ -23,7 +23,7 @@ export default function RegisterHoursPage() {
   const fetchEntries = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch('http://10.4.41.40:8080/registrehores')
+      const response = await fetch('http://10.4.41.33:8080/registrehores')
       if (!response.ok) {
         throw new Error('Failed to fetch entries')
       }

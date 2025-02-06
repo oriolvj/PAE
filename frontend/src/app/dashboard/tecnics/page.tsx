@@ -74,7 +74,7 @@ export default function TecnicsPage() {
   const fetchTecnics = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch('http://10.4.41.40:8080/tecnics')
+      const response = await fetch('http://10.4.41.33:8080/tecnics')
       if (!response.ok) {
         throw new Error('Hi ha hagut un error en recuperar els Tecnics.')
       }
@@ -90,7 +90,7 @@ export default function TecnicsPage() {
 
   const fetchPositions = async () => {
     try {
-      const response = await fetch('http://10.4.41.40:8080/lloctreball')
+      const response = await fetch('http://10.4.41.33:8080/lloctreball')
       if (!response.ok) {
         throw new Error('Hi ha hagut un error en recuperar les posicions.')
       }
@@ -108,7 +108,7 @@ export default function TecnicsPage() {
 
   const fetchUsernames = async () => {
     try {
-      const response = await fetch('http://10.4.41.40:8080/usuaris/usernames')
+      const response = await fetch('http://10.4.41.33:8080/usuaris/usernames')
       if (!response.ok) {
         throw new Error('Hi ha hagut un error en recuperar els noms d\'usuari.')
       }
@@ -126,7 +126,7 @@ export default function TecnicsPage() {
 
   const fetchProjectNames = async () => {
     try {
-      const response = await fetch('http://10.4.41.40:8080/projectes/nomsprojectes')
+      const response = await fetch('http://10.4.41.33:8080/projectes/nomsprojectes')
       if (!response.ok) {
         throw new Error('Hi ha hagut un error en recuperar els noms dels projectes.')
       }
@@ -144,7 +144,7 @@ export default function TecnicsPage() {
 
   const handleAddTecnic = async () => {
     try {
-      const response = await fetch('http://10.4.41.40:8080/tecnics', {
+      const response = await fetch('http://10.4.41.33:8080/tecnics', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -186,7 +186,7 @@ export default function TecnicsPage() {
     if (!editingTecnic) return
 
     try {
-      const response = await fetch(`http://10.4.41.40:8080/tecnics/${editingTecnic.username}`, {
+      const response = await fetch(`http://10.4.41.33:8080/tecnics/${editingTecnic.username}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -217,7 +217,7 @@ export default function TecnicsPage() {
 
   const handleDeleteTecnic = async (username: string) => {
     try {
-      const response = await fetch(`http://10.4.41.40:8080/tecnics/${username}`, {
+      const response = await fetch(`http://10.4.41.33:8080/tecnics/${username}`, {
         method: 'DELETE',
       })
 

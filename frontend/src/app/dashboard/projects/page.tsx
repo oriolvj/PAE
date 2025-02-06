@@ -47,7 +47,7 @@ export default function ProjectsPage() {
   const fetchProjects = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch('http://10.4.41.40:8080/projectes')
+      const response = await fetch('http://10.4.41.33:8080/projectes')
       if (!response.ok) {
         throw new Error('Hi ha hagut un error en recuperar els projectes.')
       }
@@ -63,7 +63,7 @@ export default function ProjectsPage() {
 
   async function deleteProject(projectName: string) {
     try {
-      const response = await fetch(`http://10.4.41.40:8080/projectes/${encodeURIComponent(projectName)}`, {
+      const response = await fetch(`http://10.4.41.33:8080/projectes/${encodeURIComponent(projectName)}`, {
         method: 'DELETE',
       })
   
@@ -105,7 +105,7 @@ export default function ProjectsPage() {
     if (!editingProject) return
 
     try {
-      const response = await fetch(`http://10.4.41.40:8080/projectes/${encodeURIComponent(editingProject.nom)}`, {
+      const response = await fetch(`http://10.4.41.33:8080/projectes/${encodeURIComponent(editingProject.nom)}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

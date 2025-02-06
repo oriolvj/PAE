@@ -40,7 +40,7 @@ export default function LlocsTreballPage() {
   const fetchLlocsTreball = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch('http://10.4.41.40:8080/lloctreball')
+      const response = await fetch('http://10.4.41.33:8080/lloctreball')
       if (!response.ok) {
         throw new Error('Hi ha hagut un error en recuperar els llocs de treball.')
       }
@@ -56,7 +56,7 @@ export default function LlocsTreballPage() {
 
   const handleAddLlocTreball = async () => {
     try {
-      const response = await fetch('http://10.4.41.40:8080/lloctreball', {
+      const response = await fetch('http://10.4.41.33:8080/lloctreball', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export default function LlocsTreballPage() {
     if (!editingLloc) return
 
     try {
-      const response = await fetch(`http://10.4.41.40:8080/lloctreball/${editingLloc.posicio}`, {
+      const response = await fetch(`http://10.4.41.33:8080/lloctreball/${editingLloc.posicio}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ export default function LlocsTreballPage() {
 
   const handleDeleteLlocTreball = async (id: string) => {
     try {
-      const response = await fetch(`http://10.4.41.40:8080/lloctreball/${id}`, {
+      const response = await fetch(`http://10.4.41.33:8080/lloctreball/${id}`, {
         method: 'DELETE',
       })
 

@@ -22,7 +22,7 @@ export default function LoginPage() {
     setError('')
 
     try {
-      const response = await fetch('http://10.4.41.40:8080/usuaris/login', {
+      const response = await fetch('http://10.4.41.33:8080/usuaris/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -31,7 +31,7 @@ export function EditUserForm({ initialUser }: { initialUser: User }) {
     e.preventDefault()
 
     try {
-      const response = await fetch(`http://10.4.41.40:8080/usuaris/${user.username}`, {
+      const response = await fetch(`http://10.4.41.33:8080/usuaris/${user.username}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

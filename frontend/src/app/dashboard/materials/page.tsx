@@ -51,7 +51,7 @@ export default function MaterialsPage() {
   const fetchMaterials = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch('http://10.4.41.40:8080/materials')
+      const response = await fetch('http://10.4.41.33:8080/materials')
       if (!response.ok) {
         throw new Error('Hi ha hagut un error en recuperar els materials.')
       }
@@ -67,7 +67,7 @@ export default function MaterialsPage() {
 
   const handleAddMaterial = async () => {
     try {
-      const response = await fetch('http://10.4.41.40:8080/materials', {
+      const response = await fetch('http://10.4.41.33:8080/materials', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ export default function MaterialsPage() {
     if (!editingMaterial) return
 
     try {
-      const response = await fetch(`http://10.4.41.40:8080/materials/${editingMaterial.id}`, {
+      const response = await fetch(`http://10.4.41.33:8080/materials/${editingMaterial.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -138,7 +138,7 @@ export default function MaterialsPage() {
 
   const handleDeleteMaterial = async (id: number) => {
     try {
-      const response = await fetch(`http://10.4.41.40:8080/materials/${id}`, {
+      const response = await fetch(`http://10.4.41.33:8080/materials/${id}`, {
         method: 'DELETE',
       })
 
